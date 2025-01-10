@@ -1,22 +1,32 @@
 Package: goatea
 Type: Package
 Title: A Shiny Interface for Gene Set Enrichment Analysis with GOAT.
-Version: 0.0.11
-Author: Maurits Unkel
+Version: 0.0.13
+Authors@R: 
+    person(given = "Maurits",
+	       family = "Unkel",
+		   role = c("aut", "cre"),
+		   email = "mauritsunkel@gmail.com")
 Maintainer: Maurits Unkel <m.unkel@erasmusmc.nl>
 Description: goatea provides a Shiny interface for performing gene set enrichment analysis using the GOAT package. It includes interactive visualizations and supports human and mouse gene sets from the Molecular Signatures Database (MSigDB).
 License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
 LazyData: true
+LazyDataCompression: xz
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Config/testthat/edition: 3
 biocViews: 
 Depends: 
-    R (>= 4.2)
+    R (>= 4.2),
+	dplyr (>= 1.0.3)
 Imports:
+    goat (>= 1.0),
 	shiny (>= 1.10.0),
 	shinyjs (>= 2.1.0),
 	shinydashboard (>= 0.7.2),
-	openxlsx (>= 4.2.7.1),
-	org.Mm.eg.db (>= 3.19.1),
-Remotes:
-	mauritsunkel/goat
+	openxlsx (>= 4.2.7.1)
+Suggests:
+    AnnotationDbi,
+    org.Hs.eg.db,
+	org.Mm.eg.db
