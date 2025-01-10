@@ -4,10 +4,27 @@
 \alias{read_genelist}
 \title{Read differential gene expression results .csvs/.xlsx to comparisons format}
 \usage{
-read_genelist(filepaths)
+read_genelist(
+  filepaths,
+  remove_NA_ids = TRUE,
+  remove_duplicated = TRUE,
+  remove_Rik_genes = TRUE,
+  remove_Gm_genes = TRUE,
+  keep_maxN_genes = TRUE
+)
 }
 \arguments{
 \item{filepaths}{named character vector of full filepathss of DE.csvs/DE.xlsx (output by enrichment_analysis())}
+
+\item{remove_NA_ids}{boolean, default TRUE, if non-integers in gene column, remove}
+
+\item{remove_duplicated}{boolean, default TRUE, removes duplicated gene symbols/ids}
+
+\item{remove_Rik_genes}{boolean, default TRUE, grepl("Rik$") search and remove Riken non-canonical mouse genes}
+
+\item{remove_Gm_genes}{boolean, default TRUE, grepl("^Gm") search and remove Gm non-canonical mouse genes}
+
+\item{keep_maxN_genes}{boolean, default TRUE, filter down by pvalue to max n genes allowed by goat (max(goat::goat_nulldistributions$N))}
 }
 \description{
 Read differential gene expression results .csvs/.xlsx to comparisons format
