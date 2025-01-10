@@ -22,7 +22,7 @@ ui <- function() {
                   column(width = 2, checkboxInput("cbi_remove_Rik_genes", "Remove Rik genes", value = TRUE)),
                   column(width = 2, checkboxInput("cbi_remove_Gm_genes", "Remove Gm genes", value = TRUE)),
                   column(width = 2, checkboxInput("cbi_keep_maxN_genes", "Keep max N genes", value = TRUE)),
-                  column(width = 12, verbatimTextOutput("filepaths_DE", placeholder = TRUE)),
+                  column(width = 12, verbatimTextOutput("vto_filepaths_DE", placeholder = TRUE)),
                   column(width = 2, actionButton("load_GOAT", "Load GOAT results (optional)")),
                   column(width = 12, verbatimTextOutput("filepaths_GOAT", placeholder = TRUE)),
                   box(

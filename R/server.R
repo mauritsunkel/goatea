@@ -42,7 +42,7 @@ server <- function(input, output, session) {
   
   
   # Display the selected file paths
-  output$filepaths_DE <- shiny::renderText({
+  output$vto_filepaths_DE <- shiny::renderText({
     shiny::req(filepaths_DE())
     paste(filepaths_DE(), collapse = "\n")
   })
