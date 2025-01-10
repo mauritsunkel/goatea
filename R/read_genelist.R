@@ -14,20 +14,20 @@ read_genelist <- function(filepaths, remove_NA_ids = TRUE, remove_duplicated = T
   genelists <- list()
   
   for (i in seq_along(filepaths)) {
-    DE_file <- filepaths[i]
+    file <- filepaths[i]
     
-    if (file_extension(DE_file) == "xlsx") {
-      genelist <- openxlsx::read.xlsx(DE_file)
-    } else if (file_extension(DE_file) == "csv") {
-      genelist <- utils::read.csv2(file = DE_file)
-    } else if (file_extension(DE_file) == "tsv") {
-      genelist <- utils::read.delim(DE_file, header = TRUE, sep = "\t")
+    if (file_extension(file) == "xlsx") {
+      genelist <- openxlsx::read.xlsx(file)
+    } else if (file_extension(file) == "csv") {
+      genelist <- utils::read.csv2(file = file)
+    } else if (file_extension(file) == "tsv") {
+      genelist <- utils::read.delim(file, header = TRUE, sep = "\t")
     }
-    genelist <- tibble::as.tibble(genelist)
+    genelist <- tibble::as_tibble(genelist)
     
     genelist <- validate_genelist(genelist = genelist)
     # return error message if validation not ok
-    if (is.character(genelist)) return(genelist)
+    if (is.character(genelist)) return(paste(file, genelist))
     
     genelist <- date2gene(gene_names = genelist$symbol)
     
