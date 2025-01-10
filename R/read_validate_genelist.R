@@ -84,8 +84,6 @@ read_validate_genelist <- function(file, remove_NA_ids = TRUE, remove_duplicated
     return(paste0("genelist table should not exceed ", max(goat::goat_nulldistributions$N), " genes (", length(genelist$gene), ")"))
   }
   
-  genelist <- date2gene(gene_names = genelist$symbol)
-  
   # remove if NA after integer conversion of gene IDs
   if (remove_NA_ids) genelist <- genelist[ ! is.na(as.integer(genelist$gene)), ]
   
