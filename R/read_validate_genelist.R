@@ -1,10 +1,25 @@
-
-#' validate a table with genes (that should be tested in overrepresentation-analysis) for compatibility with this R package
+#' Read and validate a table with genes (that should be tested in overrepresentation-analysis) for compatibility with this R package#'
+#' @param file full filepath to gene tibble in .csvs/.xlsx/.tsv 
+#' @param remove_NA_ids boolean, default TRUE, if non-integers in gene column, remove
+#' @param remove_duplicated boolean, default TRUE, removes duplicated gene symbols/ids
+#' @param remove_Rik_genes boolean, default TRUE, grepl("Rik$") search and remove Riken non-canonical mouse genes
+#' @param remove_Gm_genes boolean, default TRUE, grepl("^Gm") search and remove Gm non-canonical mouse genes
+#' @param keep_maxN_genes boolean, default TRUE, filter down by pvalue to max n genes allowed by goat (max(goat::goat_nulldistributions$N))
 #'
-#' @param genelist gene tibble to validate
-#' @noRd
 #' @export
-validate_genelist <- function(genelist) {
+read_validate_genelist <- function(file, remove_NA_ids = TRUE, remove_duplicated = TRUE,
+                          remove_Rik_genes = TRUE, remove_Gm_genes = TRUE, keep_maxN_genes = TRUE) {
+  message("Checking file format...")
+  
+  if (file_extension(file) == "xlsx") {
+    genelist <- openxlsx::read.xlsx(file)
+  } else if (file_extension(file) == "csv") {
+    genelist <- utils::read.csv2(file = file)
+  } else if (file_extension(file) == "tsv") {
+    genelist <- utils::read.delim(file, header = TRUE, sep = "\t")
+  }
+  genelist <- tibble::as_tibble(genelist)
+  
   # 1) data.frame with all required columns
   ok = is.data.frame(genelist) &&
     nrow(genelist) > 0 &&
@@ -54,14 +69,31 @@ validate_genelist <- function(genelist) {
   }
   
   # 5) genes cannot be duplicated
+  if (remove_duplicated) genelist <- genelist[ ! duplicated(genelist$gene), ]
   if(anyDuplicated(genelist$gene)) {
     return("genelist table should not contain duplicate values in the 'gene' column")
   }
   
   # 6) genelist length cannot exceed maximum allowed by precomputed null distributions
-  if (length(genelist$gene) > max(goat::goat_nulldistributions$N)) {
-    return(paste0("genelist table should not exceed ", max(goat::goat_nulldistributions$N), " genes"))
+  if (keep_maxN_genes) {
+    genelist <- genelist %>% 
+      arrange(pvalue) %>% 
+      slice_head(n = max(goat::goat_nulldistributions$N))
   }
+  if (length(genelist$gene) > max(goat::goat_nulldistributions$N)) {
+    return(paste0("genelist table should not exceed ", max(goat::goat_nulldistributions$N), " genes (", length(genelist$gene), ")"))
+  }
+  
+  genelist <- date2gene(gene_names = genelist$symbol)
+  
+  # remove if NA after integer conversion of gene IDs
+  if (remove_NA_ids) genelist <- genelist[ ! is.na(as.integer(genelist$gene)), ]
+  
+  # remove Riken uncanonical mouse genes
+  if (remove_Rik_genes) genelist <- genelist %>% filter( ! grepl("Rik$", symbol))
+  # remove Gm uncanonical mouse genes
+  if (remove_Gm_genes) genelist <- genelist %>% filter( ! grepl("^Gm", symbol))
+  # filter down to max n rows based on lowest pvalue
   
   return(genelist)
 }
