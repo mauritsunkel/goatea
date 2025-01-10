@@ -25,18 +25,16 @@ read_genelist <- function(filepaths, remove_NA_ids = TRUE, remove_duplicated = T
     }
     genelist <- tibble::as_tibble(genelist)
     
-    genelist <- validate_genelist(genelist = genelist)
-    # return error message if validation not ok
-    if (is.character(genelist)) return(paste(file, genelist))
+    if ( ! "gene" %in% colnames(genelist)) return(paste(file, "genelist table should include gene (character or integer)"))
+    if (remove_duplicated) genelist <- genelist[ ! duplicated(genelist$gene), ]
+    validated <- validate_genelist(genelist = genelist)
+    genelist <- ifelse(is.character(validated), return(paste(file, validated)), validated)
     
     genelist <- date2gene(gene_names = genelist$symbol)
     
     # remove if NA after integer conversion of gene IDs
     if (remove_NA_ids) genelist <- genelist[ ! is.na(as.integer(genelist$gene)), ]
-    if (remove_duplicated) {
-      genelist <- genelist[ ! duplicated(genelist$symbol), ]
-      genelist <- genelist[ ! duplicated(genelist$gene), ]
-    }
+    
     # remove Riken uncanonical mouse genes
     if (remove_Rik_genes) genelist <- genelist %>% filter( ! grepl("Rik$", symbol))
     # remove Gm uncanonical mouse genes
