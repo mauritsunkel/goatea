@@ -1,7 +1,7 @@
 Package: goatea
 Type: Package
 Title: A Shiny Interface for Gene Set Enrichment Analysis with GOAT.
-Version: 0.0.13
+Version: 0.0.14
 Authors@R: 
     person(given = "Maurits",
 	       family = "Unkel",
