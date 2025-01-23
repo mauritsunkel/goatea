@@ -1,13 +1,13 @@
 #' Read and validate a table with genes (that should be tested in overrepresentation-analysis) for compatibility with this R package#'
 #' @param file full filepath to gene tibble in .csvs/.xlsx/.tsv 
-#' @param remove_NA_ids boolean, default TRUE, if non-integers in gene column, remove
+#' @param remove_non_numerical_ids boolean, default TRUE, if non-numerical in gene column, remove
 #' @param remove_duplicated boolean, default TRUE, removes duplicated gene symbols/ids
 #' @param remove_Rik_genes boolean, default TRUE, grepl("Rik$") search and remove Riken non-canonical mouse genes
 #' @param remove_Gm_genes boolean, default TRUE, grepl("^Gm") search and remove Gm non-canonical mouse genes
 #' @param keep_maxN_genes boolean, default TRUE, filter down by pvalue to max n genes allowed by goat (max(goat::goat_nulldistributions$N))
 #'
 #' @export
-read_validate_genelist <- function(file, remove_NA_ids = TRUE, remove_duplicated = TRUE,
+read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove_duplicated = TRUE,
                           remove_Rik_genes = TRUE, remove_Gm_genes = TRUE, keep_maxN_genes = TRUE) {
   message("Checking file format...")
   
@@ -23,17 +23,18 @@ read_validate_genelist <- function(file, remove_NA_ids = TRUE, remove_duplicated
   # 1) data.frame with all required columns
   ok = is.data.frame(genelist) &&
     nrow(genelist) > 0 &&
-    all(c("gene", "signif") %in% colnames(genelist))
+    all(c("gene", "pvalue", "effectsize") %in% colnames(genelist))
   
   # 2) check column types
   if(ok) {
     types = sapply(genelist, typeof)
-    ok = all(c("gene", "signif") %in% names(types)) &&
+    ok = all(c("gene", "pvalue", "effectsize") %in% names(types)) &&
       types["gene"] %in% c("character", "integer", "numeric", "double") &&
-      types["signif"] == "logical"
+      types["pvalue"] %in% c("integer", "numeric", "double") &&
+      types["effectsize"] %in% c("integer", "numeric", "double")
   }
   if(!ok) {
-    return("genelist table should be a data.frame/tibble with these columns (and types); gene (character or integer), signif (logical/boolean)")
+    return("genelist table should be a data.frame/tibble with these columns (and types); gene (character or integer), pvalue (numeric), effectsize (numeric)")
   }
   
   # 3) check for NA or empty-string values  (note that the 'signif' column can be NA)
@@ -85,12 +86,12 @@ read_validate_genelist <- function(file, remove_NA_ids = TRUE, remove_duplicated
   }
   
   # remove if NA after integer conversion of gene IDs
-  if (remove_NA_ids) genelist <- genelist[ ! is.na(as.integer(genelist$gene)), ]
+  if (remove_non_numerical_ids) genelist <- genelist[ ! is.na(as.integer(genelist$gene)), ]
   
   # remove Riken uncanonical mouse genes
-  if (remove_Rik_genes) genelist <- genelist %>% filter( ! grepl("Rik$", symbol))
+  if (remove_Rik_genes) genelist <- genelist %>% filter( ! grepl("Rik$", gene))
   # remove Gm uncanonical mouse genes
-  if (remove_Gm_genes) genelist <- genelist %>% filter( ! grepl("^Gm", symbol))
+  if (remove_Gm_genes) genelist <- genelist %>% filter( ! grepl("^Gm", gene))
   # filter down to max n rows based on lowest pvalue
   
   return(genelist)
