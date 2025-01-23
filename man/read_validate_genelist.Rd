@@ -6,7 +6,7 @@
 \usage{
 read_validate_genelist(
   file,
-  remove_NA_ids = TRUE,
+  remove_non_numerical_ids = TRUE,
   remove_duplicated = TRUE,
   remove_Rik_genes = TRUE,
   remove_Gm_genes = TRUE,
@@ -16,7 +16,7 @@ read_validate_genelist(
 \arguments{
 \item{file}{full filepath to gene tibble in .csvs/.xlsx/.tsv}
 
-\item{remove_NA_ids}{boolean, default TRUE, if non-integers in gene column, remove}
+\item{remove_non_numerical_ids}{boolean, default TRUE, if non-numerical in gene column, remove}
 
 \item{remove_duplicated}{boolean, default TRUE, removes duplicated gene symbols/ids}
 

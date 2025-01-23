@@ -4,7 +4,7 @@
 \alias{server}
 \title{Server for goatea package}
 \usage{
-server(input, output, session)
+server(input, output, session, mm_genesets)
 }
 \arguments{
 \item{input}{Shiny input elements handling}
