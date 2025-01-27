@@ -4,12 +4,12 @@
 \alias{wrap_hovertip}
 \title{Wrap Shiny UI element with a hoverable tooltip contained in html div tags}
 \usage{
-wrap_hovertip(text, ui_element)
+wrap_hovertip(ui_element, hovertip)
 }
 \arguments{
-\item{text}{}
-
 \item{ui_element}{}
+
+\item{text}{}
 }
 \description{
 Wrap Shiny UI element with a hoverable tooltip contained in html div tags
