@@ -63,8 +63,7 @@ plot_genelists_overlap_upset <- function(genelists, grayscale_colors = TRUE, emp
     combi <- combinations[[i]]
     
     if ( ! grayscale_colors) {
-      color_index <- match(paste(combi, collapse = "/"), df$name)
-      color <- col[color_index]
+      color <- col[i]
     } else {
       ## color by grayscale based on intersection degree
       color <- switch(
@@ -104,5 +103,4 @@ plot_genelists_overlap_upset <- function(genelists, grayscale_colors = TRUE, emp
                      sets.x.label = "Significant genes",
                      set_size.show = T, set_size.scale_max = 1000)
   return(p)
-  
 }
