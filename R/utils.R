@@ -104,14 +104,40 @@ get_terms_by_keywords <- function(
 
 #' Process Shiny areaInput string
 #'
-#' @param area_input Shiny areaInput string
+#' @param string_input string
 #'
 #' @returns string
-process_area_input <- function(area_input) {
-  if (length(area_input) == 1 && grepl('\n', area_input)) area_input <- strsplit(area_input, "\n")[[1]]
-  area_input <- trimws(area_input)
-  area_input <- gsub("[^a-zA-Z0-9]", "", area_input)
-  return(area_input)
+process_string_input <- function(string_input) {
+  if (length(string_input) == 1 && grepl('\n', string_input)) string_input <- strsplit(string_input, "\n")[[1]]
+  string_input <- trimws(string_input)
+  string_input <- gsub("[^a-zA-Z0-9]", "", string_input)
+  string_input <- Filter(function(x) x != "", string_input)
+  return(string_input)
 }
 
-
+#' Colorscale for given values and color breaks
+#'
+#' @param values Values to create colorscale for
+#' @param pos_color Named or hex color for 'positive' colors
+#' @param neg_color Named or hex color for 'negative' colors
+#' @param zero_color Named or hex color for 'zero'/'neutral' colors
+#'
+#' @returns color function
+#' @export
+#' 
+#' @description
+#' Colorscale uses circlize::colorRamp2
+colorscale <- function(values, pos_color = "red", neg_color = "blue", zero_color = "white") {
+  max_val <- max(values, na.rm = TRUE)
+  min_val <- min(values, na.rm = TRUE)
+  
+  if (max_val < 0) {
+    color_fun <- circlize::colorRamp2(c(min_val, 0), c(neg_color, zero_color))
+  } else if (min_val > 0) {
+    color_fun <- circlize::colorRamp2(c(0, max_val), c(zero_color, pos_color))
+  } else {
+    color_fun <- circlize::colorRamp2(c(min_val, 0, max_val), c(neg_color, zero_color, pos_color))
+  }
+  
+  return(color_fun)
+}
