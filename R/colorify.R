@@ -13,6 +13,7 @@ brewer_palettes <- rownames(RColorBrewer::brewer.pal.info)
 # TODO exportable: hexcodes, RGB values, HSL values to .csv, .png of pie and palettes 
 # TODO finish docs after finishing TODOs
 # TODO check scale_continuous need for colour output (need of function as output?)
+# TODO if colors already given, see if runif() generator can plot other colors theoretically distinct from gives ones 
 
 #' Create and/or modify color/gradient palettes
 #'
