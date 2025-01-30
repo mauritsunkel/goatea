@@ -11,13 +11,15 @@ brewer_palettes <- rownames(RColorBrewer::brewer.pal.info)
 # TODO be able to return a function? as some plots seem to require that 
 # TODO be able to return named vector ?
 # TODO exportable: hexcodes, RGB values, HSL values to .csv, .png of pie and palettes 
+# TODO finish docs after finishing TODOs
+# TODO check scale_continuous need for colour output (need of function as output?)
 
 #' Create and/or modify color/gradient palettes
 #'
 #' Either generate theoretically maximally different colors, select an available R grDevices palette and/or modify the colors of the given gradient/palette
 #'
+#' @param n default: NULL, else integer, amount of colors to create, if palette selected and more colors requested they will be generated
 #' @param colors if integer, generate that many theoretically maximally different colors, select palette by name (options: see grDevices::palette.pals(), "maus"), or vector of R color names or color hexcodes
-#' @param n default: NULL, else integer, amount of colors to output, if palette selected and more colors requested they will be generated
 #' @param n_gradient default: n, else integer, amount of colors to output as gradient, after completing palette for n colors
 #' @param h hue factor, default: 1, multiply values by factor, proportional scaling from base value of 1
 #' @param s saturation factor, default: 1, multiply values by factor, proportional scaling from base value of 1
@@ -41,8 +43,8 @@ brewer_palettes <- rownames(RColorBrewer::brewer.pal.info)
 #'
 #' @examples
 #' ## if parameters identical, change seed to change generation
-#' colorify(n = 10, plot = TRUE, seed = 1)
-#' colorify(n = 10, plot = TRUE, seed = 42)
+#' colorify(10, plot = TRUE, seed = 1)
+#' colorify(10, plot = TRUE, seed = 42)
 #' ## set colors, generate additional up to n
 #' colorify(colors = c("red", "white", "blue"), n = 5, plot = TRUE)
 #' ## create gradients
@@ -54,7 +56,8 @@ brewer_palettes <- rownames(RColorBrewer::brewer.pal.info)
 #' colorify(colors = "viridis", n = 10, plot = TRUE, l = .9)
 #' 
 #' TODO rgb, hsl examples
-colorify <- function(colors = character(0), n = NULL, n_gradient = n, h = 1, s = 1, l = 1, r = 1, g = 1, b = 1, alpha = 1, seed = 1L, rev = FALSE, plot = FALSE) {
+#' TODO all parameter examples
+colorify <- function(n = NULL, colors = character(0), n_gradient = n, h = 1, s = 1, l = 1, r = 1, g = 1, b = 1, alpha = 1, seed = 1L, rev = FALSE, plot = FALSE) {
   stopifnot(
     is.character(colors),
     is.numeric(alpha),

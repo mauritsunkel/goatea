@@ -5,8 +5,8 @@
 \title{Create and/or modify color/gradient palettes}
 \usage{
 colorify(
-  colors = character(0),
   n = NULL,
+  colors = character(0),
   n_gradient = n,
   h = 1,
   s = 1,
@@ -21,9 +21,9 @@ colorify(
 )
 }
 \arguments{
-\item{colors}{if integer, generate that many theoretically maximally different colors, select palette by name (options: see grDevices::palette.pals(), "maus"), or vector of R color names or color hexcodes}
+\item{n}{default: NULL, else integer, amount of colors to create, if palette selected and more colors requested they will be generated}
 
-\item{n}{default: NULL, else integer, amount of colors to output, if palette selected and more colors requested they will be generated}
+\item{colors}{if integer, generate that many theoretically maximally different colors, select palette by name (options: see grDevices::palette.pals(), "maus"), or vector of R color names or color hexcodes}
 
 \item{n_gradient}{default: n, else integer, amount of colors to output as gradient, after completing palette for n colors}
 
@@ -59,8 +59,8 @@ Either generate theoretically maximally different colors, select an available R 
 }
 \examples{
 ## if parameters identical, change seed to change generation
-colorify(n = 10, plot = TRUE, seed = 1)
-colorify(n = 10, plot = TRUE, seed = 42)
+colorify(10, plot = TRUE, seed = 1)
+colorify(10, plot = TRUE, seed = 42)
 ## set colors, generate additional up to n
 colorify(colors = c("red", "white", "blue"), n = 5, plot = TRUE)
 ## create gradients
@@ -72,4 +72,5 @@ colorify(colors = "viridis", n = 10, plot = TRUE, l = 1.2, s = 10)
 colorify(colors = "viridis", n = 10, plot = TRUE, l = .9)
 
 TODO rgb, hsl examples
+TODO all parameter examples
 }
