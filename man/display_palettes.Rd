@@ -4,12 +4,12 @@
 \alias{display_palettes}
 \title{Display R grDevices palettes}
 \usage{
-display_palettes(n = 10, i_palettes = 1:131, border = FALSE)
+display_palettes(n = 10, i_palettes = 1:1000, border = FALSE)
 }
 \arguments{
 \item{n}{integer, amount of colors to display}
 
-\item{i_palettes}{index range as numerical vector for choosing palettes, any i over maximum amount of palettes are removed}
+\item{i_palettes}{default: numeric vector as index/range for choosing palettes, or a combination of 'rcolorbrewer', 'viridis', 'rainbow' (grDevices Palettes) to show specific palettes}
 
 \item{border}{default: FALSE, if TRUE show color rectangle borders}
 }
@@ -19,10 +19,19 @@ named vector with source and name of palettes, 'hcl' for grDevices::hcl.pals() a
 \description{
 Use colorify() to select and modify the palettes, see its documentation.
 Note that discrete palettes with maximum n colors will be repeated in plotting.
+
+Any numeric i_palettes over maximum amount of palettes are not displayed.
+
+Contains all Viridis palettes, including Turbo.
 }
 \examples{
 display_palettes()
 display_palettes(i_palettes = 50:75)
+
+display_palettes(i_palettes = 'RColorBrewer')
+display_palettes(i_palettes = 'Viridis')
+display_palettes(i_palettes = c("rainbow", "viridis"))
+
 display_palettes(i_palettes = c(1,5,10,20,40,100,119)
 display_palettes(n = 100, i_palettes = 1:10)
 display_palettes(n = 10, i_palettes = 1:10, border = TRUE)

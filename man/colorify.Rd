@@ -2,56 +2,100 @@
 % Please edit documentation in R/colorify.R
 \name{colorify}
 \alias{colorify}
-\title{Create and/or modify color/gradient palettes}
+\title{TODO add @param colors_breakpoints & @param ... to pass arguments to grDevices::colorRamp(Palette)
+Create and/or modify color/gradient palettes}
 \usage{
 colorify(
   n = NULL,
   colors = character(0),
-  n_gradient = n,
-  h = 1,
-  s = 1,
-  l = 1,
-  r = 1,
-  g = 1,
-  b = 1,
+  colors_lock = NULL,
+  colors_names = character(0),
+  colors_breakpoints = numeric(0),
+  gradient_n = n,
+  gradient_space = c("rgb", "Lab"),
+  gradient_interpolate = c("linear", "spline"),
+  hf = 1,
+  sf = 1,
+  lf = 1,
+  rf = 1,
+  gf = 1,
+  bf = 1,
+  hv = 0,
+  sv = 0,
+  lv = 0,
+  rv = 0L,
+  gv = 0L,
+  bv = 0L,
   alpha = 1,
-  seed = 1L,
+  seed = 42L,
   rev = FALSE,
-  plot = FALSE
+  plot = FALSE,
+  export = FALSE,
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
 \item{n}{default: NULL, else integer, amount of colors to create, if palette selected and more colors requested they will be generated}
 
-\item{colors}{if integer, generate that many theoretically maximally different colors, select palette by name (options: see grDevices::palette.pals(), "maus"), or vector of R color names or color hexcodes}
+\item{colors}{character (vector), combination of selecting palette(s) by name (options: see display_palettes()), and/or vector of R color names and/or color hexcodes}
 
-\item{n_gradient}{default: n, else integer, amount of colors to output as gradient, after completing palette for n colors}
+\item{colors_lock}{default: rep(FALSE, length(colors), numerical or logical index of colors (not) to be modified, if logical length != colors it will be cut or filled with TRUE/FALSE, prefix with '!' for logical vectors and '-' for numerical vectors to get inverse, see examples. If gradient_n \%\% length(colors) == 0, i.e. if gradient_n divisive by amount of colors without rest, set repeat given locking pattern}
 
-\item{h}{hue factor, default: 1, multiply values by factor, proportional scaling from base value of 1}
+\item{gradient_n}{default: n, else integer, amount of colors to output as gradient, after completing palette for n colors}
 
-\item{s}{saturation factor, default: 1, multiply values by factor, proportional scaling from base value of 1}
+\item{gradient_space}{default: "rgb", else "Lab", see ?grDevices::colorRamp()}
 
-\item{l}{lightness/brightness factor, default: 1, multiply values by factor, proportional scaling from base value of 1}
+\item{gradient_interpolate}{default: "linear", else "spline", see ? grDevices::colorRamp()}
 
-\item{r}{red factor, default: 1, multiply values by factor, proportional scaling from base value of 1}
+\item{hf}{hue factor, default: 1, multiply values by factor, proportional to base value of 1}
 
-\item{g}{green factor, default: 1, multiply values by factor, proportional scaling from base value of 1}
+\item{sf}{saturation factor, default: 1, multiply values by factor, proportional to base value of 1}
 
-\item{b}{blue factor, default: 1, multiply values by factor, proportional scaling from base value of 1}
+\item{lf}{lightness/brightness factor, default: 1, multiply values by factor, proportional to base value of 1}
+
+\item{rf}{red factor, default: 1, multiply values by factor, proportional to base value of 1}
+
+\item{gf}{green factor, default: 1, multiply values by factor, proportional to base value of 1}
+
+\item{bf}{blue factor, default: 1, multiply values by factor, proportional to base value of 1}
+
+\item{hv}{hue value, default: 0, add value to values, linear from base value of 0}
+
+\item{sv}{saturation value, default: 0, add value to values, linear from base value of 0}
+
+\item{lv}{lightness/brightness value, default: 0, add value to values, linear from base value of 0}
+
+\item{rv}{red value, default: 0, add value to values, linear from base value of 0}
+
+\item{gv}{green value, default: 0, add value to values, linear from base value of 0}
+
+\item{bv}{blue value, default: 0, add value to values, linear from base value of 0}
 
 \item{alpha}{numeric, sets color alpha values}
 
-\item{seed}{integer, set seed for generation of colors}
+\item{seed}{integer, default: 42, set seed for generation of colors}
 
 \item{rev}{default: FALSE, if TRUE, reverse order of colors}
 
 \item{plot}{default: FALSE, if TRUE plot pie chart of color palette}
+
+\item{export}{default: FALSE, if TRUE: export = getwd(), if export = "string/", save hexcodes, rgb, and hsl values to export/colorify.csv}
 }
 \value{
 vector of color hexcodes
 }
 \description{
+TODO especially Viridis for colorblind continuous
 Note for colorblind use: "Okabe-Ito"
+
+Addition of values happens before multiplication with factors.
+
+Palette names are stripped of whitespace and lowered for name matching.
+All RColorBrewer and Viridis palettes are included.
+
+All grDevices plotting functions are provided as palettes, simply use colors = "rainbow", "heat", "terrain", "topo" or "cm".
+
 TODO add description
 }
 \details{
@@ -64,12 +108,35 @@ colorify(10, plot = TRUE, seed = 42)
 ## set colors, generate additional up to n
 colorify(colors = c("red", "white", "blue"), n = 5, plot = TRUE)
 ## create gradients
-colorify(colors = c("orange", "red", "white", "blue", "orange"), n_gradient = 100, plot = TRUE)
+colorify(colors = c("orange", "red", "white", "blue", "orange"), gradient_n = 100, plot = TRUE)
 
 ## viridis gradient, lighten and saturate, darken
 colorify(colors = "viridis", n = 100, plot = TRUE)
 colorify(colors = "viridis", n = 10, plot = TRUE, l = 1.2, s = 10)
 colorify(colors = "viridis", n = 10, plot = TRUE, l = .9)
+
+## palette selected by name in colors[1], can add colors to selected palette, if n < length, remove colors , if greater generate 
+colorify(colors = c("Okabe-Ito", "red", "blue", "yellow"), plot = T, n = 10)
+
+## no adjustments to locked indices 
+TODO more examples
+colorify(colors = "Okabe-Ito", colors_lock = c(F,F,T,T), plot = T, rv = -300)
+colorify(colors = "Okabe-Ito", colors_lock = c(F,F,T,T), plot = T, rv = 300)
+
+## colors_lock and inversing
+colors <- colorify(5)
+colorify(colors_lock = c(T,T), colors=colors)
+colorify(colors_lock = ! c(T,F,T), colors=colors)
+colorify(colors_lock = c(3,4), colors=colors)
+colorify(colors_lock = - c(3,4), colors=colors)
+
+## rainbow
+colorify(colors=grDevices::rainbow(100, s = .5), plot = T)
+colorify(colors="rainbow", n = 100, sf = .5, plot = T)
+colorify(colors=grDevices::rainbow(100, v = .5), plot = T)
+colorify(colors="rainbow", n = 100, lf = .5, plot = T,)
+colorify(colors=grDevices::rainbow(100, start = .25, end = .75), plot = T)
+colorify(colors=grDevices::rainbow(100)[25:75], plot = T)
 
 TODO rgb, hsl examples
 TODO all parameter examples
