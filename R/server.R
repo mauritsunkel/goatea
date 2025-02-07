@@ -276,8 +276,8 @@ goatea_server <- function(input, output, session, mm_genesets) {
         searching = FALSE,
         selection = 'none',
         colResize = list(resize = TRUE),
-        ## set text color of table info and paginators based on CSS style file
-        initComplete = JS("
+        ## set text color of table info and paginators based on CSS style file after rendering datatable
+        initComplete = DT::JS("
           function(settings, json) {
             const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
           
@@ -315,9 +315,6 @@ goatea_server <- function(input, output, session, mm_genesets) {
         padj_cutoff = input$ni_test_padj_cutoff, 
         padj_min_signifgenes = input$ni_test_padj_min_signifgenes
       )
-      ## map IDs back to gene symbol
-      gene_to_symbol <- setNames(data_genelists[[name]]$symbol, data_genelists[[name]]$gene)
-      enrichment_results$symbol <- lapply(enrichment_results$genes, function(genes) unname(gene_to_symbol[as.character(genes)]))
       rv_enrichment$results[[name]] <- enrichment_results
       rv_enrichment$results_filtered[[name]] <- enrichment_results
     }
