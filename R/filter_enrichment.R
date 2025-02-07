@@ -33,11 +33,14 @@ filter_enrichment <- function(
   terms_query_all_any <- match.arg(terms_query_all_any)
   terms_antiquery_all_any <- match.arg(terms_antiquery_all_any)
   
-  print(1)
+  genes_input <- process_string_input(genes_input)
+  terms_query <- process_string_input(terms_query)
+  terms_antiquery <- process_string_input(terms_antiquery)
+  
+  isEmptyCharacter <- function(x) is.character(x) && length(x) == 0
   
   ## keep terms matching by genes
-  if (genes_input != "") {
-    genes_input <- process_area_input(genes_input)
+  if ( ! isEmptyCharacter(genes_input)) {
     match_terms_by_genes <- if (genes_any_all == "any") {
       sapply(df$symbol, function(symbols) any(tolower(genes_input) %in% tolower(symbols)))
     } else if (genes_any_all == "all") {
@@ -45,39 +48,29 @@ filter_enrichment <- function(
     }
     df <- df[match_terms_by_genes, ]
   }
-  print(2)
   ## keep terms matching any/all queries and not any/all antiqueries
-  if (terms_query != "") {
-    print(2.1)
-    terms_query <- process_area_input(terms_query)
+  if ( ! isEmptyCharacter(terms_query)) {
     hits <- get_terms_by_keywords(
       patterns = terms_query,
       terms = df$name,
       pos_neg = 'pos',
       all_any = terms_query_all_any
     )
-    print(2.2)
-    if (terms_antiquery != "") {
-      print(2.3)
-      terms_antiquery <- process_area_input(terms_antiquery)
+    if ( ! isEmptyCharacter(terms_antiquery)) {
       hits <- get_terms_by_keywords(
         patterns = terms_antiquery,
         terms = hits,
         pos_neg = 'neg',
         all_any = terms_antiquery_all_any
       )
-      print(2.4)
     }
     df <- df[df$name %in% hits,]
-    print(2.5)
   }
-  print(3)
   ## filter numericals
   df <- df[df$ngenes >= min_ngenes,]
   df <- df[df$ngenes_input >= min_ngenes_input,]
   df <- df[df$ngenes_signif >= min_ngenes_signif,]
   df <- df[abs(df$zscore) >= min_abs_zscore,]
   df <- df[df$pvalue_adjust <= max_pvalue_adjust,]
-  print(4)
   return(df)
 }

@@ -115,29 +115,46 @@ process_string_input <- function(string_input) {
   return(string_input)
 }
 
-#' Colorscale for given values and color breaks
+#' Helper function to process and write combined genesets overview and genes overview output
 #'
-#' @param values Values to create colorscale for
-#' @param pos_color Named or hex color for 'positive' colors
-#' @param neg_color Named or hex color for 'negative' colors
-#' @param zero_color Named or hex color for 'zero'/'neutral' colors
-#'
-#' @returns color function
-#' @export
-#' 
-#' @description
-#' Colorscale uses circlize::colorRamp2
-colorscale <- function(values, pos_color = "red", neg_color = "blue", zero_color = "white") {
-  max_val <- max(values, na.rm = TRUE)
-  min_val <- min(values, na.rm = TRUE)
+#' @param merged_enrichment row binded enrichment results dataframe/tibble
+#' @param output_folder base output folder path to write to
+#' @param top_n n top results per genelist per source based on genesets adjusted pvalue
+process_write_merged_enrichments <- function(merged_enrichment, output_folder, filename, top_n = NULL) {
   
-  if (max_val < 0) {
-    color_fun <- circlize::colorRamp2(c(min_val, 0), c(neg_color, zero_color))
-  } else if (min_val > 0) {
-    color_fun <- circlize::colorRamp2(c(0, max_val), c(zero_color, pos_color))
-  } else {
-    color_fun <- circlize::colorRamp2(c(min_val, 0, max_val), c(neg_color, zero_color, pos_color))
-  }
-  
-  return(color_fun)
+  merged_enrichment_sources <- lapply(unique(merged_enrichment$source), function(source) {
+    dir.create(file.path(output_folder, "searches", source), recursive = TRUE)
+    
+    merged_enrichment[merged_enrichment$source == source, ] %>%
+      select(genelist_ID, source, name, ngenes_input, ngenes, ngenes_signif, pvalue_adjust, zscore, symbol) %>%
+      ## Select top 50 per genelist_ID based on pvalue_adjust before unnesting
+      { if (!is.null(top_n)) group_by(., genelist_ID) %>%
+          slice_min(pvalue_adjust, n = top_n, with_ties = FALSE) %>%
+          ungroup() else . } %>%
+      unnest(symbol) %>% ## long format by genes
+      ## combine genesets with genes
+      left_join(genes_overview, by = "symbol") %>%
+      ## set best effectsize and pvalue columns based on respective values (excluding NA values)
+      mutate(
+        best_efsi = purrr::pmap_dbl(select(., ends_with("_efsi")),
+                                    ~ { vals <- c(...);
+                                    vals <- vals[!is.na(vals)];
+                                    if (length(vals) > 0) vals[which.max(abs(vals))] else NA}),
+        best_pval = purrr::pmap_dbl(select(., ends_with("_pval")),
+                                    ~ { vals <- c(...);
+                                    vals <- vals[!is.na(vals)];
+                                    if (length(vals) > 0) vals[which.min(vals)] else NA})
+      ) %>%
+      ## order columns
+      select(
+        genelist_ID, source, name, ngenes_input, ngenes, ngenes_signif, pvalue_adjust, zscore, symbol,
+        gene, gene_annotation, genelist_overlap, best_efsi, best_pval,
+        ends_with("_efsi"),
+        ends_with("_perc"),
+        ends_with("_pval"),
+        ends_with("geneSetRatio")
+      )
+    ## write results
+    openxlsx::write.xlsx(merged_enrichments_filtered_processed, file.path(output_folder, "searches", source, paste0(filename, ".xlsx")))
+  })
 }
