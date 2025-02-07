@@ -24,9 +24,13 @@ run_genelists_overlap <- function(
   ## add expression and significance values of each genelist
   for (name in names(genelists)) {
     gene_i <- match(df$symbol, genelists[[name]]$symbol)
-    df[, paste0(name, "-efsi")] <- genelists[[name]]$effectsize[gene_i] # effect size
-    df[, paste0(name, "-pval")] <- genelists[[name]]$pvalue[gene_i] # p-value
+    df[, paste0(name, "_efsi")] <- genelists[[name]]$effectsize[gene_i] # effect size
+    df[, paste0(name, "_pval")] <- genelists[[name]]$pvalue[gene_i] # p-value
   }
+  ## convert log2 fold effectsize values to percentage change
+  df <- df %>%
+    mutate(across(ends_with("_efsi"), ~ (2^. - 1) * 100, .names = "{.col}_perc")) %>%
+    rename_with(~ gsub("_efsi_perc", "_perc", .), ends_with("_efsi_perc"))
   ## list significant genes for efficiently checking overlap
   genelists_signif_genes <- lapply(genelists, function(df) df$symbol[df$signif == TRUE])
   ## get genelist names of overlapping significant genes
