@@ -71,7 +71,7 @@ plot_ComplexHeatmap <- function(
   ## initialize matrix data
   m_data <- df %>%
     select(name, symbol) %>%
-    unnest(symbol)
+    tidyr::unnest(symbol)
   unique_names <- unique(m_data$name)
   unique_genes <- unique(m_data$symbol)
   
@@ -167,7 +167,8 @@ plot_ComplexHeatmap <- function(
     cha_column_overlap <- ComplexHeatmap::HeatmapAnnotation(
       signif_overlap = overlap_values,
       col = list(
-        signif_overlap = colorify(n = length(unique(overlap_values)), colors = "okabe-ito", colors_names = unique(overlap_values))
+        signif_overlap = colorify(n = length(unique(overlap_values)), colors = "okabe-ito", colors_names = replace(unique(overlap_values), is.na(unique(overlap_values)), "?"))
+        # signif_overlap = colorify(n = length(unique(overlap_values)), colors = "okabe-ito", colors_names = c("M", "C", "", "A", "M+A", NA))
       ),
       na_col = neutral_color
     )
