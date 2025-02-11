@@ -6,6 +6,7 @@
 \usage{
 read_validate_genelist(
   file,
+  map_organism = NULL,
   remove_non_numerical_ids = TRUE,
   remove_duplicated = TRUE,
   remove_Rik_genes = TRUE,
@@ -15,6 +16,8 @@ read_validate_genelist(
 }
 \arguments{
 \item{file}{full filepath to gene tibble in .csvs/.xlsx/.tsv}
+
+\item{map_organism}{default: NULL, if "Hs" or "Mm", used for selecting org.Xx.eg.db to map gene symbols to gene column via AnnotationDbi::mapIds(keytype = 'ALIAS') - if mapped to NA the genes are removed`}
 
 \item{remove_non_numerical_ids}{boolean, default TRUE, if non-numerical in gene column, remove}
 

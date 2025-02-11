@@ -21,3 +21,4 @@ process_write_merged_enrichments(
 \description{
 Helper function to process and write combined genesets overview and genes overview output
 }
+\keyword{internal}
