@@ -17,9 +17,11 @@ run_genelists_overlap <- function(
   }
   
   ## initiate df with unique gene symbols (and annotations)
-  df <- tibble::tibble(
-    symbol = Reduce(union, lapply(genelists, function(x) x$symbol)),
-    gene = Reduce(union, lapply(genelists, function(x) x$gene)))
+  long_df <- do.call(rbind, genelists)
+  df <- tibble::tibble(gene = Reduce(union, lapply(genelists, function(x) x$gene)))
+  df$symbol <- long_df$symbol[match(df$gene, long_df$gene)] # match first hits, multiple possible if symbol to gene mapping happened
+  
+  # df$symbol <- match(df$gene, Reduce(union, lapply(genelists, function(x) x$symbol)))
   if (annotate_genes) df$gene_annotation <- get_gene_annotation(gene_symbols = df$symbol, organism = annotation_organism)
   ## add expression and significance values of each genelist
   for (name in names(genelists)) {
