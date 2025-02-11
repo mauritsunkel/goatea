@@ -1,4 +1,8 @@
-# TODO add doc
+#' Get file extension
+#'
+#' @param x string filepath
+#'
+#' @returns string file extension
 file_extension <- function (x) {
   pos <- regexpr("\\.([[:alnum:]]+)$", x)
   ifelse(pos > -1L, substring(x, pos + 1L), "")
@@ -120,12 +124,16 @@ process_string_input <- function(string_input) {
 #' @param merged_enrichment row binded enrichment results dataframe/tibble
 #' @param output_folder base output folder path to write to
 #' @param top_n n top results per genelist per source based on genesets adjusted pvalue
+#' 
+#' @importFrom tidyr unnest
+#' 
+#' @keywords internal
 process_write_merged_enrichments <- function(merged_enrichment, output_folder, filename, top_n = NULL) {
   
   merged_enrichment_sources <- lapply(unique(merged_enrichment$source), function(source) {
     dir.create(file.path(output_folder, "searches", source), recursive = TRUE)
     
-    merged_enrichment[merged_enrichment$source == source, ] %>%
+    merged_enrichment_source <- merged_enrichment[merged_enrichment$source == source, ] %>%
       select(genelist_ID, source, name, ngenes_input, ngenes, ngenes_signif, pvalue_adjust, zscore, symbol) %>%
       ## Select top 50 per genelist_ID based on pvalue_adjust before unnesting
       { if (!is.null(top_n)) group_by(., genelist_ID) %>%
@@ -155,6 +163,6 @@ process_write_merged_enrichments <- function(merged_enrichment, output_folder, f
         ends_with("geneSetRatio")
       )
     ## write results
-    openxlsx::write.xlsx(merged_enrichments_filtered_processed, file.path(output_folder, "searches", source, paste0(filename, ".xlsx")))
+    openxlsx::write.xlsx(merged_enrichment_source, file.path(output_folder, "searches", source, paste0(filename, ".xlsx")))
   })
 }
