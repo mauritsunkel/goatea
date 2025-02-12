@@ -24,11 +24,6 @@ run_geneset_enrichment <- function(
     padj_cutoff = 0.01, 
     padj_min_signifgenes = 0L,
     ...) {
-  # NOTE: attaching and detaching namespace around function call to fix getting goat::goat_nulldistributions for testing genesets
-  ## issued at: https://github.com/ftwkoopmans/goat/issues/8
-  if( ! "package:goat" %in% search()) {
-    attachNamespace("goat")
-  }
   goat_result <- goat::test_genesets(
     genesets = genesets,
     genelist = genelist,
@@ -42,8 +37,5 @@ run_geneset_enrichment <- function(
   ## map IDs back to gene symbol
   gene_to_symbol <- setNames(genelist$symbol, genelist$gene)
   goat_result$symbol <- lapply(goat_result$genes, function(genes) unname(gene_to_symbol[as.character(genes)]))
-  if("package:goat" %in% search()) {
-    detach("package:goat")
-  }
   return(goat_result)
 }
