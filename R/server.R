@@ -32,8 +32,6 @@ goatea_server <- function(input, output, session, mm_genesets) {
     )
   }
   
-  
-  
   # Reactive value to store the file path
   rv_load_genelists <- shiny::reactiveValues(
     text = NULL,
@@ -61,6 +59,16 @@ goatea_server <- function(input, output, session, mm_genesets) {
     results_filtered = list()
   )
   rv_genelists <- shiny::reactiveVal(list())
+  
+  rv_icheatmap <- shiny::reactiveValues(
+    heatmap = NULL,
+    success = FALSE,
+    text = NULL,
+    row_i = NULL,
+    col_i = NULL,
+    row_names = NULL,
+    col_names = NULL
+  )
   
   shiny::observe({
     if (rv_load_genelists$success == TRUE & rv_genesets$success_filter == TRUE) {
@@ -101,11 +109,153 @@ goatea_server <- function(input, output, session, mm_genesets) {
       shinyjs::disable("ab_go_to_PPI") 
     }
   })
+  shiny::observe({
+    if (rv_icheatmap$success) {
+      shinyjs::enable("ab_go_to_PPI_icheatmap")
+    } else {
+      shinyjs::disable("ab_go_to_PPI_icheatmap")
+    }
+  })
   
   shiny::observe(if (rv_load_genelists$success) shinyjs::enable("ab_set_significant_genes") else shinyjs::disable("ab_set_significant_genes"))
   shiny::observe(if (rv_set_significant_genes$success) shinyjs::enable("ab_set_names") else shinyjs::disable("ab_set_names"))
   shiny::observe(if (rv_genesets$success) shinyjs::enable("ab_filter_genesets") else shinyjs::disable("ab_filter_genesets"))
   
+  
+  shiny::observeEvent(input$ab_icheatmap_plot, {
+    # TODO test 
+    shiny::showNotification("notification test")
+    
+    shinyjs::runjs("$('#vto_icheatmap').css('color', '#32CD32');")
+    data_genelists <- rv_genelists()
+    # TODO test server use displayed/filtered data for heatmap 
+    displayed_enrichment <- output$dto_test_enrichment[input$dto_test_enrichment_rows_all, ]
+    print(1)
+    print(displayed_enrichment)
+    
+    # TODO test if numericInput NULL default value allowed 
+    ch <- plot_ComplexHeatmap(
+      enrichment_result = displayed_enrichment,
+      genelist = data_genelists[[input$si_show_enrichment]], 
+      cluster_method = input$si_icheatmap_cluster_method,
+      n_cluster = input$ni_icheatmap_nclusters,
+      n_top_terms = inout$ni_icheatmap_nterms,
+      n_top_genes = input$ni_icheatmap_ngenes,
+      genelist_overlap = ifelse(is.null(rv_genelists_overlap$gene_overview), NULL, rv_genelists_overlap$gene_overview),
+      plot = FALSE
+    )
+    rv_icheatmap$heatmap <- ch
+    makeInteractiveComplexHeatmap(input, output, session, ch, heatmap_id = "icheatmap", click_action = icheatmap_action, brush_action = icheatmap_action)
+    
+    rv_icheatmap$success <- TRUE 
+    shinyjs::runjs("$('#vto_icheatmap').css('color', '#ff0000');")
+    rv_icheatmap$text <- "Successfully plotted InteractiveComplexHeatmap"
+    
+    # TODO test if visually needed and if works
+    # tags$style("
+    #           .content-wrapper, .right-side {
+    #               overflow-x: auto;
+    #           }
+    #           .content {
+    #               min-width:1500px;
+    #           }
+    #       ")
+  })
+  icheatmap_action <- function(df, output) { # on click or brush in InteractiveComplexHeatmap
+    if(is.null(df)) {
+      rv_icheatmap$row_i = NULL
+      rv_icheatmap$col_i = NULL
+      rv_icheatmap$row_names = NULL
+      rv_icheatmap$col_names = NULL
+      rv_icheatmap$text <- "Selected: nothing"
+    } else {
+      rv_icheatmap$row_i = unique(unlist(df$row_index))
+      rv_icheatmap$col_i = unique(unlist(df$column_index))
+      rv_icheatmap$row_names = unique(unlist(df$row_label))
+      rv_icheatmap$col_names = unique(unlist(df$column_label))
+      rv_icheatmap$text <- paste0("Selection will be used for Protein-Protein Interactions. Selected genes from terms: ", rv_icheatmap$row_names, ". Selected genes: ", rv_icheatmap$col_names)
+    }
+  }
+  
+  shiny::observeEvent(input$ab_enrichment_reset, {
+    original_dts <- rv_enrichment$results
+    rv_enrichment$results_filtered <- original_dts
+  })
+  
+  shiny::observeEvent(input$ab_filter_enrichment, {
+    shinyjs::show("ab_filter_enrichment_loader")
+    dts <- rv_enrichment$results
+    for (name in names(dts)) {
+      dt <- dts[[name]]
+      rv_enrichment$results_filtered[[name]] <- filter_enrichment(
+        df = dt,
+        genes_input = input$tai_enrichment_filter_gene_query,
+        genes_any_all = input$tai_enrichment_filter_gene_query_allany,
+        terms_query = input$tai_enrichment_filter_term_query,
+        terms_query_all_any = input$rb_enrichment_filter_term_query_allany,
+        terms_antiquery = input$tai_enrichment_filter_term_antiquery,
+        terms_antiquery_all_any = input$rb_enrichment_filter_term_antiquery_allany,
+        min_ngenes = input$ni_enrichment_filter_ngenes,
+        min_ngenes_input = input$ni_enrichment_filter_ngenes_input,
+        min_ngenes_signif = input$ni_enrichment_filter_ngenes_signif,
+        min_abs_zscore = input$ni_enrichment_filter_zscore,
+        max_pvalue_adjust = input$ni_enrichment_filter_pvalue_adjust
+      )
+    }
+    shinyjs::hide("ab_filter_enrichment_loader")
+  })
+  
+  observeEvent({
+    rv_enrichment$results_filtered
+    input$si_show_enrichment
+    input$si_show_enrichment_source}, {
+      req(length(rv_enrichment$results_filtered) != 0)
+      
+      if (input$si_show_enrichment == "") {
+        dt <- rv_enrichment$results_filtered[[1]]
+      } else {
+        dt <- rv_enrichment$results_filtered[[input$si_show_enrichment]]
+      }
+      if (input$si_show_enrichment_source == "") {
+        value <- unique(dt$source)[1]
+        dt <- dt %>% filter(source == value)
+      } else {
+        dt <- dt %>% filter(source == input$si_show_enrichment_source)
+      }
+      
+      dt <- dt[,c("name", "ngenes_input", "ngenes", "ngenes_signif", "zscore", "pvalue_adjust")]
+      dt <- dt %>% mutate(
+        zscore = round(zscore, 2),
+        pvalue_adjust = round(pvalue_adjust, 2)
+      )
+      
+      output$dto_test_enrichment <- DT::renderDT({
+        DT::datatable(dt, options = list(
+          pageLength = 5,
+          lengthMenu = c(5,10, 25, 50, 100),
+          dom = "Bfrtip",
+          searching = FALSE,
+          selection = 'none',
+          colResize = list(resize = TRUE),
+          ## set text color of table info and paginators based on CSS style file after rendering datatable
+          initComplete = DT::JS("
+          function(settings, json) {
+            const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+          
+            $(this.api().table().container()).find('.dataTables_info').css({
+              'color': textColor,
+              'font-weight': 'bold'
+            });
+            $(this.api().table().container()).find('.dataTables_paginate').css({
+              'color': textColor,
+              'font-weight': 'bold'
+            });
+          }
+        ")), 
+          extensions = c("ColReorder")
+        )
+      })
+    })
   
   shiny::observeEvent(input$ab_run_genelist_overlap, {
     rv_genelists_overlap$success <- FALSE
@@ -216,92 +366,12 @@ goatea_server <- function(input, output, session, mm_genesets) {
     contentType = "text/csv/xlsx"
   )
   
-  shiny::observeEvent(input$ab_enrichment_reset, {
-    original_dts <- rv_enrichment$results
-    rv_enrichment$results_filtered <- original_dts
-  })
-  
-  shiny::observeEvent(input$ab_filter_enrichment, {
-    shinyjs::show("ab_filter_enrichment_loader")
-    dts <- rv_enrichment$results
-    for (name in names(dts)) {
-      dt <- dts[[name]]
-      rv_enrichment$results_filtered[[name]] <- filter_enrichment(
-        df = dt,
-        genes_input = input$tai_enrichment_filter_gene_query,
-        genes_any_all = input$tai_enrichment_filter_gene_query_allany,
-        terms_query = input$tai_enrichment_filter_term_query,
-        terms_query_all_any = input$rb_enrichment_filter_term_query_allany,
-        terms_antiquery = input$tai_enrichment_filter_term_antiquery,
-        terms_antiquery_all_any = input$rb_enrichment_filter_term_antiquery_allany,
-        min_ngenes = input$ni_enrichment_filter_ngenes,
-        min_ngenes_input = input$ni_enrichment_filter_ngenes_input,
-        min_ngenes_signif = input$ni_enrichment_filter_ngenes_signif,
-        min_abs_zscore = input$ni_enrichment_filter_zscore,
-        max_pvalue_adjust = input$ni_enrichment_filter_pvalue_adjust
-      )
-    }
-    shinyjs::hide("ab_filter_enrichment_loader")
-  })
-  
-  observeEvent({
-    rv_enrichment$results_filtered
-    input$si_show_enrichment
-    input$si_show_enrichment_source}, {
-    req(length(rv_enrichment$results_filtered) != 0)
-    
-    if (input$si_show_enrichment == "") {
-      dt <- rv_enrichment$results_filtered[[1]]
-    } else {
-      dt <- rv_enrichment$results_filtered[[input$si_show_enrichment]]
-    }
-    if (input$si_show_enrichment_source == "") {
-      value <- unique(dt$source)[1]
-      dt <- dt %>% filter(source == value)
-    } else {
-      dt <- dt %>% filter(source == input$si_show_enrichment_source)
-    }
-      
-    dt <- dt[,c("name", "ngenes_input", "ngenes", "ngenes_signif", "zscore", "pvalue_adjust")]
-    dt <- dt %>% mutate(
-      zscore = round(zscore, 2),
-      pvalue_adjust = round(pvalue_adjust, 2)
-    )
-    
-    output$dto_test_enrichment <- DT::renderDT({
-      DT::datatable(dt, options = list(
-        pageLength = 5,
-        lengthMenu = c(5,10, 25, 50, 100),
-        dom = "Bfrtip",
-        searching = FALSE,
-        selection = 'none',
-        colResize = list(resize = TRUE),
-        ## set text color of table info and paginators based on CSS style file after rendering datatable
-        initComplete = DT::JS("
-          function(settings, json) {
-            const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
-          
-            $(this.api().table().container()).find('.dataTables_info').css({
-              'color': textColor,
-              'font-weight': 'bold'
-            });
-            $(this.api().table().container()).find('.dataTables_paginate').css({
-              'color': textColor,
-              'font-weight': 'bold'
-            });
-          }
-        ")), 
-        extensions = c("ColReorder")
-      )
-    })
-  })
-  
   shiny::observeEvent(input$ab_run_enrichment, {
     data_genelists <- rv_genelists()
     data_genesets <- rv_genesets$filtered_genesets
     
     rv_enrichment$success <- FALSE
-    shinyjs::runjs("$('#vto_test_enrichment').css('color', '#ff0000');")
+    shinyjs::runjs("$('#vto_test_enrichment').css('color', '#ff0000');") # failure color
     shinyjs::show("ab_run_enrichment_loader")
     
     for (name in names(data_genelists)) {
@@ -333,7 +403,7 @@ goatea_server <- function(input, output, session, mm_genesets) {
     
     shinyjs::hide("ab_run_enrichment_loader")
     rv_enrichment$success <- TRUE
-    shinyjs::runjs("$('#vto_test_enrichment').css('color', '#32CD32');")
+    shinyjs::runjs("$('#vto_test_enrichment').css('color', '#32CD32');") # success color
     rv_enrichment$text <- "Enrichment ran successfully"
   })
   
@@ -432,7 +502,12 @@ goatea_server <- function(input, output, session, mm_genesets) {
   shiny::observeEvent(input$ab_load_GOB_genesets, {
     shinyjs::show("ab_load_GOB_genesets_loader")
     rv_genesets$success <- FALSE
-    rv_genesets$genesets <- load_genesets_go_bioconductor(organism = input$rb_human_mouse)
+    if (input$rb_human_mouse == "Hs") {
+      taxid = 9606
+    } else if (input$rb_human_mouse == "Mm") {
+      taxid = 10090
+    }
+    rv_genesets$genesets <- load_genesets_go_bioconductor(taxid = taxid)
     rv_genesets$success <- TRUE
     shinyjs::runjs("$('#vto_load_genesets').css('color', '#32CD32');")
     rv_genesets$text <- paste0("Successfully loaded: org.", input$rb_human_mouse, ".eg.db")
@@ -447,6 +522,7 @@ goatea_server <- function(input, output, session, mm_genesets) {
   output$vto_set_names <- shiny::renderText({rv_set_names$text})
   output$vto_test_enrichment <- shiny::renderText({rv_enrichment$text})
   output$vto_genelist_overlap <- shiny::renderText({rv_genelists_overlap$text})
+  output$vto_icheatmap <- shiny::renderText({rv_icheatmap$text})
   
   ## render plots for plotOutputs
   output$po_genelist_overlap <- renderPlot({

@@ -222,17 +222,30 @@ goatea_ui <- function() {
                     id = "box_plot_heatmap",
                     title = "Plot Interactive Heatmap",
                     width = NULL,
-                    # TODO UI elements
-                    # Plot button
-                    # vto
-                    # plotoutput
-                    ## parameters
+                    column(width = 2, wrap_hovertip(actionButton("ab_icheatmap_plot", "Plot heatmap"), 
+                                                    hovertip = "Plot selected (and filtered) enrichment")),
+                    column(width = 3, wrap_hovertip(selectInput("si_icheatmap_cluster_method", "Cluster method",
+                                                                choices = c("single", "ward.D", "ward.D2", "complete", "average", "mcquitty", "median", "centroid"),
+                                                                selected = "single"), hovertip = "Clustering method for terms and genes")),
+                    column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_nclusters", "N clusters", 4, min = 1, step = 1), 
+                                                    hovertip = "Cluster terms by gene overlap")),
+                    column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_nterms", "topN terms", NULL, min = 1, step = 1), 
+                                                    hovertip = "Top N terms based on effectsize")),
+                    column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_ngenes", "topN genes", NULL, min = 1, step = 1), 
+                                                    hovertip = "Top N genes based on effectsize")),
+                    column(width = 12, verbatimTextOutput("vto_icheatmap", placeholder = TRUE)),
+                    column(width = 12, InteractiveComplexHeatmapOutput(heatmap_id = "icheatmap", layout = "1|2|3", output_ui_float = TRUE))
                     
-                    
-                    # TODO server use displayed/filtered data for heatmap/PPI 
-                    ## displayed_rows <- input$dto_test_enrichment_rows_all
-                    ## dt_displayed <- dt[displayed_rows, ]
-                  ))
+                    # TODO GOTO plotting
+                  )),
+                fluidRow(
+                  box(
+                    id = "box_go_to_plotting_icheatmap",
+                    title = "GO TO plotting",
+                    width = NULL,
+                    column(width = 2, disabled(actionButton("ab_go_to_PPI_icheatmap", "GO TO PPI"))),
+                  )
+                )
         ),
         tabItem(tabName = "menu_plot_PPI",
                 fluidRow(
@@ -241,6 +254,8 @@ goatea_ui <- function() {
                     title = "Plot Protein-Protein Interations",
                     width = NULL,
                     # TODO UI elements
+                    
+                    # TODO server use selected displayed/filtered enrichment data for PPI 
                   )
                 )
         )

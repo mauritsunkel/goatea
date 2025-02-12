@@ -7,7 +7,8 @@
 #' @param genelist dataframe with gene-level statistics, including at least
 #'   `symbol`, `pvalue`, `effectsize`, and `signif` columns
 #' @param n_cluster default: 1, integer, number of hierarchical clusters to define
-#' @param n_top_genesets default: NULL, if integer, plot only top genesets (recommended for visual clarity: 70)
+#' @param cluster_method default: 'single', else one of \link{hclust} methods
+#' @param n_top_terms default: NULL, if integer, plot only top genesets (recommended for visual clarity: 70)
 #' @param n_top_genes default: NULL, if integer, plot only top genes (recommended for visual clarity: 150)
 #' @param genelist_overlap (Optional) dataframe with gene overlap information, including
 #'   `symbol` and `genelist_overlap`, see run_genelists_overlap()
@@ -41,8 +42,9 @@
 plot_ComplexHeatmap <- function(
     enrichment_result,
     genelist,
+    cluster_method = 'single',
     n_cluster = 1,
-    n_top_genesets = NULL,
+    n_top_terms = NULL,
     n_top_genes = NULL,
     genelist_overlap = NULL,
     plot = FALSE) {
@@ -53,7 +55,7 @@ plot_ComplexHeatmap <- function(
     all(c("name", "symbol", "pvalue_adjust", "ngenes", "signif") %in% colnames(enrichment_result)),
     all(c("symbol", "effectsize", "pvalue", "signif") %in% colnames(genelist)),
     length(unique(unlist(enrichment_result$symbol))) > 1,
-    is.null(c(n_top_genes, n_top_genesets)) | is.numeric(c(n_top_genes, n_top_genesets)),
+    is.null(c(n_top_genes, n_top_terms)) | is.numeric(c(n_top_genes, n_top_terms)),
     is.logical(plot)
   )
   
@@ -62,10 +64,10 @@ plot_ComplexHeatmap <- function(
   rm(enrichment_result)
   
   ## plot only top n genesets
-  if ( ! is.null(n_top_genesets)) {
-    if (n_top_genesets > nrow(df)) n_top_genesets <- nrow(df)
+  if ( ! is.null(n_top_terms)) {
+    if (n_top_terms > nrow(df)) n_top_terms <- nrow(df)
     df <- df[order(df$pvalue_adjust), ]
-    df <- df[1:n_top_genesets, ]
+    df <- df[1:n_top_terms, ]
   }
   
   ## initialize matrix data
@@ -98,7 +100,7 @@ plot_ComplexHeatmap <- function(
   
   ## hierarchical clustering and group by tree cut
   if (nrow(m) > 1) {
-    hc_terms <- hclust(dist(m, method = "binary"), "single")
+    hc_terms <- hclust(dist(m, method = "binary"), cluster_method)
     if (n_cluster <= nrow(m)) {
       hc_terms_clusters <- cutree(hc_terms, n_cluster)
       ## set term cluster values in matrix
@@ -109,7 +111,7 @@ plot_ComplexHeatmap <- function(
     }
   }
   if (ncol(m) > 1) {
-    hc_genes <- hclust(dist(t(m), method = "binary"), "single")
+    hc_genes <- hclust(dist(t(m), method = "binary"), cluster_method)
     if (n_cluster <= ncol(m)) {
       hc_genes_clusters <- cutree(hc_genes, n_cluster)
     }

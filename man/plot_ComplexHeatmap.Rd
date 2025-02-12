@@ -7,8 +7,9 @@
 plot_ComplexHeatmap(
   enrichment_result,
   genelist,
+  cluster_method = "single",
   n_cluster = 1,
-  n_top_genesets = NULL,
+  n_top_terms = NULL,
   n_top_genes = NULL,
   genelist_overlap = NULL,
   plot = FALSE
@@ -21,9 +22,11 @@ Must include \code{name} (gene set names) and \code{symbol} (listed genes associ
 \item{genelist}{dataframe with gene-level statistics, including at least
 \code{symbol}, \code{pvalue}, \code{effectsize}, and \code{signif} columns}
 
+\item{cluster_method}{default: 'single', else one of \link{hclust} methods}
+
 \item{n_cluster}{default: 1, integer, number of hierarchical clusters to define}
 
-\item{n_top_genesets}{default: NULL, if integer, plot only top genesets (recommended for visual clarity: 70)}
+\item{n_top_terms}{default: NULL, if integer, plot only top genesets (recommended for visual clarity: 70)}
 
 \item{n_top_genes}{default: NULL, if integer, plot only top genes (recommended for visual clarity: 150)}
 
