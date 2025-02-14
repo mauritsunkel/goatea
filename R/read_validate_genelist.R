@@ -18,6 +18,8 @@ read_validate_genelist <- function(file, map_organism = NULL, remove_non_numeric
   } else if (file_extension(file) == "tsv") {
     genelist <- utils::read.delim(file, header = TRUE, sep = "\t")
   }
+  ## remove unnamed first column 
+  if ("X" %in% colnames(genelist)) genelist[, "X"] <- NULL
   genelist <- tibble::as_tibble(genelist)
   
   ## if mapping: note that NA and empty genes will be removed from genelist
