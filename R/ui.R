@@ -7,13 +7,16 @@ goatea_ui <- function() {
     dashboardSidebar(
       sidebarMenu(
         id = "menu_tabs",
-        menuItem("Initialize", tabName = "menu_initialize", icon = icon("dashboard")),
-        menuItem("Genelists overlap", tabName = "menu_run_genelist_overlap", icon = icon("dashboard")),
+        menuItem("Initialize", tabName = "menu_initialize", icon = icon("dashboard"), selected = TRUE),
+        menuItem("(Plot) genelists overlap", tabName = "menu_run_genelist_overlap", icon = icon("dashboard")),
         menuItem("Geneset enrichment", tabName = "menu_run_enrichment", icon = icon("dashboard")),
-        menuItem("Heatmapping", tabName = "menu_plot_heatmap", icon = icon("dashboard")),
-        menuItem("Protein-Protein Interactions", tabName = "menu_plot_PPI", icon = icon("dashboard"))
+        menuItem("Plot splitdot", tabName = "menu_plot_splitdot", icon = icon("dashboard")),
+        menuItem("Plot termtree", tabName = "menu_plot_termtree", icon = icon("dashboard")),
+        menuItem("Plot heatmap", tabName = "menu_plot_heatmap", icon = icon("dashboard")),
+        menuItem("Plot Protein-Protein Interactions", tabName = "menu_plot_PPI", icon = icon("dashboard"))
       )
     ),
+    
     dashboardBody(
       useShinyjs(), # Initialize shinyjs
       tags$head(
@@ -30,7 +33,7 @@ goatea_ui <- function() {
                                                                  choices = list("Human" = "Hs", "Mouse" = "Mm"),
                                                                  selected = "Mm", # FINAL set to Hs
                                                                  inline = FALSE), 
-                                                    hovertip = "Select human or mouse for loading Gene Ontology Bioconductor genesets and gene annotation")),
+                                                    hovertip = "Select human or mouse for loading Gene Ontology Bioconductor AnnotationDbi genesets and gene annotation")),
                     column(width = 2, wrap_hovertip(radioButtons("rb_global_output_type", "Select output type",
                                                                  choices = list("CSV" = ".csv", "Excel" = ".xlsx"),
                                                                  selected = ".csv",
@@ -75,8 +78,8 @@ goatea_ui <- function() {
                     title = "Genesets",
                     width = NULL,
                     wrap_hovertip(column(width = 2, disabled(wrap_loader(id = "ab_load_GOB_genesets_loader", 
-                                                                         actionButton("ab_load_GOB_genesets", "Load GO Bioconductor genesets")))), 
-                                  hovertip = "Load Gene Ontology Bioconductor genesets using selected organism"),
+                                                                         actionButton("ab_load_GOB_genesets", "Load GO AnnotationDbi genesets")))), 
+                                  hovertip = "Load Gene Ontology Bioconductor AnnotationDbi genesets using selected organism"),
                     column(width = 12, verbatimTextOutput("vto_load_genesets", placeholder = TRUE)),
                     column(width = 12, tags$hr()),
                     column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_filter_genesets_loader", actionButton("ab_filter_genesets", "Filter genesets"))), 
@@ -121,9 +124,9 @@ goatea_ui <- function() {
                                                     hovertip = "Plot genelists gene overlap in an UpSet plot")),
                     column(width = 3, wrap_hovertip(checkboxInput("cbi_plot_overlap_upset_grayscale", "UpSet grayscale colors", value = TRUE), 
                                                     hovertip = "Set UpSet plot coloring to grayscale or colorful")),
-                    column(width = 3, wrap_hovertip(checkboxInput("cbi_plot_overlap_upset_intersections", "UpSet empty intersections", value = TRUE), 
+                    column(width = 3, wrap_hovertip(hidden(checkboxInput("cbi_plot_overlap_upset_intersections", "UpSet empty intersections", value = TRUE)), 
                                                     hovertip = "Set UpSet plot to (not) show empty intersections")),
-                    column(width = 12, plotOutput("po_genelist_overlap")),
+                    column(width = 12, shinyjqui::jqui_resizable(plotOutput("po_genelist_overlap"))),
                     column(width = 2, hidden(downloadButton("db_overlap_plot", "Save plot")))
                   )
                 ),
@@ -213,6 +216,62 @@ goatea_ui <- function() {
                     width = NULL,
                     column(width = 2, disabled(actionButton("ab_go_to_heatmap", "GO TO heatmap"))),
                     column(width = 2, disabled(actionButton("ab_go_to_PPI", "GO TO PPI"))),
+                    column(width = 2, disabled(actionButton("ab_go_to_splitdot", "GO TO splitdot"))),
+                    column(width = 2, disabled(actionButton("ab_go_to_termtree", "GO TO termtree"))),
+                  )
+                )
+        ),
+        tabItem(tabName = "menu_plot_splitdot",
+                fluidRow(
+                  box(
+                    id = "box_plot_splitdot",
+                    title = "Plot splitdot",
+                    width = NULL,
+                    column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_splitdot_plot_loader", actionButton("ab_splitdot_plot", "Plot splitdot"))), 
+                                                    hovertip = "Plot selected (and filtered) enrichment")),
+                    column(width = 2, wrap_hovertip(numericInput("ni_splitdot_topN", "top N terms", NA, min = 2, step = 1), 
+                                                    hovertip = "Plot terms ordered by adjusted pvalue")),
+                    column(width = 6),
+                    column(width = 2, hidden(downloadButton("db_splitdot", "Save plot"))),
+                    column(width = 12, shinyjqui::jqui_resizable(plotOutput("po_splitdot", width = 800, height = 600)))
+                  )),
+                fluidRow(
+                  box(
+                    id = "box_go_to_plotting_splitdot",
+                    title = "GO TO plotting",
+                    width = NULL,
+                    column(width = 2, disabled(actionButton("ab_go_to_heatmap_splitdot", "GO TO heatmap"))),
+                    column(width = 2, disabled(actionButton("ab_go_to_termtree_splitdot", "GO TO termtree"))),
+                    column(width = 2, disabled(actionButton("ab_go_to_PPI_splitdot", "GO TO PPI")))
+                  )
+                )
+        ),
+        tabItem(tabName = "menu_plot_termtree",
+                fluidRow(
+                  box(
+                    id = "box_plot_termtree",
+                    title = "Plot termtree",
+                    width = NULL,
+                    column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_termtree_plot_loader", actionButton("ab_termtree_plot", "Plot termtree"))), 
+                                                    hovertip = "NOTE: requires 'enrichplot' package - Plot selected (and filtered) enrichment")),
+                    column(width = 2, wrap_hovertip(numericInput("ni_termtree_Nterms", "top N terms", NA, min = 2, step = 1), 
+                                                    hovertip = "Plot terms ordered by adjusted pvalue")),
+                    column(width = 2, wrap_hovertip(numericInput("ni_termtree_Nwords", "N words", 5, min = 0, step = 1), 
+                                                    hovertip = "Plot N summarizing words from semantic similarity/overlapping genes")),
+                    column(width = 2, wrap_hovertip(numericInput("ni_termtree_Nclusters", "N clusters", 3, min = 1, step = 1), 
+                                                    hovertip = "Plot N clusters of terms by semantic similarity/overlapping genes")),
+                    column(width = 2),
+                    column(width = 2, hidden(downloadButton("db_termtree", "Save plot"))),
+                    column(width = 12, shinyjqui::jqui_resizable(plotOutput("po_termtree", width = 800, height = 600)))
+                  )),
+                fluidRow(
+                  box(
+                    id = "box_go_to_plotting_termtree",
+                    title = "GO TO plotting",
+                    width = NULL,
+                    column(width = 2, disabled(actionButton("ab_go_to_heatmap_termtree", "GO TO heatmap"))),
+                    column(width = 2, disabled(actionButton("ab_go_to_splitdot_termtree", "GO TO splitdot"))),
+                    column(width = 2, disabled(actionButton("ab_go_to_PPI_termtree", "GO TO PPI"))),
                   )
                 )
         ),
@@ -222,28 +281,28 @@ goatea_ui <- function() {
                     id = "box_plot_heatmap",
                     title = "Plot Interactive Heatmap",
                     width = NULL,
-                    column(width = 2, wrap_hovertip(actionButton("ab_icheatmap_plot", "Plot heatmap"), 
+                    column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_icheatmap_plot_loader", actionButton("ab_icheatmap_plot", "Plot heatmap"))), 
                                                     hovertip = "Plot selected (and filtered) enrichment")),
-                    column(width = 3, wrap_hovertip(selectInput("si_icheatmap_cluster_method", "Cluster method",
+                    column(width = 2, wrap_hovertip(selectInput("si_icheatmap_cluster_method", "Cluster method",
                                                                 choices = c("single", "ward.D", "ward.D2", "complete", "average", "mcquitty", "median", "centroid"),
                                                                 selected = "single"), hovertip = "Clustering method for terms and genes")),
                     column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_nclusters", "N clusters", 4, min = 1, step = 1), 
                                                     hovertip = "Cluster terms by gene overlap")),
-                    column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_nterms", "topN terms", NULL, min = 1, step = 1), 
+                    column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_nterms", "topN terms", NA, min = 1, step = 1), 
                                                     hovertip = "Top N terms based on effectsize")),
-                    column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_ngenes", "topN genes", NULL, min = 1, step = 1), 
+                    column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_ngenes", "topN genes", NA, min = 1, step = 1), 
                                                     hovertip = "Top N genes based on effectsize")),
                     column(width = 12, verbatimTextOutput("vto_icheatmap", placeholder = TRUE)),
-                    column(width = 12, InteractiveComplexHeatmapOutput(heatmap_id = "icheatmap", layout = "1|2|3", output_ui_float = TRUE))
-                    
-                    # TODO GOTO plotting
+                    column(width = 12, InteractiveComplexHeatmap::InteractiveComplexHeatmapOutput(heatmap_id = "icheatmap", layout = "1|2|3", output_ui_float = TRUE, width1 = 1400, height1 = 700, width2 = 1400, height2 = 500))
                   )),
                 fluidRow(
                   box(
                     id = "box_go_to_plotting_icheatmap",
                     title = "GO TO plotting",
                     width = NULL,
-                    column(width = 2, disabled(actionButton("ab_go_to_PPI_icheatmap", "GO TO PPI"))),
+                    column(width = 2, actionButton("ab_go_to_PPI_icheatmap", "GO TO PPI")),
+                    column(width = 2, actionButton("ab_go_to_splitdot_icheatmap", "GO TO splitdot")),
+                    column(width = 2, actionButton("ab_go_to_termtree_icheatmap", "GO TO termtree")),
                   )
                 )
         ),
@@ -255,7 +314,24 @@ goatea_ui <- function() {
                     width = NULL,
                     # TODO UI elements
                     
-                    # TODO server use selected displayed/filtered enrichment data for PPI 
+                    # TODO server
+                    ## use selected displayed/filtered enrichment data for PPI 
+                    ## PPI from selected genes 
+                    ### rv_icheatmap$row_i (terms -> function to select all genes)
+                    ### rv_icheatmap$col_i (genes)
+                    ### specifically only for significant 
+                    
+                    # TODO GO TO other plotting
+                  )
+                ),
+                fluidRow(
+                  box(
+                    id = "box_go_to_plotting_PPI",
+                    title = "GO TO plotting",
+                    width = NULL,
+                    column(width = 2, actionButton("ab_go_to_heatmap_PPI", "GO TO heatmap")),
+                    column(width = 2, actionButton("ab_go_to_splitdot_PPI", "GO TO splitdot")),
+                    column(width = 2, actionButton("ab_go_to_termtree_PPI", "GO TO termtree")),
                   )
                 )
         )
