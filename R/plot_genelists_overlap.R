@@ -58,7 +58,6 @@ plot_genelists_overlap_upset <- function(genelists, grayscale_colors = TRUE, emp
   
   queries = list()
   combinations <- do.call(c, lapply(seq_along(set), combn, x = set, simplify = FALSE))
-  
   for (i in seq_along(combinations)) {
     combi <- combinations[[i]]
     
@@ -86,15 +85,18 @@ plot_genelists_overlap_upset <- function(genelists, grayscale_colors = TRUE, emp
       "Degree 5",
       "Degree 6"
     )
-    queries[[length(queries)+1]] <- list(query = UpSetR::intersects,
-                                         params = combi,
-                                         active = TRUE,
-                                         color = color,
-                                         query.name = name)
+    queries[[length(queries)+1]] <- list(
+      query = UpSetR::intersects,
+      params = combi,
+      active = TRUE,
+      color = color,
+      query.name = name
+    )
   }
   
   upd <- UpSetR::fromList(genelists_gene_overlaps)
-  
+  if (sum(upd[, 1]) == 0) upd <- upd[, c(2,1)] # fix error if first col all zeroes
+
   ## if intersection is not shown it is empty (no overlap)
   p <- UpSetR::upset(data = upd, sets = set, nintersects = NA, order.by = "freq", shade.color = "grey100",
                      sets.bar.color = "black", main.bar.color = "black", matrix.color = "black",
