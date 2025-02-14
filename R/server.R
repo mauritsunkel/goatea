@@ -32,7 +32,7 @@ goatea_server <- function(input, output, session, mm_genesets) {
     )
   }
   
-  # Reactive value to store the file path
+  #### reactive values ----
   rv_load_genelists <- shiny::reactiveValues(
     text = NULL,
     success = FALSE
@@ -51,15 +51,20 @@ goatea_server <- function(input, output, session, mm_genesets) {
     text = NULL,
     success = FALSE
   )
-  
   rv_enrichment <- shiny::reactiveValues(
     results = list(),
     text = NULL,
     success = FALSE,
-    results_filtered = list()
+    results_filtered = list(),
+    current_enrichment = NULL
   )
   rv_genelists <- shiny::reactiveVal(list())
-  
+  rv_splitdot <- shiny::reactiveValues(
+    plot = NULL
+  )
+  rv_termtree <- shiny::reactiveValues(
+    plot = NULL
+  )
   rv_icheatmap <- shiny::reactiveValues(
     heatmap = NULL,
     success = FALSE,
@@ -70,6 +75,7 @@ goatea_server <- function(input, output, session, mm_genesets) {
     col_names = NULL
   )
   
+  #### observers for pathing ----
   shiny::observe({
     if (rv_load_genelists$success == TRUE & rv_genesets$success_filter == TRUE) {
       shinyjs::enable("ab_go_to_enrichment")
@@ -97,89 +103,76 @@ goatea_server <- function(input, output, session, mm_genesets) {
     } 
   })
   shiny::observe({
+    button_ids <- c(
+      "ab_filter_enrichment", "ab_go_to_PPI", "ab_go_to_PPI_icheatmap", "ab_go_to_PPI_splitdot", "ab_go_to_PPI_termtree",
+      "ab_go_to_heatmap", "ab_go_to_heatmap_PPI", "ab_go_to_heatmap_splitdot", "ab_go_to_heatmap_termtree",
+      "ab_go_to_splitdot", "ab_go_to_splitdot_PPI", "ab_go_to_splitdot_icheatmap", "ab_go_to_splitdot_termtree",
+      "ab_go_to_termtree", "ab_go_to_termtree_PPI", "ab_go_to_termtree_icheatmap", "ab_go_to_termtree_splitdot",
+      "ab_icheatmap_plot", "ab_splitdot_plot", "ab_termtree_plot"
+    )
     if (rv_enrichment$success) {
-      shinyjs::enable("ab_filter_enrichment") 
+      purrr::walk(button_ids, shinyjs::enable)
       shinyjs::show("div_enrichment")
-      shinyjs::enable("ab_go_to_heatmap") 
-      shinyjs::enable("ab_go_to_PPI") 
     } else {
-      shinyjs::disable("ab_filter_enrichment")
+      purrr::walk(button_ids, shinyjs::disable)
       shinyjs::hide("div_enrichment")
-      shinyjs::disable("ab_go_to_heatmap") 
-      shinyjs::disable("ab_go_to_PPI") 
     }
   })
-  shiny::observe({
-    if (rv_icheatmap$success) {
-      shinyjs::enable("ab_go_to_PPI_icheatmap")
-    } else {
-      shinyjs::disable("ab_go_to_PPI_icheatmap")
-    }
-  })
-  
   shiny::observe(if (rv_load_genelists$success) shinyjs::enable("ab_set_significant_genes") else shinyjs::disable("ab_set_significant_genes"))
   shiny::observe(if (rv_set_significant_genes$success) shinyjs::enable("ab_set_names") else shinyjs::disable("ab_set_names"))
   shiny::observe(if (rv_genesets$success) shinyjs::enable("ab_filter_genesets") else shinyjs::disable("ab_filter_genesets"))
+  shiny::observe(if ( ! is.null(rv_splitdot$plot)) shinyjs::show("db_splitdot") else shinyjs::hide("db_splitdot"))
+  shiny::observe(if ( ! is.null(rv_termtree$plot)) shinyjs::show("db_termtree") else shinyjs::hide("db_termtree"))
   
-  
+  #### observe events ----
   shiny::observeEvent(input$ab_icheatmap_plot, {
-    # TODO test 
-    shiny::showNotification("notification test")
-    
-    shinyjs::runjs("$('#vto_icheatmap').css('color', '#32CD32');")
+    shinyjs::show("ab_icheatmap_plot_loader")
+    shinyjs::runjs("$('#vto_icheatmap').css('color', '#ff0000');")
     data_genelists <- rv_genelists()
-    # TODO test server use displayed/filtered data for heatmap 
-    displayed_enrichment <- output$dto_test_enrichment[input$dto_test_enrichment_rows_all, ]
-    print(1)
-    print(displayed_enrichment)
     
-    # TODO test if numericInput NULL default value allowed 
     ch <- plot_ComplexHeatmap(
-      enrichment_result = displayed_enrichment,
+      enrichment_result = rv_enrichment$current_enrichment,
       genelist = data_genelists[[input$si_show_enrichment]], 
       cluster_method = input$si_icheatmap_cluster_method,
       n_cluster = input$ni_icheatmap_nclusters,
-      n_top_terms = inout$ni_icheatmap_nterms,
+      n_top_terms = input$ni_icheatmap_nterms,
       n_top_genes = input$ni_icheatmap_ngenes,
-      genelist_overlap = ifelse(is.null(rv_genelists_overlap$gene_overview), NULL, rv_genelists_overlap$gene_overview),
+      genelist_overlap = if (is.null(rv_genelists_overlap$gene_overview)) NULL else rv_genelists_overlap$gene_overview,
       plot = FALSE
     )
     rv_icheatmap$heatmap <- ch
-    makeInteractiveComplexHeatmap(input, output, session, ch, heatmap_id = "icheatmap", click_action = icheatmap_action, brush_action = icheatmap_action)
-    
+    InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, output, session, ch, heatmap_id = "icheatmap", click_action = icheatmap_action, brush_action = icheatmap_action)
     rv_icheatmap$success <- TRUE 
-    shinyjs::runjs("$('#vto_icheatmap').css('color', '#ff0000');")
-    rv_icheatmap$text <- "Successfully plotted InteractiveComplexHeatmap"
-    
-    # TODO test if visually needed and if works
-    # tags$style("
-    #           .content-wrapper, .right-side {
-    #               overflow-x: auto;
-    #           }
-    #           .content {
-    #               min-width:1500px;
-    #           }
-    #       ")
+    shinyjs::runjs("$('#vto_icheatmap').css('color', '#32CD32');")
+    rv_icheatmap$text <- "Successfully plotted InteractiveComplexHeatmap: click or drag cells for info and to select gene(s) or gene(s) by term(s)"
+    shinyjs::hide("ab_icheatmap_plot_loader")
   })
   icheatmap_action <- function(df, output) { # on click or brush in InteractiveComplexHeatmap
     if(is.null(df)) {
-      rv_icheatmap$row_i = NULL
-      rv_icheatmap$col_i = NULL
-      rv_icheatmap$row_names = NULL
-      rv_icheatmap$col_names = NULL
-      rv_icheatmap$text <- "Selected: nothing"
+      shiny::showNotification("Selected nothing, keep last selection")
     } else {
       rv_icheatmap$row_i = unique(unlist(df$row_index))
       rv_icheatmap$col_i = unique(unlist(df$column_index))
       rv_icheatmap$row_names = unique(unlist(df$row_label))
       rv_icheatmap$col_names = unique(unlist(df$column_label))
-      rv_icheatmap$text <- paste0("Selection will be used for Protein-Protein Interactions. Selected genes from terms: ", rv_icheatmap$row_names, ". Selected genes: ", rv_icheatmap$col_names)
+      rv_icheatmap$text <- paste0("PPI selection: if genes by terms: ", paste(rv_icheatmap$row_names, collapse = ", "), ". If genes: ", paste(rv_icheatmap$col_names, collapse = ", "))
     }
   }
   
+  shiny::observeEvent(input$ab_termtree_plot, {
+    shinyjs::show("ab_termtree_plot_loader")
+    rv_termtree$plot <- plot_termtree(enrichment = rv_enrichment$current_enrichment, Nterms = input$ni_termtree_Nterms, Nwords = input$ni_termtree_Nwords, Nclusters = input$ni_termtree_Nclusters)
+    if (is.null(rv_termtree$plot)) shiny::showNotification("'enrichplot' package required for plotting")
+    shinyjs::hide("ab_termtree_plot_loader")
+  })
+  shiny::observeEvent(input$ab_splitdot_plot, {
+    shinyjs::show("ab_splitdot_plot_loader")
+    rv_splitdot$plot <- plot_splitdot(enrichment = rv_enrichment$current_enrichment, topN = input$ni_splitdot_topN)
+    shinyjs::hide("ab_splitdot_plot_loader")
+  })
+  
   shiny::observeEvent(input$ab_enrichment_reset, {
-    original_dts <- rv_enrichment$results
-    rv_enrichment$results_filtered <- original_dts
+    rv_enrichment$results_filtered <- rv_enrichment$results
   })
   
   shiny::observeEvent(input$ab_filter_enrichment, {
@@ -217,18 +210,17 @@ goatea_server <- function(input, output, session, mm_genesets) {
         dt <- rv_enrichment$results_filtered[[input$si_show_enrichment]]
       }
       if (input$si_show_enrichment_source == "") {
-        value <- unique(dt$source)[1]
-        dt <- dt %>% filter(source == value)
+        dt <- dt %>% filter(source == unique(dt$source)[1])
       } else {
         dt <- dt %>% filter(source == input$si_show_enrichment_source)
       }
+      rv_enrichment$current_enrichment <- dt
       
       dt <- dt[,c("name", "ngenes_input", "ngenes", "ngenes_signif", "zscore", "pvalue_adjust")]
       dt <- dt %>% mutate(
         zscore = round(zscore, 2),
         pvalue_adjust = round(pvalue_adjust, 2)
       )
-      
       output$dto_test_enrichment <- DT::renderDT({
         DT::datatable(dt, options = list(
           pageLength = 5,
@@ -255,6 +247,7 @@ goatea_server <- function(input, output, session, mm_genesets) {
           extensions = c("ColReorder")
         )
       })
+      
     })
   
   shiny::observeEvent(input$ab_run_genelist_overlap, {
@@ -304,68 +297,6 @@ goatea_server <- function(input, output, session, mm_genesets) {
     shinyjs::show("db_overlap_plot")
   })
   
-  output$db_overlap_plot <- downloadHandler(
-    filename = "overlap_plot.png",
-    content = function(file) {
-      if (class(rv_genelists_overlap$plot)[1] == "upset") {
-        png(file)
-        print(rv_genelists_overlap$plot)
-        dev.off()
-      } else {
-        ggplot2::ggsave(file, rv_genelists_overlap$plot)
-      }
-    },
-    contentType = "png/image"
-  )
-  
-  output$db_enrichment_current <- downloadHandler(
-    filename = function() {
-      req(input$si_show_enrichment)
-      paste0("enrichment_", input$si_show_enrichment)
-    },
-    content = function(file) {
-      req(rv_enrichment$results_filtered)
-      req(input$si_show_enrichment)
-      dt <- rv_enrichment$results_filtered[[input$si_show_enrichment]]
-      dt_clean <- dt %>% mutate(across(where(is.list), ~ sapply(., toString)))
-      if (input$rb_global_output_type == ".csv") {
-        write.csv2(dt_clean, file = file)
-      } else if (input$rb_global_output_type == ".xlsx") {
-        openxlsx::write.xlsx(dt_clean, file = file)
-      }
-    },
-    contentType = "text/csv/xlsx"
-  )
-  output$db_enrichment_all <- downloadHandler(
-    filename = function() {
-      paste0("enrichment.zip")
-    },
-    content = function(file) {
-      req(rv_enrichment$results_filtered)
-      dts <- rv_enrichment$results_filtered
-      
-      ## go to a temp dir to avoid permission issues
-      owd <- setwd(tempdir())
-      on.exit(setwd(owd))
-      
-      files <- NULL;
-      for (name in names(dts)) {
-        dt <- dts[[name]]
-        dt_clean <- dt %>% mutate(across(where(is.list), ~ sapply(., toString)))
-        
-        filename <- paste0("enrichment_", name)
-        if (input$rb_global_output_type == ".csv") {
-          write.csv2(dt_clean, file = filename)
-        } else if (input$rb_global_output_type == ".xlsx") {
-          openxlsx::write.xlsx(dt_clean, file = filename)
-        }
-        files <- c(filename, files)
-      }
-      zip(file, files)
-    },
-    contentType = "text/csv/xlsx"
-  )
-  
   shiny::observeEvent(input$ab_run_enrichment, {
     data_genelists <- rv_genelists()
     data_genesets <- rv_genesets$filtered_genesets
@@ -397,6 +328,18 @@ goatea_server <- function(input, output, session, mm_genesets) {
     updateSelectInput(
       session,
       "si_show_enrichment_source",
+      choices = unique(data_genesets[[1]]$source),
+      selected = unique(data_genesets[[1]]$source)[1] 
+    )
+    updateSelectInput(
+      session,
+      "si_show_enrichment_icheatmap",
+      choices = names(data_genelists),
+      selected = names(data_genelists)[1] 
+    )
+    updateSelectInput(
+      session,
+      "si_show_enrichment_source_icheatmap",
       choices = unique(data_genesets[[1]]$source),
       selected = unique(data_genesets[[1]]$source)[1] 
     )
@@ -507,14 +450,86 @@ goatea_server <- function(input, output, session, mm_genesets) {
     } else if (input$rb_human_mouse == "Mm") {
       taxid = 10090
     }
-    rv_genesets$genesets <- load_genesets_go_bioconductor(taxid = taxid)
+    rv_genesets$genesets <- goat::load_genesets_go_bioconductor(taxid = taxid)
     rv_genesets$success <- TRUE
     shinyjs::runjs("$('#vto_load_genesets').css('color', '#32CD32');")
     rv_genesets$text <- paste0("Successfully loaded: org.", input$rb_human_mouse, ".eg.db")
     shinyjs::hide("ab_load_GOB_genesets_loader")
   })
   
-  # render texts for verbatimTextOutputs
+  #### download button handlers ----
+  output$db_termtree <- shiny::downloadHandler(
+    filename = "TermTreePlot.png",
+    content = function(file) ggplot2::ggsave(file, rv_termtree$plot, bg = "white", width = 30, height = 20, units = "cm"),
+    contentType = "png/image"
+  )
+  output$db_splitdot <- shiny::downloadHandler(
+    filename = "SplitDotPlot.png",
+    content = function(file) ggplot2::ggsave(file, rv_splitdot$plot, bg = "white", width = 30, height = 20, units = "cm"),
+    contentType = "png/image"
+  )
+  output$db_overlap_plot <- downloadHandler(
+    filename = "overlap_plot.png",
+    content = function(file) {
+      if (class(rv_genelists_overlap$plot)[1] == "upset") {
+        png(file)
+        print(rv_genelists_overlap$plot)
+        dev.off()
+      } else {
+        ggplot2::ggsave(file, rv_genelists_overlap$plot)
+      }
+    },
+    contentType = "png/image"
+  )
+  output$db_enrichment_current <- shiny::downloadHandler(
+    filename = function() {
+      req(input$si_show_enrichment)
+      paste0("enrichment_", input$si_show_enrichment)
+    },
+    content = function(file) {
+      req(rv_enrichment$results_filtered)
+      req(input$si_show_enrichment)
+      dt <- rv_enrichment$results_filtered[[input$si_show_enrichment]]
+      dt_clean <- dt %>% mutate(across(where(is.list), ~ sapply(., toString)))
+      if (input$rb_global_output_type == ".csv") {
+        write.csv2(dt_clean, file = file)
+      } else if (input$rb_global_output_type == ".xlsx") {
+        openxlsx::write.xlsx(dt_clean, file = file)
+      }
+    },
+    contentType = "text/csv/xlsx"
+  )
+  output$db_enrichment_all <- shiny::downloadHandler(
+    filename = function() {
+      paste0("enrichment.zip")
+    },
+    content = function(file) {
+      req(rv_enrichment$results_filtered)
+      dts <- rv_enrichment$results_filtered
+      
+      ## go to a temp dir to avoid permission issues
+      owd <- setwd(tempdir())
+      on.exit(setwd(owd))
+      
+      files <- NULL;
+      for (name in names(dts)) {
+        dt <- dts[[name]]
+        dt_clean <- dt %>% mutate(across(where(is.list), ~ sapply(., toString)))
+        
+        filename <- paste0("enrichment_", name)
+        if (input$rb_global_output_type == ".csv") {
+          write.csv2(dt_clean, file = filename)
+        } else if (input$rb_global_output_type == ".xlsx") {
+          openxlsx::write.xlsx(dt_clean, file = filename)
+        }
+        files <- c(filename, files)
+      }
+      zip(file, files)
+    },
+    contentType = "text/csv/xlsx"
+  )
+  
+  #### render texts for verbatimTextOutputs ----
   output$vto_load_genelists <- shiny::renderText({paste(rv_load_genelists$text, collapse = "\n")})
   output$vto_load_genesets <- shiny::renderText({rv_genesets$text})
   output$vto_filter_genesets <- shiny::renderText({rv_genesets$text_filter})
@@ -524,25 +539,38 @@ goatea_server <- function(input, output, session, mm_genesets) {
   output$vto_genelist_overlap <- shiny::renderText({rv_genelists_overlap$text})
   output$vto_icheatmap <- shiny::renderText({rv_icheatmap$text})
   
-  ## render plots for plotOutputs
-  output$po_genelist_overlap <- renderPlot({
-    rv_genelists_overlap$plot
+  #### render plots for plotOutputs ----
+  output$po_genelist_overlap <- shiny::renderPlot({
+    req(rv_genelists_overlap$plot)
+    print(rv_genelists_overlap$plot)
+    shiny::showNotification("NOTE: plot size is draggable from edges")
   }, bg = "transparent")
-  
-  # Navigate to the "Run GOAT" tab when the "Run GOAT" button is clicked
-  shiny::observeEvent(input$ab_go_to_enrichment, {
-    shinydashboard::updateTabItems(session, "menu_tabs", "menu_run_enrichment")
+  output$po_splitdot <- shiny::renderPlot({
+    if ( ! is.null(rv_splitdot$plot)) print(ggplot2::ggplot_build(rv_splitdot$plot))
+    shiny::showNotification("NOTE: plot size is draggable from edges")
   })
-  shiny::observeEvent(input$ab_go_to_enrichment_from_overlap, {
+  output$po_termtree <- shiny::renderPlot({
+    if ( ! is.null(rv_termtree$plot)) print(ggplot2::ggplot_build(rv_termtree$plot))
+    shiny::showNotification("NOTE: plot size is draggable from edges")
+  })
+  
+  #### GO TO pathing buttons ----
+  shiny::observeEvent(c(input$ab_go_to_enrichment, input$ab_go_to_enrichment_from_overlap), ignoreInit = TRUE, {
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_run_enrichment")
   })
   shiny::observeEvent(input$ab_go_to_overlap, {
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_run_genelist_overlap")
   })
-  shiny::observeEvent(input$ab_go_to_heatmap, {
+  shiny::observeEvent(c(input$ab_go_to_heatmap, input$ab_go_to_heatmap_PPI, input$ab_go_to_heatmap_splitdot, input$ab_go_to_heatmap_termtree), ignoreInit = TRUE, {
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_heatmap")
   })
-  shiny::observeEvent(input$ab_go_to_PPI, {
+  shiny::observeEvent(c(input$ab_go_to_PPI, input$ab_go_to_PPI_icheatmap, input$ab_go_to_PPI_splitdot, input$ab_go_to_PPI_termtree), ignoreInit = TRUE, {
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_PPI")
+  })
+  shiny::observeEvent(c(input$ab_go_to_splitdot, input$ab_go_to_splitdot_PPI, input$ab_go_to_splitdot_icheatmap, input$ab_go_to_splitdot_termtree), ignoreInit = TRUE, {
+    shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_splitdot")
+  })
+  shiny::observeEvent(c(input$ab_go_to_termtree, input$ab_go_to_termtree_PPI, input$ab_go_to_termtree_icheatmap, input$ab_go_to_termtree_splitdot), ignoreInit = TRUE, {
+    shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_termtree")
   })
 }
