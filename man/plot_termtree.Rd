@@ -4,12 +4,12 @@
 \alias{plot_termtree}
 \title{Plot semantic similarity termtree}
 \usage{
-plot_termtree(enrichment_result, Nterms = 50, Nwords = 5)
+plot_termtree(enrichment, Nterms = NA, Nwords = 5, Nclusters = 1)
 }
 \arguments{
-\item{enrichment_result}{GOAT enrichment result dataframe}
+\item{enrichment}{GOAT enrichment result dataframe}
 
-\item{Nterms}{integer, default: 50, sets amount of terms to plot}
+\item{Nterms}{integer, default: NA to plat all terms, integer sets amount of terms to plot}
 
 \item{Nwords}{integer, default: 5, sets N summarized words per cluster}
 }

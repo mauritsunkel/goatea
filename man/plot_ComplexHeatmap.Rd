@@ -9,8 +9,8 @@ plot_ComplexHeatmap(
   genelist,
   cluster_method = "single",
   n_cluster = 1,
-  n_top_terms = NULL,
-  n_top_genes = NULL,
+  n_top_terms = NA,
+  n_top_genes = NA,
   genelist_overlap = NULL,
   plot = FALSE
 )

@@ -44,8 +44,8 @@ plot_ComplexHeatmap <- function(
     genelist,
     cluster_method = 'single',
     n_cluster = 1,
-    n_top_terms = NULL,
-    n_top_genes = NULL,
+    n_top_terms = NA,
+    n_top_genes = NA,
     genelist_overlap = NULL,
     plot = FALSE) {
   
@@ -55,7 +55,7 @@ plot_ComplexHeatmap <- function(
     all(c("name", "symbol", "pvalue_adjust", "ngenes", "signif") %in% colnames(enrichment_result)),
     all(c("symbol", "effectsize", "pvalue", "signif") %in% colnames(genelist)),
     length(unique(unlist(enrichment_result$symbol))) > 1,
-    is.null(c(n_top_genes, n_top_terms)) | is.numeric(c(n_top_genes, n_top_terms)),
+    is.na(c(n_top_genes, n_top_terms)) | is.numeric(c(n_top_genes, n_top_terms)),
     is.logical(plot)
   )
   
@@ -64,7 +64,7 @@ plot_ComplexHeatmap <- function(
   rm(enrichment_result)
   
   ## plot only top n genesets
-  if ( ! is.null(n_top_terms)) {
+  if ( ! is.na(n_top_terms)) {
     if (n_top_terms > nrow(df)) n_top_terms <- nrow(df)
     df <- df[order(df$pvalue_adjust), ]
     df <- df[1:n_top_terms, ]
@@ -78,7 +78,7 @@ plot_ComplexHeatmap <- function(
   unique_genes <- unique(m_data$symbol)
   
   ## plot only top n genes
-  if ( ! is.null(n_top_genes)) {
+  if ( ! is.na(n_top_genes)) {
     matched_genelist <- genelist[match(unique_genes, genelist$symbol),]
     if (n_top_genes > length(unique_genes)) n_top_genes <- length(unique_genes)
     unique_genes <- matched_genelist$symbol[order(abs(matched_genelist$effectsize), decreasing = TRUE)][1:n_top_genes]

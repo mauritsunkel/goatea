@@ -4,12 +4,12 @@
 \alias{plot_splitdot}
 \title{Plot splitdot plot}
 \usage{
-plot_splitdot(enrichment, topN = Inf)
+plot_splitdot(enrichment, topN = NA)
 }
 \arguments{
 \item{enrichment}{GOAT enrichment result}
 
-\item{topN}{default: Inf to plot all, else integer to plot topN terms by adjusted pvalue}
+\item{topN}{default: NA to plot all, else integer to plot topN terms by adjusted pvalue}
 }
 \value{
 ggplot2 object
