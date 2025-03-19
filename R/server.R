@@ -1,4 +1,3 @@
-
 #' Server for goatea package
 #'
 #' @param input Shiny input elements handling
@@ -11,6 +10,29 @@
 #'
 #' @export
 goatea_server <- function(input, output, session, mm_genesets) {
+  # TODO FINALLY give user control of colors from calling app.R 
+  # TODO set colors in server via this list, that user at some point can define! 
+  css_colors <- list(
+    main_bg = "#222222",
+    darker_bg = "#111111",
+    focus = "#32CD32",
+    hover = "#228B22",
+    border = "#555555",
+    text = "#FFFFFF"
+  )
+  colors <- shiny::reactiveValues(
+    main_bg = css_colors$main_bg,
+    darker_bg = css_colors$darker_bg,
+    focus = css_colors$focus,
+    hover = css_colors$hover,
+    border = css_colors$border,
+    text = css_colors$text
+  )
+  ## set css colors
+  session$onFlushed(function() session$sendCustomMessage("update_css_colors", css_colors), once = TRUE)
+  
+  
+  
   # FINAL remove else after testing
   if (is.null(mm_genesets)) {
     rv_genesets <- shiny::reactiveValues(
@@ -258,7 +280,7 @@ goatea_server <- function(input, output, session, mm_genesets) {
     genelist_overlap_result <- run_genelists_overlap(
       genelists = rv_genelists(),
       annotate_genes = input$cbi_annotate_genes,
-      annotation_organism = input$rb_human_mouse
+      annotation_organism = input$si_organism
     )
     shinyjs::hide("ab_run_genelist_overlap_loader")
     if (is.character(genelist_overlap_result)) {
@@ -445,15 +467,11 @@ goatea_server <- function(input, output, session, mm_genesets) {
   shiny::observeEvent(input$ab_load_GOB_genesets, {
     shinyjs::show("ab_load_GOB_genesets_loader")
     rv_genesets$success <- FALSE
-    if (input$rb_human_mouse == "Hs") {
-      taxid = 9606
-    } else if (input$rb_human_mouse == "Mm") {
-      taxid = 10090
-    }
+    taxid = input$si_organism
     rv_genesets$genesets <- goat::load_genesets_go_bioconductor(taxid = taxid)
     rv_genesets$success <- TRUE
     shinyjs::runjs("$('#vto_load_genesets').css('color', '#32CD32');")
-    rv_genesets$text <- paste0("Successfully loaded: org.", input$rb_human_mouse, ".eg.db")
+    rv_genesets$text <- paste0("Successfully loaded: org.", input$si_organism, ".eg.db")
     shinyjs::hide("ab_load_GOB_genesets_loader")
   })
   
