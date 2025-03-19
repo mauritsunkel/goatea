@@ -126,6 +126,13 @@ process_string_input <- function(string_input) {
 #' @param top_n n top results per genelist per source based on genesets adjusted pvalue
 #' 
 #' @importFrom tidyr unnest
+#' @importFrom purrr pmap_dbl
+#' @importFrom dplyr group_by
+#' @importFrom dplyr slice_min
+#' @importFrom dplyr ungroup
+#' @importFrom dplyr left_join
+#' @importFrom dplyr mutate
+#' @importFrom dplyr select
 #' 
 #' @keywords internal
 process_write_merged_enrichments <- function(merged_enrichment, output_folder, filename, top_n = NULL) {
@@ -165,4 +172,57 @@ process_write_merged_enrichments <- function(merged_enrichment, output_folder, f
     ## write results
     openxlsx::write.xlsx(merged_enrichment_source, file.path(output_folder, "searches", source, paste0(filename, ".xlsx")))
   })
+}
+
+#' Scale values between given min/max
+#'
+#' @param values numeric (vector) 
+#' @param old_min numeric, default: min(values), else set as current expected minimum of values
+#' @param old_max numeric, default: max(values), else set as current expected maximum of values
+#' @param new_min numeric, default: 0, else set to wanted new minimum value
+#' @param new_max numeric, default: 100, else set to wanted new maximum value
+#'
+#' @returns scaled numeric values
+#' @export
+scale_values_between <- function(values, old_min = min(values), old_max = max(values), new_min = 0, new_max = 100) {
+  stopifnot(is.numeric(c(values, old_min, old_max, new_min, new_max)))
+  if (old_min == old_max) return(rep(new_max, length(values)))
+  ((values - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min
+}
+
+
+
+
+#' Hex code colors to rgba format
+#'
+#' @param hexcolors character (vector), hexcode colors (e.g. #FFFFFF)
+#' @param alpha numeric in range [0-1], default: NULL to use full opacity or given opacity (AA) in hexcolors (#RRGGBBAA)
+#'
+#' @returns colors in rgba format
+#' 
+#' @export
+#'
+#' @examples
+#' colors <- colorify(5)
+#' hexcolor2rgba(colors)
+#' hexcolor2rgba(colors, alpha = .5)
+#' colors <- gsub('FF$', 75, colors)
+#' hexcolor2rgba(colors)
+#' hexcolor2rgba(colors, alpha = .5)
+hexcolor2rgba <- function(hexcolors, alpha = NULL) {
+  stopifnot(
+    is.character(hexcolors),
+    is.null(alpha) | is.numeric(alpha) && alpha >= 0 && alpha <= 1
+  )
+  ## set rgb
+  hex <- gsub('#', '', hexcolors) # strip #
+  r <- as.numeric(paste0('0x', substr(hex, 1, 2))) # extract red
+  g <- as.numeric(paste0('0x', substr(hex, 3, 4))) # extract green
+  b <- as.numeric(paste0('0x', substr(hex, 5, 6))) # extract blue
+  ## set alpha
+  if (is.null(alpha)) {
+    alpha <- 1
+    if (nchar(hex)[1] == 8) alpha <- as.numeric(paste0('0x', substr(hex, 7, 8))) / 255
+  }
+  return(paste0('rgba(', r, ',', g, ',', b, ',', alpha*100, ')')) # convert to RGBA format
 }
