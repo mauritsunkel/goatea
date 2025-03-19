@@ -18,9 +18,10 @@ goatea_ui <- function() {
     ),
     
     dashboardBody(
-      useShinyjs(), # Initialize shinyjs
+      useShinyjs(), # initialize shinyjs
       tags$head(
-        tags$link(rel = "stylesheet", type = "text/css", href = "www/styles.css")
+        tags$link(rel = "stylesheet", type = "text/css", href = "www/styles.css"), # load .css stylesheet
+        tags$script(src = "www/colors.js") # load JS initializing .css colors 
       ),
       tabItems(
         tabItem(tabName = "menu_initialize",
@@ -29,11 +30,11 @@ goatea_ui <- function() {
                     id = "box_global_options",
                     title = "Global options",
                     width = NULL,
-                    column(width = 2, wrap_hovertip(radioButtons("rb_human_mouse", "Select organism",
-                                                                 choices = list("Human" = "Hs", "Mouse" = "Mm"),
-                                                                 selected = "Mm", # FINAL set to Hs
-                                                                 inline = FALSE), 
-                                                    hovertip = "Select human or mouse for loading Gene Ontology Bioconductor AnnotationDbi genesets and gene annotation")),
+                    column(width = 2, wrap_hovertip(selectInput("si_organism", "Select organism",
+                                                  choices = list("Human" = 9606, "Mouse" = 10090, "Chimpanzee" = 9598, "Rhesus monkey" = 9544,
+                                                                 "Rat" = 10116, "Zebrafish" = 7955, "Fruit fly" = 7227, "Worm" = 6239),
+                                                  selected = "Mouse"), # FINAL set to Hs
+                                                  hovertip = "Select organism for loading Gene Ontology Bioconductor AnnotationDbi genesets, gene annotation and STRINGDB protein-protein interactions")), 
                     column(width = 2, wrap_hovertip(radioButtons("rb_global_output_type", "Select output type",
                                                                  choices = list("CSV" = ".csv", "Excel" = ".xlsx"),
                                                                  selected = ".csv",
