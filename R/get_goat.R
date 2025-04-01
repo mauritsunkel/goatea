@@ -27,12 +27,12 @@ run_geneset_enrichment <- function(
   goat_result <- goat::test_genesets(
     genesets = genesets,
     genelist = genelist,
-    method = "goat",
-    score_type = "effectsize",
-    padj_method = "BH",
-    padj_sources = TRUE,
-    padj_cutoff = 0.01, 
-    padj_min_signifgenes = 0L
+    method = method,
+    score_type = score_type,
+    padj_method = padj_method,
+    padj_sources = padj_sources,
+    padj_cutoff = padj_cutoff, 
+    padj_min_signifgenes = padj_min_signifgenes
   )
   ## map IDs back to gene symbol
   gene_to_symbol <- setNames(genelist$symbol, genelist$gene)
