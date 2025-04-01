@@ -56,15 +56,27 @@ wrap_hovertip <- function(ui_element, hovertip) {
 #' Can extend functino to get gene annotations for other organisms within annotables package.
 #'
 #' @param gene_symbols character vector of ensembl genes 109 symbols
-#' @param organism default "Hs" (Homo Sapiens), otherwise: "Mm" (Mus Musculus)
+#' @param organism integer, indicates taxonomy ID, default 9606 (Homo Sapiens). options:
+#' * 9606 = Human (Homo sapiens)
+#' * 9544 = Rhesus monkey (Macaca mulatta)
+#' * 10090 = Mouse (Mus musculus)
+#' * 10116 = Rat (Rattus norvegicus)
+#' * 7227 = Fruit fly (Drosophila melanogaster)
+#' * 6239 = Worm (Caenorhabditis elegans)
 #'
 #' @export
-get_gene_annotation <- function(gene_symbols, organism = "Hs") {
-  if (organism == "Hs") {
-    annodata <- annotables::grch38
-  } else if (organism == "Mm") {
-    annodata <- annotables::grcm38
-  }
+get_gene_annotation <- function(gene_symbols, organism = '9606') {
+  annodata <- switch(
+    as.character(organism),
+    '9606' = annotables::grch38,
+    '7227' = annotables::bdgp6,
+    '9544' = annotables::mmul801,
+    '10116' = annotables::rnor6,
+    '6239' = annotables::wbcel235,
+    '10090' = annotables::grcm38,
+    NULL
+  )
+  if (is.null(annodata)) return(NULL)
   return(plyr::mapvalues(
     x = gene_symbols,
     from = annodata$symbol,
