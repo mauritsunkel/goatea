@@ -33,7 +33,7 @@ goatea_ui <- function() {
                     column(width = 2, wrap_hovertip(selectInput("si_organism", "Select organism",
                                                   choices = list("Human" = 9606, "Mouse" = 10090, "Chimpanzee" = 9598, "Rhesus monkey" = 9544,
                                                                  "Rat" = 10116, "Zebrafish" = 7955, "Fruit fly" = 7227, "Worm" = 6239),
-                                                  selected = "Mouse"), # FINAL set to Hs
+                                                  selected = "Human"),
                                                   hovertip = "Select organism for loading Gene Ontology Bioconductor AnnotationDbi genesets, gene annotation and STRINGDB protein-protein interactions")), 
                     column(width = 2, wrap_hovertip(radioButtons("rb_global_output_type", "Select output type",
                                                                  choices = list("CSV" = ".csv", "Excel" = ".xlsx"),
@@ -41,7 +41,7 @@ goatea_ui <- function() {
                                                                  inline = FALSE), 
                                                     hovertip = "Select CSV or Excel for output type when writing tables")),
                     column(width = 3, wrap_hovertip(checkboxInput("cbi_annotate_genes", "Annotate genes", value = TRUE), 
-                                                    hovertip = "If individual genes are output in .csvs, annotate with a small description"))
+                                                    hovertip = "Requires 'annotables' package, annotate genes with a small description for available organisms, see '?goatea::get_gene_annotation()'"))
                   )
                 ),
                 fluidRow(
@@ -49,7 +49,7 @@ goatea_ui <- function() {
                     id = "box_load_genelists",
                     title = "Genelists",
                     width = NULL,
-                    column(width = 2, wrap_hovertip(actionButton("ab_load_genelists", "Load genelist(s)", width = 115), 
+                    column(width = 2, wrap_hovertip(fileInput("fi_load_genelists", "Load genelist(s)", multiple = TRUE),
                                                     hovertip = "Load genelist(s), accepted formats: .csv, .xlsx, .tsv")),
                     column(width = 2, wrap_hovertip(checkboxInput("cbi_remove_non_numerical_ids", "Remove non-numerical IDs", value = FALSE), 
                                                     hovertip = "Remove genes with non-available IDs")),
@@ -59,15 +59,21 @@ goatea_ui <- function() {
                                                     hovertip = "Remove Riken non-canonical mouse genes")),
                     column(width = 2, wrap_hovertip(checkboxInput("cbi_remove_Gm_genes", "Remove Gm genes", value = TRUE), 
                                                     hovertip = "Remove Gm non-canonical mouse genes")),
-                    column(width = 2, wrap_hovertip(checkboxInput("cbi_keep_maxN_genes", "Keep max N genes", value = TRUE), 
-                                                    hovertip = paste0("Filter down to max allowed n genes: ", max(goat::goat_nulldistributions$N)))),
                     column(width = 12, verbatimTextOutput("vto_load_genelists", placeholder = TRUE)),
                     
-                    column(width = 2, disabled(actionButton("ab_set_significant_genes", "Set signif genes", value = TRUE, width = 115))),
-                    column(width = 2, numericInput("ni_set_significant_pvalue", "P-value <=", 0.05, min = 0, step = 0.01)),
-                    column(width = 2, numericInput("ni_set_significant_effectsize", "Effectsize >=", 1, min = 0, step = 0.1)),
-                    column(width = 12, verbatimTextOutput("vto_set_significant_genes", placeholder = TRUE)),
+                    column(width = 2, disabled(actionButton("ab_set_significant_genes", "Set signif and N genes", value = TRUE, width = 115))),
+                    column(width = 2, wrap_hovertip(selectInput("si_set_significant_genes", "Set significant/N genes", choices = c("pvalue_effectsize", "pvalue", "effectsize")),
+                                                    hovertip = 'Set significant and N genes by pvalue and/or effectsize')),
+                    column(width = 2, wrap_hovertip(numericInput("ni_set_significant_pvalue", "P-value <=", 0.05, min = 0, step = 0.01),
+                                                    hovertip = 'Significant genes p-value threshold')),
+                    column(width = 2, wrap_hovertip(numericInput("ni_set_significant_effectsize", "Effectsize >=", 1, min = 0, step = 0.1),
+                                                    hovertip = 'Significant genes effectsize threshold')),
+                    column(width = 2, wrap_hovertip(checkboxInput("cbi_keep_maxN_genes", "Keep max N genes", value = FALSE), 
+                                                    hovertip = paste0("Filter down to max allowed n genes in goat method: ", max(goat::goat_nulldistributions$N), ". NOTE: other methods, like goat_bootstrap, might not have this n genes limitation."))),
                     
+                    column(width = 2, wrap_hovertip(selectInput("si_keep_maxN_genes", "Keep max N genes by pvalue/effectsize", choices = c("pvalue", "effectsize")),
+                                                    hovertip = 'When keeping max N genes, do so by lowest p-values or by highest absolute effect sizes')),
+                    column(width = 12, verbatimTextOutput("vto_set_significant_genes", placeholder = TRUE)),
                     column(width = 2, disabled(actionButton("ab_set_names", "Set names", value = TRUE, width = 115))),
                     column(width = 9, textInput("ti_set_names", label = NULL, placeholder = "Enter genelist names separated by a space...")),
                     column(width = 12, verbatimTextOutput("vto_set_names", placeholder = TRUE))
@@ -80,7 +86,12 @@ goatea_ui <- function() {
                     width = NULL,
                     wrap_hovertip(column(width = 2, disabled(wrap_loader(id = "ab_load_GOB_genesets_loader", 
                                                                          actionButton("ab_load_GOB_genesets", "Load GO AnnotationDbi genesets")))), 
-                                  hovertip = "Load Gene Ontology Bioconductor AnnotationDbi genesets using selected organism"),
+                                  hovertip = "Load Gene Ontology Bioconductor AnnotationDbi genesets using selected organism, NOTE: individual organism packages need to be installed manually, if not, a warning message will be thrown."),
+                    column(width = 2),
+                    column(width = 2, wrap_hovertip(fileInput("fi_load_genesets_GMT", "Load GMT genesets"),
+                                                    hovertip = "Load genesets from .gmt format, for instance downloaded from the Molecular Signatures Database")),
+                    column(width = 2, wrap_hovertip(textInput('ti_load_genesets_GMT', 'GMT genesets source label', value = 'GMT'),
+                                                    hovertip = 'Set genesets source column label, default: "GMT"')),
                     column(width = 12, verbatimTextOutput("vto_load_genesets", placeholder = TRUE)),
                     column(width = 12, tags$hr()),
                     column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_filter_genesets_loader", actionButton("ab_filter_genesets", "Filter genesets"))), 
@@ -152,7 +163,7 @@ goatea_ui <- function() {
                     column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_run_enrichment_loader", actionButton("ab_run_enrichment", "Run enrichment"))), 
                                                     hovertip = "Run geneset enrichment")),
                     column(width = 3, wrap_hovertip(selectInput("si_test_method", "Method",
-                                                                choices = c("goat", "hypergeometric", "fisherexact", "fisherexact_ease", "gsea", "idea"),
+                                                                choices = c("goat", "goat_bootstrap", "hypergeometric", "fisherexact", "fisherexact_ease", "gsea", "idea"),
                                                                 selected = "goat"), 
                                                     hovertip = "Enrichment method")),
                     column(width = 3, wrap_hovertip(selectInput("si_test_score_type", "Score type",
@@ -294,7 +305,15 @@ goatea_ui <- function() {
                     column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_ngenes", "topN genes", NA, min = 1, step = 1), 
                                                     hovertip = "Top N genes based on effectsize")),
                     column(width = 12, verbatimTextOutput("vto_icheatmap", placeholder = TRUE)),
-                    column(width = 12, InteractiveComplexHeatmap::InteractiveComplexHeatmapOutput(heatmap_id = "icheatmap", layout = "1|2|3", output_ui_float = TRUE, width1 = 1400, height1 = 700, width2 = 1400, height2 = 500))
+                    column(width = 12, InteractiveComplexHeatmap::InteractiveComplexHeatmapOutput(heatmap_id = "icheatmap", layout = "1|2|3", output_ui_float = TRUE, width1 = 1400, height1 = 700, width2 = 1400, height2 = 500)),
+                    column(width = 2, wrap_hovertip(actionButton("ab_icheatmap_select_genes", label = "Add visible genes"),
+                                                    hovertip = "Add genes visible in subheatmap to selection")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_icheatmap_select_terms", "Add all genes of visible terms"),
+                                                    hovertip = "Add all genes from terms visible in subheatmap to selection")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_icheatmap_select_terms_subgenes", "Add visible genes of visible terms"),
+                                                    hovertip = "Add only visible genes from terms visibile in subheatmap to selection")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_icheatmap_reset_protgenes", "Reset selected genes"),
+                                                    hovertip = "Reset/remove all selected genes"))
                   )),
                 fluidRow(
                   box(
@@ -313,16 +332,61 @@ goatea_ui <- function() {
                     id = "box_plot_PPI",
                     title = "Plot Protein-Protein Interations",
                     width = NULL,
-                    # TODO UI elements
                     
-                    # TODO server
-                    ## use selected displayed/filtered enrichment data for PPI 
-                    ## PPI from selected genes 
-                    ### rv_icheatmap$row_i (terms -> function to select all genes)
-                    ### rv_icheatmap$col_i (genes)
-                    ### specifically only for significant 
-                    
-                    # TODO GO TO other plotting
+                    ## ppigraph
+                    column(width = 2, wrap_hovertip(wrap_loader("ab_ppi_graph_loader", actionButton("ab_ppi_graph", "Create PPIgraph")),
+                                                    hovertip = "Create protein-protein interaction graph from STRING database interactions of selected proteins, using parameters of UI to the right")),
+                    column(width = 2, wrap_hovertip(numericInput("ni_ppi_score_threshold", "STRINGdb score threshold", value = 0, min = 0, max = 1000, step = 10),
+                                                    hovertip = "STRING database PPI score threshold, ranges from 0 (no threshold) to 1000 (threshold all). STRINGdb advises 700 as stringent and 400 as lenient thresholding.")),
+                    column(width = 2, wrap_hovertip(selectInput("si_ppi_sample", "Select sample", choices = NULL),
+                                                    hovertip = "Select sample to get metadata from for selected proteins/genes. Note, sample can be different than sample on the enrichment tab.")), 
+                    column(width = 2, wrap_hovertip(selectInput("si_ppi_version", "Select STRINGdb version", choices = NULL),
+                                                    hovertip = "Select from STRING database available version. Default and recommended to select latest.")),
+                    column(width = 4),
+                    column(width = 2, wrap_hovertip(textAreaInput("tai_ppi_add_protgenes", label = "Additional proteins/genes", placeholder = "Add proteins/genes (to selection)..."),
+                                                    hovertip = "Add proteins/gene symbols separated by enter (\n) to take into account additionally next to earlier selected genes.")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_ppi_reset_protgenes", label = "Reset proteins/genes selection"),
+                                                    hovertip = "Reset proteins/gene symbols selection")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_ppi_help", label = icon("question"), style = "font-size: 24px;"),
+                                                    hovertip = "Click to show tab help overview")),
+                    column(width = 12, verbatimTextOutput("vto_ppi_selection")),
+                    column(width = 12, visNetwork::visNetworkOutput("vno_ppi_visnetwork", height = "600px")),
+                    column(width = 2, wrap_hovertip(selectInput("si_ppi_color_nodes_type", "Nodes feature to color", choices = c('Background', 'Border'), selected = 'Background'),
+                                                    hovertip = "Select to color nodes background or border by selected a node feature next")),
+                    column(width = 2, wrap_hovertip(selectInput("si_ppi_color_nodes", "Nodes feature", choices = NULL),
+                                                    hovertip = "Select to color nodes aspect by an igraph feature")),
+                    column(width = 2, wrap_hovertip(selectInput("si_ppi_color_edges", "Edges feature", choices = NULL),
+                                                    hovertip = "Select to color interactions by an edge feature")),
+                    column(width = 2, wrap_hovertip(selectInput("si_ppi_layout", "Select ppigraph layout", choices = NULL),
+                                                    hovertip = "Select igraph layout")),
+                    column(width = 2),
+                    column(width = 2, wrap_hovertip(actionButton("ab_ppi_subset", "Subgraph selected nodes"),
+                                                    hovertip = "Draw ppisubgraph below from selected nodes")),
+                    column(width = 12),
+                    column(width = 2, wrap_hovertip(downloadButton("db_ppigraph_metrics", "Export ppigraph metrics"),
+                                                    hovertip = "Export ppigraph metrics to table")),
+                    column(width = 10),
+                    column(width = 12, verbatimTextOutput("vto_ppi_metrics")),
+                    column(width = 12, div(tags$hr())),
+                    ## ppi subgraph
+                    column(width = 12, verbatimTextOutput("vto_ppi_selection_subgraph")),
+                    column(width = 12, visNetwork::visNetworkOutput("vno_ppi_visnetwork_subgraph", height = "600px")),
+                    column(width = 2, wrap_hovertip(selectInput("si_ppi_color_nodes_type_subgraph", "Nodes feature to color", choices = c('Background', 'Border'), selected = 'Background'),
+                                                    hovertip = "Select to color nodes background or border by selected a node feature next")),
+                    column(width = 2, wrap_hovertip(selectInput("si_ppi_color_nodes_subgraph", "Nodes feature", choices = NULL),
+                                                    hovertip = "Select to color nodes aspect by an igraph feature")),
+                    column(width = 2, wrap_hovertip(selectInput("si_ppi_color_edges_subgraph", "Edges feature", choices = NULL),
+                                                    hovertip = "Select to color interactions by an edge feature")),
+                    column(width = 2, wrap_hovertip(selectInput("si_ppi_layout_subgraph", "Select subgraph layout", choices = NULL),
+                                                    hovertip = "Select igraph layout")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_ppi_delete_nodes_subgraph", "Delete selected nodes"),
+                                                    hovertip = "Delete selected nodes from ppisubgraph")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_ppi_reset_subgraph", "Reset to original ppigraph"),
+                                                    hovertip = "Reset ppisubgraph to original ppigraph")),
+                    column(width = 12),
+                    column(width = 2, wrap_hovertip(downloadButton("db_ppigraph_metrics_subgraph", "Export subgraph metrics"),
+                                                    hovertip = "Export ppisubgraph metrics to table")),
+                    column(width = 12, verbatimTextOutput("vto_ppi_metrics_subgraph")),
                   )
                 ),
                 fluidRow(
