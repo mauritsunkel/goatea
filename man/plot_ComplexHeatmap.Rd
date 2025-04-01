@@ -54,7 +54,8 @@ enrichment_result <- tibble::tibble(
 name = c("Pathway1", "Pathway2", "Pathway3", "Pathway4"),
 symbol = list(c("GeneA", "GeneB"), c("GeneC", "GeneD"),c("GeneA", "GeneB"), c("GeneC", "GeneD")),
 pvalue_adjust = c(0.01, 0.05, 0.5, 0.8),
-ngenes = c(10, 20, 30, 100)
+ngenes = c(10, 20, 30, 100),
+signif = c(T,T,F,F)
 )
 genelist <- data.frame(
   symbol = c("GeneA", "GeneB", "GeneC", "GeneD"),

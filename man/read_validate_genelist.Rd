@@ -10,8 +10,7 @@ read_validate_genelist(
   remove_non_numerical_ids = TRUE,
   remove_duplicated = TRUE,
   remove_Rik_genes = TRUE,
-  remove_Gm_genes = TRUE,
-  keep_maxN_genes = TRUE
+  remove_Gm_genes = TRUE
 )
 }
 \arguments{
@@ -26,9 +25,8 @@ read_validate_genelist(
 \item{remove_Rik_genes}{boolean, default TRUE, grepl("Rik$") search and remove Riken non-canonical mouse genes}
 
 \item{remove_Gm_genes}{boolean, default TRUE, grepl("^Gm") search and remove Gm non-canonical mouse genes}
-
-\item{keep_maxN_genes}{boolean, default TRUE, filter down by pvalue to max n genes allowed by goat (max(goat::goat_nulldistributions$N))}
 }
 \description{
-Read and validate a table with genes (that should be tested in overrepresentation-analysis) for compatibility with this R package#'
+if 'pvalue' is not in the genelist columns, it is set and defaulted to 1 for visualization purposes
+if 'effectsize' is not in the genelist columns, it is set and defaulted to 0 for visualization purposes
 }

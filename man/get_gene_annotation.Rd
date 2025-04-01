@@ -4,12 +4,20 @@
 \alias{get_gene_annotation}
 \title{Get gene annotation for mouse}
 \usage{
-get_gene_annotation(gene_symbols, organism = "Hs")
+get_gene_annotation(gene_symbols, organism = "9606")
 }
 \arguments{
 \item{gene_symbols}{character vector of ensembl genes 109 symbols}
 
-\item{organism}{default "Hs" (Homo Sapiens), otherwise: "Mm" (Mus Musculus)}
+\item{organism}{integer, indicates taxonomy ID, default 9606 (Homo Sapiens). options:
+\itemize{
+\item 9606 = Human (Homo sapiens)
+\item 9544 = Rhesus monkey (Macaca mulatta)
+\item 10090 = Mouse (Mus musculus)
+\item 10116 = Rat (Rattus norvegicus)
+\item 7227 = Fruit fly (Drosophila melanogaster)
+\item 6239 = Worm (Caenorhabditis elegans)
+}}
 }
 \description{
 Can extend functino to get gene annotations for other organisms within annotables package.
