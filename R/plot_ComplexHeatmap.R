@@ -29,7 +29,8 @@
 #' name = c("Pathway1", "Pathway2", "Pathway3", "Pathway4"),
 #' symbol = list(c("GeneA", "GeneB"), c("GeneC", "GeneD"),c("GeneA", "GeneB"), c("GeneC", "GeneD")),
 #' pvalue_adjust = c(0.01, 0.05, 0.5, 0.8),
-#' ngenes = c(10, 20, 30, 100)
+#' ngenes = c(10, 20, 30, 100),
+#' signif = c(T,T,F,F)
 #' )
 #' genelist <- data.frame(
 #'   symbol = c("GeneA", "GeneB", "GeneC", "GeneD"),
@@ -76,7 +77,7 @@ plot_ComplexHeatmap <- function(
     tidyr::unnest(symbol)
   unique_names <- unique(m_data$name)
   unique_genes <- unique(m_data$symbol)
-  
+
   ## plot only top n genes
   if ( ! is.na(n_top_genes)) {
     matched_genelist <- genelist[match(unique_genes, genelist$symbol),]
@@ -142,24 +143,29 @@ plot_ComplexHeatmap <- function(
   ## set term annotation
   cha_row  <- ComplexHeatmap::HeatmapAnnotation(
     which = "row",
+    zscore = df$zscore,
     GeneSetSize = df$ngenes,
     pvalue = df$pvalue_adjust,
-    zscore = df$zscore,
+    signif = as.numeric(df$signif),
     col = list(
+      zscore = colorify(colors = c(neg_color, neutral_color, pos_color), colors_breakpoints = c(min(df$zscore, na.rm = T), 0, max(df$zscore, na.rm = T))),
       GeneSetSize = colorify(colors = c(neutral_color, effect_color), colors_breakpoints = c(0, max(df$ngenes, na.rm = T))),
       pvalue = colorify(colors = c("black", "white"), colors_breakpoints = c(0, 1)),
-      zscore = colorify(colors = c(neg_color, neutral_color, pos_color), colors_breakpoints = c(min(df$zscore, na.rm = T), 0, max(df$zscore, na.rm = T)))
+      signif = colorify(colors = c(effect_color, neutral_color), colors_breakpoints = c(1, 0))
     ),
     na_col = neutral_color
   )
   ## set gene annotation
   cha_column <- ComplexHeatmap::HeatmapAnnotation(
+    signif = as.numeric(genelist$signif[unique_genes_i]),
     pvalue = genelist$pvalue[unique_genes_i],
     effectsize = genelist$effectsize[unique_genes_i],
     # if ( ! is.null(genelist_overlap)) overlap = overlap_values,
     col = list(
+      signif = colorify(colors = c(effect_color, neutral_color), colors_breakpoints = c(1, 0)),
       pvalue = colorify(colors = c(effect_color, neutral_color), colors_breakpoints = c(0, 1)),
       effectsize = colorify(colors = c(neg_color, neutral_color, pos_color), colors_breakpoints = c(min(genelist$effectsize[unique_genes_i], na.rm = T), 0, max(genelist$effectsize[unique_genes_i], na.rm = T)))
+      # TODO effectsize.signif
       # if ( ! is.null(genelist_overlap)) overlap = colorify(n = length(unique(overlap_values)), colors = "okabe-ito", colors_names = unique(overlap_values))
     ),
     na_col = neutral_color
@@ -177,15 +183,16 @@ plot_ComplexHeatmap <- function(
     cha_column <- c(cha_column, cha_column_overlap)
   }
   
-  ## highlight significant terms and genes
-  row_colors <- setNames(rep("black", length(df$name)), df$name)
-  row_colors[df$signif] <- "green4"
-  row_fontface <- rep("plain", length(df$name))
-  row_fontface[df$signif] <- "bold.italic"
-  col_colors <- setNames(rep("black", length(unique_genes)), unique_genes)
-  col_colors[genelist$signif[unique_genes_i]] <- "green4"
-  col_fontface <- rep("plain", length(unique_genes))
-  col_fontface[genelist$signif[unique_genes_i]] <- "bold.italic"
+  ## DEPRECATED devnote: highlighting labels in the sub-InteractiveComplexHeatmap mismatches them from the original ICH
+  # ## highlight significant terms and genes
+  # row_colors <- setNames(rep("black", length(df$name)), df$name)
+  # row_colors[df$signif] <- "green4"
+  # row_fontface <- rep("plain", length(df$name))
+  # row_fontface[df$signif] <- "bold.italic"
+  # col_colors <- setNames(rep("black", length(unique_genes)), unique_genes)
+  # col_colors[genelist$signif[unique_genes_i]] <- "green4"
+  # col_fontface <- rep("plain", length(unique_genes))
+  # col_fontface[genelist$signif[unique_genes_i]] <- "bold.italic"
   
   ## set unique matrix values
   m_unique_values <- unique(m[ ! is.na(m)])
@@ -198,8 +205,8 @@ plot_ComplexHeatmap <- function(
     rect_gp = grid::gpar(col = "grey30"),
     show_row_names = TRUE,
     show_column_names = TRUE,
-    row_names_gp = grid::gpar(col = row_colors, fontface = row_fontface),
-    column_names_gp = grid::gpar(col = col_colors, fontface = col_fontface),
+    # row_names_gp = gpar(fontsize = 12), # grid::gpar(col = row_colors, fontface = row_fontface),
+    # column_names_gp = gpar(fontsize = 12), # grid::gpar(col = col_colors, fontface = col_fontface),
     column_names_side = "top",
     cluster_rows = FALSE,
     cluster_columns = FALSE,
