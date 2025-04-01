@@ -1,17 +1,11 @@
 #' Create gene overview through overlapping genelists information by overlapping significant genes
 #'
 #' @param genelists UI value/list of tibbles/dataframes
-#' @param annotate_genes default: UI value/TRUE, else FALSE to not add small gene descriptive annotations
-#' @param annotation_organism default: UI value/"Hs" (Homo Sapiens), otherwise: "Mm" (Mus Musculus)
 #'
 #' @export
 #'
 #' @return tibble/dataframe with (annotated) genes and p-value/effectsize info for each genelist, concluding with overlapping genelists by significant genes
-run_genelists_overlap <- function(
-    genelists,
-    annotate_genes = TRUE,
-    annotation_organism = "Hs") {
-  
+run_genelists_overlap <- function(genelists) {
   if ( ! all(sapply(genelists, function(x) "symbol" %in% colnames(x)))) {
     return("ERROR: column 'symbol' missing in genelists")
   }
@@ -20,9 +14,8 @@ run_genelists_overlap <- function(
   long_df <- do.call(rbind, genelists)
   df <- tibble::tibble(gene = Reduce(union, lapply(genelists, function(x) x$gene)))
   df$symbol <- long_df$symbol[match(df$gene, long_df$gene)] # match first hits, multiple possible if symbol to gene mapping happened
-  
   # df$symbol <- match(df$gene, Reduce(union, lapply(genelists, function(x) x$symbol)))
-  if (annotate_genes) df$gene_annotation <- get_gene_annotation(gene_symbols = df$symbol, organism = annotation_organism)
+
   ## add expression and significance values of each genelist
   for (name in names(genelists)) {
     gene_i <- match(df$symbol, genelists[[name]]$symbol)
