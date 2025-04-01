@@ -5,11 +5,14 @@
 #' @param remove_duplicated boolean, default TRUE, removes duplicated gene symbols/ids
 #' @param remove_Rik_genes boolean, default TRUE, grepl("Rik$") search and remove Riken non-canonical mouse genes
 #' @param remove_Gm_genes boolean, default TRUE, grepl("^Gm") search and remove Gm non-canonical mouse genes
-#' @param keep_maxN_genes boolean, default TRUE, filter down by pvalue to max n genes allowed by goat (max(goat::goat_nulldistributions$N))
+#'
+#' @description
+#' if 'pvalue' is not in the genelist columns, it is set and defaulted to 1 for visualization purposes 
+#' if 'effectsize' is not in the genelist columns, it is set and defaulted to 0 for visualization purposes 
 #'
 #' @export
 read_validate_genelist <- function(file, map_organism = NULL, remove_non_numerical_ids = TRUE, remove_duplicated = TRUE,
-                          remove_Rik_genes = TRUE, remove_Gm_genes = TRUE, keep_maxN_genes = TRUE) {
+                          remove_Rik_genes = TRUE, remove_Gm_genes = TRUE) {
   message("Checking file format...")
   if (file_extension(file) == "xlsx") {
     genelist <- openxlsx::read.xlsx(file)
@@ -35,14 +38,12 @@ read_validate_genelist <- function(file, map_organism = NULL, remove_non_numeric
     genelist <- genelist[ ! is.na(genelist$gene), ]
   }
   
-  
-  
-
-  
   # 1) data.frame with all required columns
-  ok = is.data.frame(genelist) &&
+  ok = is.data.frame(genelist) && 
     nrow(genelist) > 0 &&
-    all(c("gene", "pvalue", "effectsize") %in% colnames(genelist))
+    'gene' %in% colnames(genelist)
+  if ( ! 'pvalue' %in% colnames(genelist)) genelist$pvalue <- 1
+  if ( ! 'effectsize' %in% colnames(genelist)) genelist$effectsize <- 0
   
   # 2) check column types
   if(ok) {
@@ -53,7 +54,7 @@ read_validate_genelist <- function(file, map_organism = NULL, remove_non_numeric
       types["effectsize"] %in% c("integer", "numeric", "double")
   }
   if( ! ok) {
-    return("genelist table should be a data.frame/tibble with these columns (and types); gene (character or integer), pvalue (numeric), effectsize (numeric)")
+    return("genelist table should be a data.frame/tibble with these columns (and types); gene (character or integer)")
   }
   
   # 3) check for NA or empty-string values  (note that the 'signif' column can be NA)
@@ -92,17 +93,6 @@ read_validate_genelist <- function(file, map_organism = NULL, remove_non_numeric
   if (remove_duplicated) genelist <- genelist[ ! duplicated(genelist$gene), ]
   if(anyDuplicated(genelist$gene)) {
     return("genelist table should not contain duplicate values in the 'gene' column")
-  }
-  
-  # 6) genelist length cannot exceed maximum allowed by precomputed null distributions
-  ## filter down to max n rows based on lowest pvalue
-  if (keep_maxN_genes) {
-    genelist <- genelist %>% 
-      arrange(pvalue) %>% 
-      slice_head(n = max(goat::goat_nulldistributions$N))
-  }
-  if (length(genelist$gene) > max(goat::goat_nulldistributions$N)) {
-    return(paste0("genelist table should not exceed ", max(goat::goat_nulldistributions$N), " genes (", length(genelist$gene), ")"))
   }
   
   # remove if NA after integer conversion of gene IDs
