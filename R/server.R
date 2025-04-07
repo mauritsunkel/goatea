@@ -386,8 +386,13 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
       rv_icheatmap$text <- paste0("PPI selection: if genes by terms: ", paste(rv_icheatmap$row_names, collapse = ", "), ". If genes: ", paste(rv_icheatmap$col_names, collapse = ", "))
     }
   }
+  
   shiny::observeEvent(c(input$ab_ppi_reset_protgenes, input$ab_icheatmap_reset_protgenes), {
     rv_genes$all_selected <- character(0)
+  })
+  shiny::observeEvent(input$ab_reset_upset_genes, {
+    rv_genes$all_selected <- character(0)
+    rv_genelists_overlap$text <- "Reset genes selection"
   })
   shiny::observeEvent(input$ab_icheatmap_select_genes, {
     req(rv_icheatmap$col_names)
@@ -517,25 +522,28 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     shinyjs::runjs("$('#vto_genelist_overlap').css('color', '#32CD32');")
   })
   
-  shiny::observeEvent(input$ab_plot_overlap_venn, {
-    data <- rv_genelists()
-    shinyjs::hide("db_overlap_plot")
-    shinyjs::show("ab_plot_overlap_venn_loader")
-    rv_genelists_overlap$plot <- plot_genelists_overlap_venn(
-      genelists = data
-    )
-    shinyjs::hide("ab_plot_overlap_venn_loader")
-    shinyjs::show("db_overlap_plot")
+  shiny::observeEvent(input$ab_select_upset_genes, {
+    ids <- unlist(input$po_genelist_overlap_click$elems)
+    req(ids)
+    symbols <- plyr::mapvalues(
+      x = ids,
+      from = rv_genelists_overlap$gene_overview$gene,
+      to = rv_genelists_overlap$gene_overview$symbol,
+      warn_missing = FALSE)
+    rv_genes$all_selected <- unique(c(rv_genes$all_selected, symbols))
+    rv_genelists_overlap$text <- "Genes from Set added to gene selection"
   })
   
   shiny::observeEvent(input$ab_plot_overlap_upset, {
     data <- rv_genelists()
     shinyjs::hide("db_overlap_plot")
     shinyjs::show("ab_plot_overlap_upset_loader")
-    rv_genelists_overlap$plot <- plot_genelists_overlap_upset(
+    rv_genelists_overlap$plot <- plot_genelists_overlap_upsetjs(
       genelists = data,
-      grayscale_colors = input$cbi_plot_overlap_upset_grayscale,
-      empty_intersections = input$cbi_plot_overlap_upset_intersections
+      mode = input$si_plot_overlap_upset,
+      interactive = TRUE,
+      main.color = colors$text, 
+      highlight.color = colors$focus
     )
     shinyjs::hide("ab_plot_overlap_upset_loader")
     shinyjs::show("db_overlap_plot")
@@ -550,7 +558,6 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     shinyjs::show("ab_run_enrichment_loader")
     
     for (name in names(data_genelists)) {
-      # TODO set before for loop 
       if (nrow(data_genelists[[name]]) > max(goat::goat_nulldistributions$N) & input$si_test_method == 'goat') {
         rv_enrichment$text <- paste0("'", name, "' genelist contains N genes: ", nrow(data_genelists[[name]]), ', when using method="goat" there have to be less then ', as.character(max(goat::goat_nulldistributions$N)), " genes, please choose another method or set 'keep max N genes' option in the initialize tab")
         break
@@ -848,8 +855,25 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     },
     contentType = "text/csv/xlsx"
   )
+  output$db_run_genelist_overlap <- shiny::downloadHandler(
+    filename = "genelist_overview.csv",
+    content = function(file) {
+      if(is.null(rv_genelists_overlap$gene_overview)) {
+        rv_genelists_overlap$gene_overview <- run_genelists_overlap(genelists = rv_genelists())
+      }
+      req(rv_genelists_overlap$gene_overview)
+
+      if (input$rb_global_output_type == ".csv") {
+        write.csv2(rv_genelists_overlap$gene_overview, file = file)
+      } else if (input$rb_global_output_type == ".xlsx") {
+        openxlsx::write.xlsx(rv_genelists_overlap$gene_overview, file = file)
+      }
+    },
+    contentType = "text/csv/xlsx"
+  )
   
-  #### render texts for verbatimTextOutputs ----
+  
+  #### render texts for (verbatim)TextOutputs ----
   output$vto_load_genelists <- shiny::renderText({paste(rv_load_genelists$text, collapse = "\n")})
   output$vto_load_genesets <- shiny::renderText({rv_genesets$text})
   output$vto_filter_genesets <- shiny::renderText({rv_genesets$text_filter})
@@ -858,6 +882,9 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   output$vto_test_enrichment <- shiny::renderText({rv_enrichment$text})
   output$vto_genelist_overlap <- shiny::renderText({rv_genelists_overlap$text})
   output$vto_icheatmap <- shiny::renderText({rv_icheatmap$text})
+  
+  output$to_upset_hovered <- renderText({input$po_genelist_overlap_hover$name})
+  output$to_upset_clicked <- renderText({input$po_genelist_overlap_click$name})
   
   output$vto_ppi_selection <- renderText({
     if (is.null(input$visNetwork_selected_nodes) || length(input$visNetwork_selected_nodes) == 0) {
@@ -911,11 +938,10 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   })
   
   #### render plots for plotOutputs ----
-  output$po_genelist_overlap <- shiny::renderPlot({
+  output$po_genelist_overlap <- upsetjs::renderUpsetjs({
     req(rv_genelists_overlap$plot)
-    print(rv_genelists_overlap$plot)
-    shiny::showNotification("NOTE: plot size is draggable from edges")
-  }, bg = "transparent")
+    rv_genelists_overlap$plot
+  })
   output$po_splitdot <- shiny::renderPlot({
     if ( ! is.null(rv_splitdot$plot)) print(ggplot2::ggplot_build(rv_splitdot$plot))
     shiny::showNotification("NOTE: plot size is draggable from edges")

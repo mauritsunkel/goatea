@@ -7,13 +7,19 @@ goatea_ui <- function() {
     dashboardSidebar(
       sidebarMenu(
         id = "menu_tabs",
-        menuItem("Initialize", tabName = "menu_initialize", icon = icon("dashboard"), selected = TRUE),
-        menuItem("(Plot) genelists overlap", tabName = "menu_run_genelist_overlap", icon = icon("dashboard")),
-        menuItem("Geneset enrichment", tabName = "menu_run_enrichment", icon = icon("dashboard")),
-        menuItem("Plot splitdot", tabName = "menu_plot_splitdot", icon = icon("dashboard")),
-        menuItem("Plot termtree", tabName = "menu_plot_termtree", icon = icon("dashboard")),
-        menuItem("Plot heatmap", tabName = "menu_plot_heatmap", icon = icon("dashboard")),
-        menuItem("Plot Protein-Protein Interactions", tabName = "menu_plot_PPI", icon = icon("dashboard"))
+        menuItem("Initialize", tabName = "global_initialize", icon = icon("dashboard"),
+                 menuSubItem("Load data", tabName = "menu_initialize", selected = TRUE),
+                 menuSubItem("Overlap genelists (plot)", tabName = "menu_run_genelist_overlap")
+        ),
+        menuItem("Enrichment analysis", tabName = "global_enrichment", icon = icon("dashboard"),
+                 menuSubItem("Geneset enrichment", tabName = "menu_run_enrichment")
+        ),
+        menuItem("Enrichment plotting", tabName = "global_plotting", icon = icon("dashboard"),
+                 menuSubItem("Splitdot", tabName = "menu_plot_splitdot"),
+                 menuSubItem("Termtree", tabName = "menu_plot_termtree"),
+                 menuSubItem("Heatmap", tabName = "menu_plot_heatmap"),
+                 menuSubItem("Protein-Protein Interactions", tabName = "menu_plot_PPI")
+        )
       )
     ),
     
@@ -21,7 +27,8 @@ goatea_ui <- function() {
       useShinyjs(), # initialize shinyjs
       tags$head(
         tags$link(rel = "stylesheet", type = "text/css", href = "www/styles.css"), # load .css stylesheet
-        tags$script(src = "www/colors.js") # load JS initializing .css colors 
+        tags$script(src = "www/colors.js"), # load JS initializing .css colors 
+        tags$script(src = "www/menu_toggle.js") # # load JS to keep all menu items visible and disable their toggling-to-close
       ),
       tabItems(
         tabItem(tabName = "menu_initialize",
@@ -62,7 +69,7 @@ goatea_ui <- function() {
                     column(width = 12, verbatimTextOutput("vto_load_genelists", placeholder = TRUE)),
                     
                     column(width = 2, disabled(actionButton("ab_set_significant_genes", "Set signif and N genes", value = TRUE, width = 115))),
-                    column(width = 2, wrap_hovertip(selectInput("si_set_significant_genes", "Set significant/N genes", choices = c("pvalue_effectsize", "pvalue", "effectsize")),
+                    column(width = 2, wrap_hovertip(selectInput("si_set_significant_genes", "Set significant genes", choices = c("pvalue_effectsize", "pvalue", "effectsize")),
                                                     hovertip = 'Set significant and N genes by pvalue and/or effectsize')),
                     column(width = 2, wrap_hovertip(numericInput("ni_set_significant_pvalue", "P-value <=", 0.05, min = 0, step = 0.01),
                                                     hovertip = 'Significant genes p-value threshold')),
@@ -129,16 +136,26 @@ goatea_ui <- function() {
                     width = NULL,
                     column(width = 3, wrap_hovertip(disabled(wrap_loader(id = "ab_run_genelist_overlap_loader", actionButton("ab_run_genelist_overlap", "Run genelists overlap"))), 
                                                     hovertip = "Run genelists overlap for 2 or more loaded genelists")),
+                    column(width = 6),
+                    column(width = 3, wrap_hovertip(downloadButton("db_run_genelist_overlap", "Download genelists overlap"), 
+                                                    hovertip = "Download genelists overlap table")),
                     column(width = 12, verbatimTextOutput("vto_genelist_overlap", placeholder = TRUE)),
-                    column(width = 3, wrap_hovertip(disabled(wrap_loader(id = "ab_plot_overlap_venn_loader", actionButton("ab_plot_overlap_venn", "Plot overlap Venn"))), 
-                                                    hovertip = "Plot genelists gene overlap in a Venn diagram")),
-                    column(width = 3, wrap_hovertip(disabled(wrap_loader(id = "ab_plot_overlap_upset_loader", actionButton("ab_plot_overlap_upset", "Plot overlap UpSet"))), 
+                    column(width = 3, wrap_hovertip(disabled(wrap_loader(id = "ab_plot_overlap_upset_loader", actionButton("ab_plot_overlap_upset", "Plot significant gene overlap"))), 
                                                     hovertip = "Plot genelists gene overlap in an UpSet plot")),
-                    column(width = 3, wrap_hovertip(checkboxInput("cbi_plot_overlap_upset_grayscale", "UpSet grayscale colors", value = TRUE), 
-                                                    hovertip = "Set UpSet plot coloring to grayscale or colorful")),
-                    column(width = 3, wrap_hovertip(hidden(checkboxInput("cbi_plot_overlap_upset_intersections", "UpSet empty intersections", value = TRUE)), 
-                                                    hovertip = "Set UpSet plot to (not) show empty intersections")),
-                    column(width = 12, shinyjqui::jqui_resizable(plotOutput("po_genelist_overlap"))),
+                    column(width = 3, wrap_hovertip(selectInput("si_plot_overlap_upset", "Overlap mode", choices = c('intersect', 'distinct', 'union')), 
+                                                    hovertip = "Mode for overlapping genes: intersect (totals of genes), distinct (unique genes), union (sums of genes)")),
+                    column(width = 12, upsetjs::upsetjsOutput("po_genelist_overlap")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_select_upset_genes", "Add Set genes"),
+                                                    hovertip = "Add genes of selected Set to the genes selection")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_reset_upset_genes", "Reset gene selection"),
+                                                    hovertip = "Reset selected genes for plotting")),
+                    column(width = 8),
+                    column(2, "Hovered Set"),
+                    column(2, textOutput("to_upset_hovered")),
+                    column(width = 8),
+                    column(2, "Clicked Set"),
+                    column(2, textOutput("to_upset_clicked")),
+                    column(width = 8),
                     column(width = 2, hidden(downloadButton("db_overlap_plot", "Save plot")))
                   )
                 ),

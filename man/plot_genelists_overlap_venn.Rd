@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_genelists_overlap.R
 \name{plot_genelists_overlap_venn}
 \alias{plot_genelists_overlap_venn}
-\title{Visualize genelists gene overlap in UpSet plot or Venn diagram}
+\title{Visualize genelists gene overlap in a Venn diagram}
 \usage{
 plot_genelists_overlap_venn(genelists)
 }
@@ -13,5 +13,5 @@ plot_genelists_overlap_venn(genelists)
 plot to render
 }
 \description{
-Visualize genelists gene overlap in UpSet plot or Venn diagram
+Visualize genelists gene overlap in a Venn diagram
 }
