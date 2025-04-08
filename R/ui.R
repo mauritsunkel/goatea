@@ -9,6 +9,7 @@ goatea_ui <- function() {
         id = "menu_tabs",
         menuItem("Initialize", tabName = "global_initialize", icon = icon("dashboard"),
                  menuSubItem("Load data", tabName = "menu_initialize", selected = TRUE),
+                 menuSubItem("Volcano genelist (plot)", tabName = "menu_run_volcano"),
                  menuSubItem("Overlap genelists (plot)", tabName = "menu_run_genelist_overlap")
         ),
         menuItem("Enrichment analysis", tabName = "global_enrichment", icon = icon("dashboard"),
@@ -120,11 +121,43 @@ goatea_ui <- function() {
                     id = "box_go_to_analysis",
                     title = "GO TO analysis",
                     width = NULL,
-                    
+                    column(width = 2, wrap_hovertip(disabled(actionButton("ab_go_to_volcano", "Go to volcano")), 
+                                                    hovertip = "Create DEG EnahandcedVolcano plot of genelist(s)")),
                     column(width = 2, wrap_hovertip(disabled(actionButton("ab_go_to_overlap", "Go to overlap")), 
                                                     hovertip = "Overlap genelists by significant genes, plot overlap and create annotated gene overview")),
                     column(width = 2, wrap_hovertip(disabled(actionButton("ab_go_to_enrichment", "Go to enrichment")), 
                                                     hovertip = "Load genelists and genesets to go to enrichment analysis"))
+                  )
+                )
+        ),
+        tabItem(tabName = "menu_run_volcano",
+                fluidRow(
+                  box(
+                    id = "box_run_volcano",
+                    title = "EnhancedVolcano",
+                    width = NULL,
+                    column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_run_volcano_loader", actionButton("ab_run_volcano", "Plot EnhancedVolcano"))),
+                                                     hovertip = "Plot EnhancedVolcano plot for selected genelist")),
+                    column(width = 2, wrap_hovertip(selectInput("si_volcano_sample", label = "Volcano genelist sample", choices = NULL),
+                                                    hovertip = "Select genelist sample to plot EnhandcedVolcano")),
+                    column(width = 12, verbatimTextOutput("vto_volcano", placeholder = TRUE)),
+                    column(width = 12, plotly::plotlyOutput("po_volcano_plot")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_select_volcano_genes", "Add selected genes"),
+                                                    hovertip = "Add selected genes of from the EnahncedVolcano plot to the genes selection")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_reset_volcano_genes", "Reset gene selection"),
+                                                    hovertip = "Reset selected genes for plotting"))
+                  )
+                ),
+                tags$hr(),
+                fluidRow(
+                  box(
+                    id = "box_go_to_enrichment_from_volcano",
+                    title = "GO TO enrichment",
+                    width = NULL,
+                    column(width = 2, wrap_hovertip(disabled(actionButton("ab_go_to_overlap_from_volcano", "Go to overlap")),
+                                                    "Go to overlap analysis")),
+                    column(width = 2, wrap_hovertip(disabled(actionButton("ab_go_to_enrichment_from_volcano", "Go to enrichment")),
+                                                    "Go to enrichment analysis, if genelists overlapped, information will be added to downstream output"))
                   )
                 )
         ),
@@ -165,6 +198,8 @@ goatea_ui <- function() {
                     id = "box_go_to_enrichment_from_overlap",
                     title = "GO TO enrichment",
                     width = NULL,
+                    column(width = 2, wrap_hovertip(disabled(actionButton("ab_go_to_volcano_from_overlap", "Go to volcano")),
+                                                    "Go to EnhancedVolcano plotting of genelist(s)")),
                     column(width = 2, wrap_hovertip(disabled(actionButton("ab_go_to_enrichment_from_overlap", "Go to enrichment")),
                                                     "Go to enrichment analysis, if genelists overlapped, information will be added to downstream output"))
                   )
@@ -317,9 +352,9 @@ goatea_ui <- function() {
                                                                 selected = "single"), hovertip = "Clustering method for terms and genes")),
                     column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_nclusters", "N clusters", 4, min = 1, step = 1), 
                                                     hovertip = "Cluster terms by gene overlap")),
-                    column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_nterms", "topN terms", NA, min = 1, step = 1), 
+                    column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_nterms", "topN terms", 50, min = 1, step = 1), 
                                                     hovertip = "Top N terms based on effectsize")),
-                    column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_ngenes", "topN genes", NA, min = 1, step = 1), 
+                    column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_ngenes", "topN genes", 100, min = 1, step = 1), 
                                                     hovertip = "Top N genes based on effectsize")),
                     column(width = 12, verbatimTextOutput("vto_icheatmap", placeholder = TRUE)),
                     column(width = 12, InteractiveComplexHeatmap::InteractiveComplexHeatmapOutput(heatmap_id = "icheatmap", layout = "1|2|3", output_ui_float = TRUE, width1 = 1400, height1 = 700, width2 = 1400, height2 = 500)),

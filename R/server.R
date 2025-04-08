@@ -47,6 +47,11 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     text = NULL,
     success = FALSE
   )
+  rv_volcano <- shiny::reactiveValues(
+    text = NULL,
+    success = FALSE,
+    plot = NULL
+  )
   rv_genelists_overlap <- shiny::reactiveValues(
     text = NULL,
     success = FALSE,
@@ -122,6 +127,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
       shinyjs::enable("ab_run_enrichment")
       shinyjs::enable("ab_go_to_enrichment_from_overlap")
       if (length(rv_genesets$filtered_genesets) > 1) {
+        shinyjs::enable("ab_go_to_volcano")
         shinyjs::enable("ab_go_to_overlap")
         shinyjs::enable("ab_run_genelist_overlap")
       }
@@ -129,6 +135,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
       shinyjs::disable("ab_go_to_enrichment")
       shinyjs::disable("ab_run_enrichment")
       shinyjs::disable("ab_go_to_enrichment_from_overlap")
+      shinyjs::disable("ab_go_to_volcano")
       shinyjs::disable("ab_go_to_overlap")
       shinyjs::disable("ab_run_genelist_overlap")
     }
@@ -394,6 +401,10 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     rv_genes$all_selected <- character(0)
     rv_genelists_overlap$text <- "Reset genes selection"
   })
+  shiny::observeEvent(input$ab_reset_volcano_genes, {
+    rv_genes$all_selected <- character(0)
+    rv_volcano$text <- "Reset genes selection"
+  })
   shiny::observeEvent(input$ab_icheatmap_select_genes, {
     req(rv_icheatmap$col_names)
     rv_genes$all_selected <- unique(c(rv_genes$all_selected, rv_icheatmap$col_names))
@@ -533,6 +544,13 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     rv_genes$all_selected <- unique(c(rv_genes$all_selected, symbols))
     rv_genelists_overlap$text <- "Genes from Set added to gene selection"
   })
+  shiny::observeEvent(input$ab_select_volcano_genes, {
+    selected <- event_data("plotly_selected", source = 'V') # selected from EnhancedVolcano plot
+    rv_genes$all_selected <- unique(c(rv_genes$all_selected, unique(selected$key)))
+    rv_volcano$text <- "Genes from EnhancedVolcano added to gene selection"
+    
+    print(rv_genes$all_selected)
+  })
   
   shiny::observeEvent(input$ab_plot_overlap_upset, {
     data <- rv_genelists()
@@ -547,6 +565,23 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     )
     shinyjs::hide("ab_plot_overlap_upset_loader")
     shinyjs::show("db_overlap_plot")
+  })
+  
+  shiny::observeEvent(input$ab_run_volcano, {
+    data <- rv_genelists()
+    shinyjs::hide("db_volcano_plot")
+    shinyjs::show("ab_run_volcano_loader")
+    rv_volcano$plot <- plot_EnhancedVolcano(
+      genelist = data[[input$si_volcano_sample]],
+      effectsize_threshold = input$ni_set_significant_effectsize,
+      pvalue_threshold = input$ni_set_significant_pvalue,
+      background_color = colors$main_bg,
+      foreground_color = colors$text,
+      interactive = TRUE
+    )
+    print(class(rv_volcano$plot))
+    shinyjs::hide("ab_run_volcano_loader")
+    shinyjs::show("db_volcano_plot")
   })
   
   shiny::observeEvent(input$ab_run_enrichment, {
@@ -610,6 +645,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   })
   
   shiny::observeEvent(input$ab_set_significant_genes, {
+    shinyjs::disable('ab_run_volcano')
     data <- rv_genelists()
 
     for (name in names(data)) {
@@ -629,6 +665,14 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     rv_set_significant_genes$success <- TRUE
     shinyjs::runjs("$('#vto_set_significant_genes').css('color', '#32CD32');")
     rv_set_significant_genes$text <- "Set genes in genelists"
+    
+    updateSelectInput(
+      session,
+      "si_volcano_sample",
+      choices = names(data),
+      selected = names(data)[1] 
+    )
+    shinyjs::enable('ab_run_volcano')
   })
   
   shiny::observeEvent(input$ab_set_names, {
@@ -681,6 +725,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   
   # Observe the button click and open file browser
   shiny::observeEvent(input$fi_load_genelists, {
+    shinyjs::disable('ab_run_volcano')
     data <- rv_genelists()
     for (i in seq_len(nrow(input$fi_load_genelists))) {
       file <- input$fi_load_genelists[i, ]
@@ -874,6 +919,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   
   
   #### render texts for (verbatim)TextOutputs ----
+  output$vto_volcano <- shiny::renderText({paste(rv_volcano$text, collapse = "\n")})
   output$vto_load_genelists <- shiny::renderText({paste(rv_load_genelists$text, collapse = "\n")})
   output$vto_load_genesets <- shiny::renderText({rv_genesets$text})
   output$vto_filter_genesets <- shiny::renderText({rv_genesets$text_filter})
@@ -938,6 +984,10 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   })
   
   #### render plots for plotOutputs ----
+  output$po_volcano_plot <- plotly::renderPlotly({
+    req(rv_volcano$plot)
+    rv_volcano$plot
+  })
   output$po_genelist_overlap <- upsetjs::renderUpsetjs({
     req(rv_genelists_overlap$plot)
     rv_genelists_overlap$plot
@@ -1067,11 +1117,14 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   })
   
   #### GO TO pathing buttons ----
-  shiny::observeEvent(c(input$ab_go_to_enrichment, input$ab_go_to_enrichment_from_overlap), ignoreInit = TRUE, {
+  shiny::observeEvent(c(input$ab_go_to_enrichment, input$ab_go_to_enrichment_from_overlap, input$ab_go_to_enrichment_from_volcano), ignoreInit = TRUE, {
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_run_enrichment")
   })
-  shiny::observeEvent(input$ab_go_to_overlap, {
+  shiny::observeEvent(c(input$ab_go_to_overlap, input$ab_go_to_overlap_from_volcano), ignoreInit = TRUE, {
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_run_genelist_overlap")
+  })
+  shiny::observeEvent(c(input$ab_go_to_volcano, input$ab_go_to_volcano_from_overlap), ignoreInit = TRUE, {
+    shinydashboard::updateTabItems(session, "menu_tabs", "menu_run_volcano")
   })
   shiny::observeEvent(c(input$ab_go_to_heatmap, input$ab_go_to_heatmap_PPI, input$ab_go_to_heatmap_splitdot, input$ab_go_to_heatmap_termtree), ignoreInit = TRUE, {
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_heatmap")
