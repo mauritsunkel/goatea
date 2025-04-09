@@ -42,8 +42,18 @@ read_validate_genelist <- function(file, map_organism = NULL, remove_non_numeric
   ok = is.data.frame(genelist) && 
     nrow(genelist) > 0 &&
     'gene' %in% colnames(genelist)
-  if ( ! 'pvalue' %in% colnames(genelist)) genelist$pvalue <- 1
-  if ( ! 'effectsize' %in% colnames(genelist)) genelist$effectsize <- 0
+  if ( ! 'pvalue' %in% colnames(genelist)) {
+    warning("no 'pvalue' column in genelist: initializing with all 'pvalue' = 1")
+    genelist$pvalue <- 1
+  }
+  if ( ! 'effectsize' %in% colnames(genelist)) {
+    warning("no 'effectsize' column in genelist: initializing with all 'effectsize' = 0")
+    genelist$effectsize <- 0
+  }
+  if ( ! 'symbol' %in% colnames(genelist)) {
+    warning("no 'symbol' column in genelist: initializing with all 'symbol' = genelist$gene")
+    genelist$symbol <- genelist$gene
+  }
   
   # 2) check column types
   if(ok) {
