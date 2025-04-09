@@ -8,6 +8,8 @@ plot_EnhancedVolcano(
   genelist,
   effectsize_threshold = 1,
   pvalue_threshold = 0.05,
+  background_color = "black",
+  foreground_color = "white",
   interactive = FALSE
 )
 }

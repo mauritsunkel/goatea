@@ -8,17 +8,20 @@ goatea_ui <- function() {
       sidebarMenu(
         id = "menu_tabs",
         menuItem("Initialize", tabName = "global_initialize", icon = icon("dashboard"),
-                 menuSubItem("Load data", tabName = "menu_initialize", selected = TRUE),
-                 menuSubItem("Volcano genelist (plot)", tabName = "menu_run_volcano"),
-                 menuSubItem("Overlap genelists (plot)", tabName = "menu_run_genelist_overlap")
+                 menuSubItem("Load data", tabName = "menu_initialize", selected = TRUE)
         ),
-        menuItem("Enrichment analysis", tabName = "global_enrichment", icon = icon("dashboard"),
-                 menuSubItem("Geneset enrichment", tabName = "menu_run_enrichment")
+        menuItem("Pre-enrichment plotting", tabName = "global_preplot", icon = icon("dashboard"),
+                 menuSubItem("Volcano", tabName = "menu_run_volcano"),
+                 menuSubItem("Overlap", tabName = "menu_run_genelist_overlap")
         ),
-        menuItem("Enrichment plotting", tabName = "global_plotting", icon = icon("dashboard"),
+        menuItem("Run enrichment", tabName = "global_enrichment", icon = icon("dashboard"),
+                 menuSubItem("Gene set enrichment", tabName = "menu_run_enrichment")
+        ),
+        menuItem("Post-enrichment plotting", tabName = "global_postplot", icon = icon("dashboard"),
                  menuSubItem("Splitdot", tabName = "menu_plot_splitdot"),
                  menuSubItem("Termtree", tabName = "menu_plot_termtree"),
-                 menuSubItem("Heatmap", tabName = "menu_plot_heatmap"),
+                 menuSubItem("Heatmap (gene-term)", tabName = "menu_plot_heatmap"),
+                 menuSubItem("Heatmap (gene-efsi)", tabName = "menu_plot_genefsi_heatmap"),
                  menuSubItem("Protein-Protein Interactions", tabName = "menu_plot_PPI")
         )
       )
@@ -84,7 +87,9 @@ goatea_ui <- function() {
                     column(width = 12, verbatimTextOutput("vto_set_significant_genes", placeholder = TRUE)),
                     column(width = 2, disabled(actionButton("ab_set_names", "Set names", value = TRUE, width = 115))),
                     column(width = 9, textInput("ti_set_names", label = NULL, placeholder = "Enter genelist names separated by a space...")),
-                    column(width = 12, verbatimTextOutput("vto_set_names", placeholder = TRUE))
+                    column(width = 12, verbatimTextOutput("vto_set_names", placeholder = TRUE)),
+                    column(width = 4, wrap_hovertip(downloadButton("db_run_genelist_overlap", "Download genelists overlap"), 
+                                                    hovertip = "Download gene overview metadata"))
                   )
                 ),
                 fluidRow(
@@ -140,12 +145,18 @@ goatea_ui <- function() {
                                                      hovertip = "Plot EnhancedVolcano plot for selected genelist")),
                     column(width = 2, wrap_hovertip(selectInput("si_volcano_sample", label = "Volcano genelist sample", choices = NULL),
                                                     hovertip = "Select genelist sample to plot EnhandcedVolcano")),
+                    column(width = 6),
+                    column(width = 2, wrap_hovertip(actionButton("ab_volcano_modal", label = icon("question"), style = "font-size: 24px;"),
+                                                    hovertip = "Click to show tab help overview")),
                     column(width = 12, verbatimTextOutput("vto_volcano", placeholder = TRUE)),
                     column(width = 12, plotly::plotlyOutput("po_volcano_plot")),
                     column(width = 2, wrap_hovertip(actionButton("ab_select_volcano_genes", "Add selected genes"),
                                                     hovertip = "Add selected genes of from the EnahncedVolcano plot to the genes selection")),
                     column(width = 2, wrap_hovertip(actionButton("ab_reset_volcano_genes", "Reset gene selection"),
-                                                    hovertip = "Reset selected genes for plotting"))
+                                                    hovertip = "Reset selected genes for plotting")),
+                    column(width = 6),
+                    column(width = 2, wrap_hovertip(downloadButton("db_volcano_download", "Export vanilla plot"),
+                                                    hovertip = "Export vanilla EnhancedVolcano plot with light colors and Enhanced features"))
                   )
                 ),
                 tags$hr(),
@@ -167,16 +178,14 @@ goatea_ui <- function() {
                     id = "box_run_genelist_overlap",
                     title = "Genelist overlap",
                     width = NULL,
-                    column(width = 3, wrap_hovertip(disabled(wrap_loader(id = "ab_run_genelist_overlap_loader", actionButton("ab_run_genelist_overlap", "Run genelists overlap"))), 
-                                                    hovertip = "Run genelists overlap for 2 or more loaded genelists")),
-                    column(width = 6),
-                    column(width = 3, wrap_hovertip(downloadButton("db_run_genelist_overlap", "Download genelists overlap"), 
-                                                    hovertip = "Download genelists overlap table")),
-                    column(width = 12, verbatimTextOutput("vto_genelist_overlap", placeholder = TRUE)),
                     column(width = 3, wrap_hovertip(disabled(wrap_loader(id = "ab_plot_overlap_upset_loader", actionButton("ab_plot_overlap_upset", "Plot significant gene overlap"))), 
                                                     hovertip = "Plot genelists gene overlap in an UpSet plot")),
                     column(width = 3, wrap_hovertip(selectInput("si_plot_overlap_upset", "Overlap mode", choices = c('intersect', 'distinct', 'union')), 
                                                     hovertip = "Mode for overlapping genes: intersect (totals of genes), distinct (unique genes), union (sums of genes)")),
+                    column(width = 3),
+                    column(width = 3, wrap_hovertip(actionButton("ab_overlap_modal", label = icon("question"), style = "font-size: 24px;"),
+                                                    hovertip = "Click to show tab help overview")),
+                    column(width = 12, verbatimTextOutput("vto_genelist_overlap", placeholder = TRUE)),
                     column(width = 12, upsetjs::upsetjsOutput("po_genelist_overlap")),
                     column(width = 2, wrap_hovertip(actionButton("ab_select_upset_genes", "Add Set genes"),
                                                     hovertip = "Add genes of selected Set to the genes selection")),
@@ -278,7 +287,8 @@ goatea_ui <- function() {
                     id = "box_go_to_plotting",
                     title = "GO TO plotting",
                     width = NULL,
-                    column(width = 2, disabled(actionButton("ab_go_to_heatmap", "GO TO heatmap"))),
+                    column(width = 2, disabled(actionButton("ab_go_to_heatmap", "GO TO gene/genesets heatmap"))),
+                    column(width = 2, disabled(actionButton("ab_go_to_genefsi_icheatmap", "GO TO gene/effectsize heatmap"))),
                     column(width = 2, disabled(actionButton("ab_go_to_PPI", "GO TO PPI"))),
                     column(width = 2, disabled(actionButton("ab_go_to_splitdot", "GO TO splitdot"))),
                     column(width = 2, disabled(actionButton("ab_go_to_termtree", "GO TO termtree"))),
@@ -295,8 +305,10 @@ goatea_ui <- function() {
                                                     hovertip = "Plot selected (and filtered) enrichment")),
                     column(width = 2, wrap_hovertip(numericInput("ni_splitdot_topN", "top N terms", NA, min = 2, step = 1), 
                                                     hovertip = "Plot terms ordered by adjusted pvalue")),
-                    column(width = 6),
+                    column(width = 4),
                     column(width = 2, hidden(downloadButton("db_splitdot", "Save plot"))),
+                    column(width = 2, wrap_hovertip(actionButton("ab_splitdot_modal", label = icon("question"), style = "font-size: 24px;"),
+                                                    hovertip = "Click to show tab help overview")),
                     column(width = 12, shinyjqui::jqui_resizable(plotOutput("po_splitdot", width = 800, height = 600)))
                   )),
                 fluidRow(
@@ -304,7 +316,8 @@ goatea_ui <- function() {
                     id = "box_go_to_plotting_splitdot",
                     title = "GO TO plotting",
                     width = NULL,
-                    column(width = 2, disabled(actionButton("ab_go_to_heatmap_splitdot", "GO TO heatmap"))),
+                    column(width = 2, disabled(actionButton("ab_go_to_genefsi_icheatmap_splitdot", "GO TO gene/effectsize heatmap"))),
+                    column(width = 2, disabled(actionButton("ab_go_to_heatmap_splitdot", "GO TO gene/genesets heatmap"))),
                     column(width = 2, disabled(actionButton("ab_go_to_termtree_splitdot", "GO TO termtree"))),
                     column(width = 2, disabled(actionButton("ab_go_to_PPI_splitdot", "GO TO PPI")))
                   )
@@ -324,8 +337,9 @@ goatea_ui <- function() {
                                                     hovertip = "Plot N summarizing words from semantic similarity/overlapping genes")),
                     column(width = 2, wrap_hovertip(numericInput("ni_termtree_Nclusters", "N clusters", 3, min = 1, step = 1), 
                                                     hovertip = "Plot N clusters of terms by semantic similarity/overlapping genes")),
-                    column(width = 2),
                     column(width = 2, hidden(downloadButton("db_termtree", "Save plot"))),
+                    column(width = 2, wrap_hovertip(actionButton("ab_termtree_modal", label = icon("question"), style = "font-size: 24px;"),
+                                                    hovertip = "Click to show tab help overview")),
                     column(width = 12, shinyjqui::jqui_resizable(plotOutput("po_termtree", width = 800, height = 600)))
                   )),
                 fluidRow(
@@ -333,7 +347,8 @@ goatea_ui <- function() {
                     id = "box_go_to_plotting_termtree",
                     title = "GO TO plotting",
                     width = NULL,
-                    column(width = 2, disabled(actionButton("ab_go_to_heatmap_termtree", "GO TO heatmap"))),
+                    column(width = 2, disabled(actionButton("ab_go_to_genefsi_icheatmap_termtree", "GO TO gene/effectsize heatmap"))),
+                    column(width = 2, disabled(actionButton("ab_go_to_heatmap_termtree", "GO TO gene/genesets heatmap"))),
                     column(width = 2, disabled(actionButton("ab_go_to_splitdot_termtree", "GO TO splitdot"))),
                     column(width = 2, disabled(actionButton("ab_go_to_PPI_termtree", "GO TO PPI"))),
                   )
@@ -343,7 +358,7 @@ goatea_ui <- function() {
                 fluidRow(
                   box(
                     id = "box_plot_heatmap",
-                    title = "Plot Interactive Heatmap",
+                    title = "Plot Interactive Heatmap of genes vs gene sets",
                     width = NULL,
                     column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_icheatmap_plot_loader", actionButton("ab_icheatmap_plot", "Plot heatmap"))), 
                                                     hovertip = "Plot selected (and filtered) enrichment")),
@@ -356,6 +371,8 @@ goatea_ui <- function() {
                                                     hovertip = "Top N terms based on effectsize")),
                     column(width = 2, wrap_hovertip(numericInput("ni_icheatmap_ngenes", "topN genes", 100, min = 1, step = 1), 
                                                     hovertip = "Top N genes based on effectsize")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_heatmap_modal", label = icon("question"), style = "font-size: 24px;"),
+                                                    hovertip = "Click to show tab help overview")),
                     column(width = 12, verbatimTextOutput("vto_icheatmap", placeholder = TRUE)),
                     column(width = 12, InteractiveComplexHeatmap::InteractiveComplexHeatmapOutput(heatmap_id = "icheatmap", layout = "1|2|3", output_ui_float = TRUE, width1 = 1400, height1 = 700, width2 = 1400, height2 = 500)),
                     column(width = 2, wrap_hovertip(actionButton("ab_icheatmap_select_genes", label = "Add visible genes"),
@@ -372,9 +389,43 @@ goatea_ui <- function() {
                     id = "box_go_to_plotting_icheatmap",
                     title = "GO TO plotting",
                     width = NULL,
+                    column(width = 2, actionButton("ab_go_to_genefsi_icheatmap_icheatmap", "GO TO gene/effectsize heatmap")),
                     column(width = 2, actionButton("ab_go_to_PPI_icheatmap", "GO TO PPI")),
                     column(width = 2, actionButton("ab_go_to_splitdot_icheatmap", "GO TO splitdot")),
                     column(width = 2, actionButton("ab_go_to_termtree_icheatmap", "GO TO termtree")),
+                  )
+                )
+        ),
+        tabItem(tabName = "menu_plot_genefsi_heatmap",
+                fluidRow(
+                  box(
+                    id = "box_plot_genefsi_heatmap",
+                    title = "Plot Interactive Heatmap of genes vs effect sizes",
+                    width = NULL,
+                    column(width = 2, wrap_hovertip(wrap_loader(id = "ab_genefsi_icheatmap_plot_loader", actionButton("ab_genefsi_icheatmap_plot", "Plot heatmap")), 
+                                                    hovertip = "Plot selected genes vs effect sizes of all loaded genelists")),
+                    column(width = 2, wrap_hovertip(numericInput("ni_genefsi_icheatmap_ngenes", "Plot N genes", 50, min = 1, step = 1), 
+                                                    hovertip = "Maximally plot N genes from selection")),
+                    column(width = 2, wrap_hovertip(checkboxInput("ci_genefsi_icheatmap_dendrogram_cols", "Cluster dendrogram columns"),
+                                                    hovertip = "Check to cluster and show dendrogram on heatmap columns")),
+                    column(width = 2, wrap_hovertip(checkboxInput("ci_genefsi_icheatmap_dendrogram_rows", "Cluster dendrogram rows"),
+                                                    hovertip = "Check to cluster and show dendrogram on heatmap rows")),
+                    column(width = 2, wrap_hovertip(textAreaInput("tai_genefsi_add_genes", label = "Additional genes", placeholder = "Add genes (to selection)..."),
+                                                    hovertip = "Add gene symbols separated by enter (\n) to take into account additionally next to earlier selected genes.")),
+                    column(width = 2, wrap_hovertip(actionButton("ab_genefsi_heatmap_modal", label = icon("question"), style = "font-size: 24px;"),
+                                                    hovertip = "Click to show tab help overview")),
+                    column(width = 12, verbatimTextOutput("vto_genefsi_icheatmap", placeholder = TRUE)),
+                    column(width = 12, InteractiveComplexHeatmap::InteractiveComplexHeatmapOutput(heatmap_id = "genefsi_icheatmap", layout = "1|2|3", output_ui_float = TRUE, width1 = 1400, height1 = 700, width2 = 1400, height2 = 500)),
+                  )),
+                fluidRow(
+                  box(
+                    id = "box_go_to_plotting_genefsi_icheatmap",
+                    title = "GO TO plotting",
+                    width = NULL,
+                    column(width = 2, actionButton("ab_go_to_PPI_genefsi_icheatmap", "GO TO PPI")),
+                    column(width = 2, actionButton("ab_go_to_heatmap_genefsi_icheatmap", "GO TO PPI")),
+                    column(width = 2, actionButton("ab_go_to_splitdot_genefsi_icheatmap", "GO TO splitdot")),
+                    column(width = 2, actionButton("ab_go_to_termtree_genefsi_icheatmap", "GO TO termtree")),
                   )
                 )
         ),
@@ -399,7 +450,7 @@ goatea_ui <- function() {
                                                     hovertip = "Add proteins/gene symbols separated by enter (\n) to take into account additionally next to earlier selected genes.")),
                     column(width = 2, wrap_hovertip(actionButton("ab_ppi_reset_protgenes", label = "Reset proteins/genes selection"),
                                                     hovertip = "Reset proteins/gene symbols selection")),
-                    column(width = 2, wrap_hovertip(actionButton("ab_ppi_help", label = icon("question"), style = "font-size: 24px;"),
+                    column(width = 2, wrap_hovertip(actionButton("ab_ppi_modal", label = icon("question"), style = "font-size: 24px;"),
                                                     hovertip = "Click to show tab help overview")),
                     column(width = 12, verbatimTextOutput("vto_ppi_selection")),
                     column(width = 12, visNetwork::visNetworkOutput("vno_ppi_visnetwork", height = "600px")),
@@ -446,7 +497,8 @@ goatea_ui <- function() {
                     id = "box_go_to_plotting_PPI",
                     title = "GO TO plotting",
                     width = NULL,
-                    column(width = 2, actionButton("ab_go_to_heatmap_PPI", "GO TO heatmap")),
+                    column(width = 2, actionButton("ab_go_to_genefsi_icheatmap_PPI", "GO TO gene/effeectsize heatmap")),
+                    column(width = 2, actionButton("ab_go_to_heatmap_PPI", "GO TO gene/genesets heatmap")),
                     column(width = 2, actionButton("ab_go_to_splitdot_PPI", "GO TO splitdot")),
                     column(width = 2, actionButton("ab_go_to_termtree_PPI", "GO TO termtree")),
                   )

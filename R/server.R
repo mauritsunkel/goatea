@@ -92,6 +92,15 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     row_names = NULL,
     col_names = NULL
   )
+  rv_genefsi_icheatmap <- shiny::reactiveValues(
+    heatmap = NULL,
+    success = FALSE,
+    text = NULL,
+    row_i = NULL,
+    col_i = NULL,
+    row_names = NULL,
+    col_names = NULL
+  )
   rv_ppi <- reactiveValues(
     nodes = NULL,
     edges = NULL,
@@ -152,10 +161,11 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   shiny::observe({
     button_ids <- c(
       "ab_filter_enrichment", "ab_go_to_PPI", "ab_go_to_PPI_icheatmap", "ab_go_to_PPI_splitdot", "ab_go_to_PPI_termtree",
-      "ab_go_to_heatmap", "ab_go_to_heatmap_PPI", "ab_go_to_heatmap_splitdot", "ab_go_to_heatmap_termtree",
+      "ab_go_to_heatmap", "ab_go_to_genefsi_icheatmap", "ab_go_to_heatmap_PPI", "ab_go_to_heatmap_splitdot", "ab_go_to_heatmap_termtree",
       "ab_go_to_splitdot", "ab_go_to_splitdot_PPI", "ab_go_to_splitdot_icheatmap", "ab_go_to_splitdot_termtree",
       "ab_go_to_termtree", "ab_go_to_termtree_PPI", "ab_go_to_termtree_icheatmap", "ab_go_to_termtree_splitdot",
-      "ab_icheatmap_plot", "ab_splitdot_plot", "ab_termtree_plot"
+      "ab_icheatmap_plot", "ab_splitdot_plot", "ab_termtree_plot", "ab_go_to_genefsi_icheatmap_splitdot", "ab_go_to_genefsi_icheatmap_termtree",
+      "ab_go_to_genefsi_icheatmap_icheatmap", "ab_go_to_genefsi_icheatmap_PPI"
     )
     if (rv_enrichment$success) {
       purrr::walk(button_ids, shinyjs::enable)
@@ -324,7 +334,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
       left_join(rv_ppi_subgraph$nodes %>% select(id, from_symbol = label), by = c("from" = "id")) %>%
       left_join(rv_ppi_subgraph$nodes %>% select(id, to_symbol = label), by = c("to" = "id")) %>%
       select(from_symbol, to_symbol, combined_score, from, to)
-    g <- get_ppigraph(ppi_data)
+    g <- get_ppigraph(ppi_data, vertex_cluster = vertex_attr(g, 'cluster'))
     genes_overview <- NULL
     if ( ! is.null(rv_genelists_overlap$gene_overview)) genes_overview <- rv_genelists_overlap$gene_overview
     vis <- get_visNetwork(g, genes_overview = genes_overview, sample_name = input$si_ppi_sample)
@@ -380,7 +390,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   })
   icheatmap_action <- function(df, output) { # on click or brush in InteractiveComplexHeatmap
     if(is.null(df)) {
-      shiny::showNotification("Selected nothing, keep last selection")
+      shiny::showNotification("Highlighted nothing, keep last highlighted")
       rv_icheatmap$row_i <- integer(0)
       rv_icheatmap$col_i <- integer(0)
       rv_icheatmap$row_names <- character(0)
@@ -390,9 +400,34 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
       rv_icheatmap$col_i <- unique(unlist(df$column_index))
       rv_icheatmap$row_names <- unique(unlist(df$row_label))
       rv_icheatmap$col_names <- unique(unlist(df$column_label))
-      rv_icheatmap$text <- paste0("PPI selection: if genes by terms: ", paste(rv_icheatmap$row_names, collapse = ", "), ". If genes: ", paste(rv_icheatmap$col_names, collapse = ", "))
+      rv_icheatmap$text <- paste0("Genes highlighted: if genes by terms: ", paste(rv_icheatmap$row_names, collapse = ", "), ". If genes: ", paste(rv_icheatmap$col_names, collapse = ", "))
     }
   }
+  shiny::observeEvent(input$ab_genefsi_icheatmap_plot, {
+    rv_ppi$p <- unique(c(rv_genes$all_selected, process_string_input(input$tai_genefsi_add_genes)))
+    req(rv_ppi$p) # cannot be empty: character(0)
+
+    shinyjs::show("ab_genefsi_icheatmap_plot_loader")
+    shinyjs::runjs("$('#vto_genefsi_icheatmap').css('color', '#ff0000');")
+    
+    data_genelists <- rv_genelists()
+    
+    ch <- plot_gene_effectsize_ComplexHeatmap(
+      genes =  rv_ppi$p, 
+      genes_overview = rv_genelists_overlap$gene_overview, 
+      rows_dendrogram = input$ci_genefsi_icheatmap_dendrogram_rows, 
+      cols_dendrogram = input$ci_genefsi_icheatmap_dendrogram_cols, 
+      plot_n_genes = input$ni_genefsi_icheatmap_ngenes
+    )
+    rv_genefsi_icheatmap$heatmap <- ch
+
+    InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, output, session, ht_list = ch, heatmap_id = "genefsi_icheatmap", click_action = genefsi_icheatmap_action, brush_action = genefsi_icheatmap_action)
+
+    rv_genefsi_icheatmap$success <- TRUE 
+    shinyjs::runjs("$('#vto_genefsi_icheatmap').css('color', '#32CD32');")
+    rv_genefsi_icheatmap$text <- "Successfully plotted InteractiveComplexHeatmap: click or drag cells for info and to select genes"
+    shinyjs::hide("ab_genefsi_icheatmap_plot_loader")
+  })
   
   shiny::observeEvent(c(input$ab_ppi_reset_protgenes, input$ab_icheatmap_reset_protgenes), {
     rv_genes$all_selected <- character(0)
@@ -513,25 +548,6 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
       })
       
     })
-  
-  shiny::observeEvent(input$ab_run_genelist_overlap, {
-    rv_genelists_overlap$success <- FALSE
-    shinyjs::runjs("$('#vto_genelist_overlap').css('color', '#ff0000');")
-    shinyjs::show("ab_run_genelist_overlap_loader")
-    ## run genelists overlap with UI parameters and global settings
-    genelist_overlap_result <- run_genelists_overlap(genelists = rv_genelists())
-    
-    shinyjs::hide("ab_run_genelist_overlap_loader")
-    if (is.character(genelist_overlap_result)) {
-      rv_genelists_overlap$text <- genelist_overlap_result
-    } else {
-      rv_genelists_overlap$gene_overview <- genelist_overlap_result
-    }
-    req( ! is.character(genelist_overlap_result))
-    rv_genelists_overlap$success <- TRUE
-    rv_genelists_overlap$text <- "Overlapped genelists, created gene overview, information will be added when running enrichment"
-    shinyjs::runjs("$('#vto_genelist_overlap').css('color', '#32CD32');")
-  })
   
   shiny::observeEvent(input$ab_select_upset_genes, {
     ids <- unlist(input$po_genelist_overlap_click$elems)
@@ -664,7 +680,14 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     rv_genelists(data)
     rv_set_significant_genes$success <- TRUE
     shinyjs::runjs("$('#vto_set_significant_genes').css('color', '#32CD32');")
-    rv_set_significant_genes$text <- "Set genes in genelists"
+    
+    ## run genelists overlap with UI parameters and global settings
+    rv_genelists_overlap$success <- FALSE
+    genelist_overlap_result <- run_genelists_overlap(genelists = rv_genelists())
+    rv_genelists_overlap$gene_overview <- genelist_overlap_result
+    rv_genelists_overlap$success <- TRUE
+    
+    rv_set_significant_genes$text <- "Set genes in genelists & created gene overview metadata used for some plotting"
     
     updateSelectInput(
       session,
@@ -775,8 +798,67 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   })
   
   #### show modal dialogues ----
+  observeEvent(input$ab_volcano_modal, {
+    showModal(modalDialog(
+      easyClose = TRUE, footer = NULL,
+      title = "EnhancedVolcano plot",
+      tags$h3("Plotting"),
+      tags$p("Select the sample to plot, then click the top left button to plot, loading might take a bit longer than the loader icon shows."),
+      tags$p("The user is recommended to deselect points that are not of interest, to speed up the interactivity."),
+      tags$p("Hovering the mouse over the points shows their metadata"),
+      tags$p("plotly provides interactive tools to zoom, pan, export and select elements of the plot in the top right corner of the plot."),
+      tags$p("Use the plotly box/lasso selection tool to highlight genes, select them using the 'add gene to selection' button, a message will be displayed, these genes are now usable in plotting the PPI."),
+    ))
+  })
+  observeEvent(input$ab_overlap_modal, {
+    showModal(modalDialog(
+      easyClose = TRUE, footer = NULL,
+      title = "Genelist overlapping and plotting",
+      tags$h3("Overlapping"),
+      tags$p("Click 'run genelists overlap' to create a gene overview in the background."),
+      tags$p("The gene overview can be downloaded by clicking the 'download genelists overlap' button."),
+      tags$p("The gene overview is used to add metadata information about overlapping significant genes to the heatmap and gene annotations which can be visualized with the Protein Protein Interactions."),
+      tags$hr(),
+      tags$h3("Plotting"),
+      tags$p("Set the overlap mode: 'intersect' to show overlapping genes in each intersection, 'distinct' (as in Venn diagrams) to show unique genes and 'union' for all genes"),
+      tags$p("Click 'plot significant gene overlap' to view the interactive UpSetjs plot."),
+      tags$p("Hover and click a set to select it, then press 'add set genes' to add the genes of the selected set to the total gene selection, to be used in plotting."),
+      tags$p("The total gene selection can be reset by clicking the 'reset gene selection' button."),
+      ))
+  })
+  observeEvent(input$ab_splitdot_modal, {
+    showModal(modalDialog(
+      easyClose = TRUE, footer = NULL,
+      title = "Splitdot plot - post enrichment",
+      tags$h3("Plotting"),
+      tags$p("Put a number of terms and click to plot, when the plot is visible you can download by clicking the save button."),
+    ))
+  })
+  observeEvent(input$ab_termtree_modal, {
+    showModal(modalDialog(
+      easyClose = TRUE, footer = NULL,
+      title = "Termtree plot - post enrichment",
+      tags$h3("Plotting"),
+      tags$p("Put a number of terms/words/clusters and click to plot, when the plot is visible you can download by clicking the save button."),
+    ))
+  })
+  observeEvent(input$ab_heatmap_modal, {
+    showModal(modalDialog(
+      easyClose = TRUE, footer = NULL,
+      title = "Interactive heatmap - post enrichment",
+      tags$h3("Plotting"),
+      tags$p("Set the clustering method, number of clusters, topN terms/genes and click 'plot heatmap' to plot."),
+      tags$p("A box can be drawn with the mouse in order to view a subset of the heatmap, which will be generated in a subgraph below the original heatmap."),
+      tags$p("From the selection, genes can be selected."),
+      tags$p("Click 'add visible genes' to add all selected genes shown on the top of the subheatmap to the genes selection."),
+      tags$p("Click 'add all genes of visible terms' to add all genes of the terms shown on the subheatmap to the genes selection, even the ones that are in the full set on the background."),
+      tags$p("Click 'add visible genes of vible terms' to add the shown genes that are within shown terms of the subheatmap to the total gene selection."),
+      tags$p("Click 'reset selected genes' to reset the gene selection."),
+    ))
+  })
+  
   ## explain page and function as graph legend
-  observeEvent(input$ab_ppi_help, {
+  observeEvent(input$ab_ppi_modal, {
     showModal(modalDialog(
       easyClose = TRUE, footer = NULL,
       title = "PPIgraph: Protein-Protein Interaction igraph",
@@ -838,6 +920,21 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   output$db_splitdot <- shiny::downloadHandler(
     filename = "SplitDotPlot.png",
     content = function(file) ggplot2::ggsave(file, rv_splitdot$plot, bg = "white", width = 30, height = 20, units = "cm"),
+    contentType = "png/image"
+  )
+  output$db_volcano_download <- downloadHandler(
+    filename = "volcano_plot.png",
+    content = function(file) {
+      req(rv_volcano$plot)
+      data <- rv_genelists()
+      p <- plot_EnhancedVolcano(
+        genelist = data[[input$si_volcano_sample]],
+        effectsize_threshold = input$ni_set_significant_effectsize,
+        pvalue_threshold = input$ni_set_significant_pvalue,
+        interactive = FALSE
+      )
+      ggplot2::ggsave(plot = p, filename = file)
+    },
     contentType = "png/image"
   )
   output$db_overlap_plot <- downloadHandler(
@@ -1126,16 +1223,19 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   shiny::observeEvent(c(input$ab_go_to_volcano, input$ab_go_to_volcano_from_overlap), ignoreInit = TRUE, {
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_run_volcano")
   })
-  shiny::observeEvent(c(input$ab_go_to_heatmap, input$ab_go_to_heatmap_PPI, input$ab_go_to_heatmap_splitdot, input$ab_go_to_heatmap_termtree), ignoreInit = TRUE, {
+  shiny::observeEvent(c(input$ab_go_to_heatmap, input$ab_go_to_heatmap_PPI, input$ab_go_to_heatmap_splitdot, input$ab_go_to_heatmap_termtree, input$ab_go_to_heatmap_genefsi_icheatmap), ignoreInit = TRUE, {
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_heatmap")
   })
-  shiny::observeEvent(c(input$ab_go_to_PPI, input$ab_go_to_PPI_icheatmap, input$ab_go_to_PPI_splitdot, input$ab_go_to_PPI_termtree), ignoreInit = TRUE, {
+  shiny::observeEvent(c(input$ab_go_to_PPI, input$ab_go_to_PPI_icheatmap, input$ab_go_to_PPI_splitdot, input$ab_go_to_PPI_termtree, input$ab_go_to_PPI_genefsi_icheatmap), ignoreInit = TRUE, {
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_PPI")
   })
-  shiny::observeEvent(c(input$ab_go_to_splitdot, input$ab_go_to_splitdot_PPI, input$ab_go_to_splitdot_icheatmap, input$ab_go_to_splitdot_termtree), ignoreInit = TRUE, {
+  shiny::observeEvent(c(input$ab_go_to_splitdot, input$ab_go_to_splitdot_PPI, input$ab_go_to_splitdot_icheatmap, input$ab_go_to_splitdot_termtree, input$ab_go_to_splitdot_genefsi_icheatmap), ignoreInit = TRUE, {
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_splitdot")
   })
-  shiny::observeEvent(c(input$ab_go_to_termtree, input$ab_go_to_termtree_PPI, input$ab_go_to_termtree_icheatmap, input$ab_go_to_termtree_splitdot), ignoreInit = TRUE, {
+  shiny::observeEvent(c(input$ab_go_to_termtree, input$ab_go_to_termtree_PPI, input$ab_go_to_termtree_icheatmap, input$ab_go_to_termtree_splitdot, input$ab_go_to_termtree_genefsi_icheatmap), ignoreInit = TRUE, {
+    shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_termtree")
+  })
+  shiny::observeEvent(c(input$ab_go_to_genefsi_icheatmap, input$ab_go_to_genefsi_icheatmap_PPI, input$ab_go_to_genefsi_icheatmap_icheatmap, input$ab_go_to_genefsi_icheatmap_splitdot, input$ab_go_to_genefsi_icheatmap_termtree), ignoreInit = TRUE, {
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_termtree")
   })
 }

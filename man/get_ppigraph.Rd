@@ -4,7 +4,7 @@
 \alias{get_ppigraph}
 \title{Get PPI igraph}
 \usage{
-get_ppigraph(ppi_data)
+get_ppigraph(ppi_data, vertex_cluster = NULL)
 }
 \arguments{
 \item{ppi_data}{dataframe, PPI by aliases/ids in columns 'from' and 'to'}
