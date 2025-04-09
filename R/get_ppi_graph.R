@@ -44,7 +44,7 @@
 #' @examples
 #' ppi <- get_string_ppi(c("TP53", "EGFR", "BRCA1", "MTOR", "MYC"))
 #' get_ppigraph(ppi)
-get_ppigraph <- function(ppi_data) {
+get_ppigraph <- function(ppi_data, vertex_cluster = NULL) {
   ## input validation
   stopifnot(
     is.data.frame(ppi_data),
@@ -57,7 +57,12 @@ get_ppigraph <- function(ppi_data) {
   ## graph clustering
   cl <- cluster_leiden(g, objective_function = 'modularity', n_iterations = -1) # run until convergence
   ## set vertices metrics
-  g <- set_vertex_attr(g, "cluster", value = membership(cl)) # community ID per vertex
+  # community ID per vertex
+  if (is.null(cluster)) {
+    g <- set_vertex_attr(g, "cluster", value = membership(cl)) 
+  } else {
+    g <- set_vertex_attr(g, "cluster", value = vertex_cluster)
+  }
   g <- set_vertex_attr(g, "id", value = unique(c(ppi_data$from, ppi_data$to))) # unique node IDs
   g <- set_vertex_attr(g, "degree", value = degree(g)) # node edges amount 
   g <- set_vertex_attr(g, "betweenness", value = betweenness(g, directed = FALSE)) # node centrality: how often shortest path between all node pairs cross
