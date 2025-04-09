@@ -23,35 +23,39 @@ plot_EnhancedVolcano <- function(genelist, effectsize_threshold = 1, pvalue_thre
     lab = genelist$symbol,
     x = "effectsize",
     y = "pvalue",
+    caption = paste0("N genes: ", nrow(genelist)),
     pCutoff = pvalue_threshold,
     FCcutoff = effectsize_threshold,
     colAlpha = .9,
     labSize = 3,
     legendPosition = "right",
     legendIconSize = 4.5,
-    gridlines.major = TRUE,
-    gridlines.minor = TRUE,
-    ## these DO NOT seem to work with ggplotly()
-    # borderWidth = 1.5,
-    # boxedLabels = TRUE,
-    # labFace = "bold",
-    # drawConnectors = TRUE,
-    # arrowheads = FALSE,
-    # widthConnectors = 0.25
+    legendLabels = c('NS', 'FC', 'P', 'FC & P'),
+    xlab = 'effectsize (FC)',
+    ylab = '-log10(pvalue) (P)',
+    gridlines.major = ifelse(interactive, TRUE, FALSE),
+    gridlines.minor = ifelse(interactive, TRUE, FALSE),
+    borderWidth = 1.5,
+    boxedLabels = TRUE,
+    labFace = "bold",
+    drawConnectors = TRUE,
+    arrowheads = FALSE,
+    widthConnectors = 0.25
   ) + ggplot2::coord_cartesian(xlim=c(x_axis_min, x_axis_max)) +
     ggplot2::scale_x_continuous(
       breaks=seq(x_axis_min, x_axis_max, 1))
   
-  for (i in seq_along(p$layers)) {
-    if (inherits(p$layers[[i]]$geom, "GeomHline")) {
-      p$layers[[i]]$aes_params$colour <- foreground_color
-    }
-    if (inherits(p$layers[[i]]$geom, "GeomText")) {
-      p$layers[[i]]$aes_params$colour <- foreground_color
-    }
-  }
-  
   if (interactive) {
+    ## assume Shiny GOATEA environment if interactive
+    for (i in seq_along(p$layers)) {
+      if (inherits(p$layers[[i]]$geom, "GeomHline")) {
+        p$layers[[i]]$aes_params$colour <- foreground_color
+      }
+      if (inherits(p$layers[[i]]$geom, "GeomText")) {
+        p$layers[[i]]$aes_params$colour <- foreground_color
+      }
+    }
+    
     p <- plotly::ggplotly(
       p + ggplot2::aes(key = symbol, x = effectsize, y = -log10(pvalue)) +
         labs(
