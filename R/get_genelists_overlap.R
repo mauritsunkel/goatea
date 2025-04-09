@@ -6,15 +6,11 @@
 #'
 #' @return tibble/dataframe with (annotated) genes and p-value/effectsize info for each genelist, concluding with overlapping genelists by significant genes
 run_genelists_overlap <- function(genelists) {
-  if ( ! all(sapply(genelists, function(x) "symbol" %in% colnames(x)))) {
-    return("ERROR: column 'symbol' missing in genelists")
-  }
-  
   ## initiate df with unique gene symbols (and annotations)
   long_df <- do.call(rbind, genelists)
   df <- tibble::tibble(gene = Reduce(union, lapply(genelists, function(x) x$gene)))
   df$symbol <- long_df$symbol[match(df$gene, long_df$gene)] # match first hits, multiple possible if symbol to gene mapping happened
-  # df$symbol <- match(df$gene, Reduce(union, lapply(genelists, function(x) x$symbol)))
+  if ('gene_annotation' %in% colnames(long_df)) df$gene_annotation <- long_df$gene_annotation[match(df$gene, long_df$gene)]
 
   ## add expression and significance values of each genelist
   for (name in names(genelists)) {
