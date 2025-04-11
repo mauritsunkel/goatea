@@ -36,12 +36,13 @@ get_visNetwork <- function(ppigraph, genes_overview = NULL, sample_name = NULL) 
   node_title <- ""
   if ('name' %in% node_names) node_title <- paste0(node_title, paste0("Protein alias: ", V(ppigraph)$name, "<br>"))
   if ( ! is.null(genes_overview)) {
-    if ('gene_annotation' %in% colnames(genes_overview)) node_title <- paste0(node_title, paste0("Protein annotation: ", genes_overview$gene_annotation[match(V(ppigraph)$name, genes_overview$symbol)], "<br>"))
-    if ('genelist_overlap' %in% colnames(genes_overview)) node_title <- paste0(node_title, paste0("Genelist overlap: ", genes_overview$genelist_overlap[match(V(ppigraph)$name, genes_overview$symbol)], "<br>"))
+    if ('gene_annotation' %in% colnames(genes_overview)) node_title <- paste0(node_title, paste0("Protein annotation: ", genes_overview$gene_annotation[match(V(ppigraph)$name, toupper(genes_overview$symbol))], "<br>"))
+    if ('genelist_overlap' %in% colnames(genes_overview)) node_title <- paste0(node_title, paste0("Genelist overlap: ", genes_overview$genelist_overlap[match(V(ppigraph)$name, toupper(genes_overview$symbol))], "<br>"))
     if ( ! is.null(sample_name)) {
-      if (paste0(sample_name, "_efsi") %in% colnames(genes_overview)) node_title <- paste0(node_title, paste0('Effectsize: ', round(genes_overview[[paste0(sample_name, "_efsi")]][match(V(ppigraph)$name, genes_overview$symbol)], digits = 3), "<br>"))
+      if (paste0(sample_name, "_efsi") %in% colnames(genes_overview)) node_title <- paste0(node_title, paste0('Effectsize: ', round(genes_overview[[paste0(sample_name, "_efsi")]][match(V(ppigraph)$name, toupper(genes_overview$symbol))], digits = 3), "<br>"))
     }
   }
+
   if ('cluster' %in% node_names) node_title <- paste0(node_title, paste0("Cluster: ", V(ppigraph)$cluster, "<br>"))
   if ('degree' %in% node_names) node_title <- paste0(node_title, paste0("Degree: ", V(ppigraph)$degree, "<br>"))
   if ('knn' %in% node_names) node_title <- paste0(node_title, paste0("KNN: ", round(V(ppigraph)$knn, digits = 3), "<br>"))
@@ -72,8 +73,9 @@ get_visNetwork <- function(ppigraph, genes_overview = NULL, sample_name = NULL) 
         min(genes_overview[[paste0(sample_name, '_efsi')]], na.rm = TRUE), 
         0, 
         max(genes_overview[[paste0(sample_name, '_efsi')]], na.rm = TRUE)))
-    
-    nodes <- nodes %>% left_join(genes_overview, c('label' = 'symbol'))
+
+    nodes <- nodes %>% left_join(mutate(genes_overview, symbol_upper = toupper(symbol)), by = c('label' = 'symbol_upper'))
+
     ## map values to colors
     if ( ! is.null(sample_name)) {
       color_values <- replace(nodes[[paste0(sample_name, "_efsi")]], is.na(nodes[[paste0(sample_name, "_efsi")]]), 0)
