@@ -75,14 +75,18 @@ plot_ComplexHeatmap <- function(
   m_data <- df %>%
     select(name, symbol) %>%
     tidyr::unnest(symbol)
+  ncount_genes <- table(m_data$symbol)
   unique_names <- unique(m_data$name)
   unique_genes <- unique(m_data$symbol)
 
-  ## plot only top n genes
+  ## plot only top n genes - based on genes showing in most terms and then based on effectsize
   if ( ! is.na(n_top_genes)) {
-    matched_genelist <- genelist[match(unique_genes, genelist$symbol),]
-    if (n_top_genes > length(unique_genes)) n_top_genes <- length(unique_genes)
-    unique_genes <- matched_genelist$symbol[order(abs(matched_genelist$effectsize), decreasing = TRUE)][1:n_top_genes]
+    # order by count first, then by abs(effectsize)
+    matched_genelist <- genelist[match(unique_genes, genelist$symbol), ]
+    matched_genelist$ncount <- ncount_genes[matched_genelist$symbol]
+    matched_genelist <- matched_genelist[order(-matched_genelist$ncount, -abs(matched_genelist$effectsize)), ]
+    if (n_top_genes > nrow(matched_genelist)) n_top_genes <- nrow(matched_genelist)
+    unique_genes <- matched_genelist$symbol[1:n_top_genes]
     m_data <- m_data[m_data$symbol %in% unique_genes, ]
   }
   
