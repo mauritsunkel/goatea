@@ -10,7 +10,7 @@
 #'
 #' @examples
 #' # https://upset.js.org/integrations/r/articles/combinationModes.html#distinct-intersection-mode
-plot_genelists_overlap_upsetjs <- function(genelists, mode = 'intersect', interactive = FALSE, main.color = 'white', highlight.color = 'green') {
+plot_genelists_overlap_upsetjs <- function(genelists, mode = 'distinct', interactive = FALSE, main.color = 'white', highlight.color = 'green') {
   col <- c("#ff00ff", "olivedrab", "#7f0000", "#4b0082", "#ff0000",
            "orange", "#ffff00", "#00ff00", "#00fa9a", "#00ffff", "#0000ff",
            "darkslategray", "#6495ed", "#ffe4b5", "#ff69b4")
@@ -28,7 +28,7 @@ plot_genelists_overlap_upsetjs <- function(genelists, mode = 'intersect', intera
     upset <- upsetjs::upsetjs()
   }
   
-  upset <- upset %>% chartTheme('dark', color = main.color, text.color = main.color, selection.color = highlight.color)
+  upset <- upset %>% upsetjs::chartTheme('dark', color = main.color, text.color = main.color, selection.color = highlight.color)
 
   if (interactive) upset <- upset %>% upsetjs::interactiveChart()
   
