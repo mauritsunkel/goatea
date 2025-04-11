@@ -133,11 +133,11 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   shiny::observe({
     if (rv_load_genelists$success == TRUE & rv_genesets$success_filter == TRUE) {
       shinyjs::enable("ab_go_to_enrichment")
+      shinyjs::enable("ab_go_to_volcano")
+      shinyjs::enable("ab_go_to_overlap")
       shinyjs::enable("ab_run_enrichment")
       shinyjs::enable("ab_go_to_enrichment_from_overlap")
       if (length(rv_genesets$filtered_genesets) > 1) {
-        shinyjs::enable("ab_go_to_volcano")
-        shinyjs::enable("ab_go_to_overlap")
         shinyjs::enable("ab_run_genelist_overlap")
       }
     } else {
@@ -203,6 +203,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     nodes_equal <- intersect(names(rv_ppi$nodes), c('cluster', 'degree', 'betweenness', 'closenss', 'knn', 'diversity', 'genelist_overlap', 'signif', 'updown'))
     updateSelectInput(session, "si_ppi_color_nodes", choices = c(nodes_equal, nodes_sample))
     updateSelectInput(session, "si_ppi_color_edges", choices = setdiff(names(rv_ppi$edges), c('id', "from", "to", "width", "title")))
+    updateSelectInput(session, "si_ppi_highlight_cluster", choices = unique(rv_ppi$nodes$cluster))
     
     ## set subgraph values
     updateSelectInput(session, "si_ppi_color_nodes_subgraph", choices = c(nodes_equal, nodes_sample))
@@ -304,6 +305,85 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     }
   }, ignoreInit = TRUE)
   
+  observeEvent(input$ab_ppi_highlight_gene, {
+    gene <- input$ti_ppi_highlight_gene
+    visNetwork::visNetworkProxy("vno_ppi_visnetwork") %>%
+      visNetwork::visSelectNodes(
+        id = rv_ppi$nodes$id[rv_ppi$nodes$label == toupper(gene)],
+        highlightEdges = FALSE,
+        clickEvent = FALSE
+      )
+  })
+  observeEvent(input$ab_ppi_highlight_cluster, {
+    cluster <- input$si_ppi_highlight_cluster
+    visNetwork::visNetworkProxy("vno_ppi_visnetwork") %>%
+      visNetwork::visSelectNodes(
+        id = rv_ppi$nodes$id[rv_ppi$nodes$cluster == cluster],
+        highlightEdges = FALSE,
+        clickEvent = FALSE
+      )
+  })
+  observeEvent(input$ab_ppi_highlight_gene_subgraph, {
+    gene <- input$ti_ppi_highlight_gene_subgraph
+    visNetwork::visNetworkProxy("vno_ppi_visnetwork_subgraph") %>%
+      visNetwork::visSelectNodes(
+        id = rv_ppi_subgraph$nodes$id[rv_ppi_subgraph$nodes$label == toupper(gene)],
+        highlightEdges = FALSE,
+        clickEvent = FALSE
+      )
+  })
+  observeEvent(input$ab_ppi_highlight_cluster_subgraph, {
+    cluster <- input$si_ppi_highlight_cluster_subgraph
+    visNetwork::visNetworkProxy("vno_ppi_visnetwork_subgraph") %>%
+      visNetwork::visSelectNodes(
+        id = rv_ppi_subgraph$nodes$id[rv_ppi_subgraph$nodes$cluster == cluster],
+        highlightEdges = FALSE,
+        clickEvent = FALSE
+      )
+  })
+  
+  # TODO test
+  observeEvent(input$ab_ppi_highlight_nodes, {
+    print(1)
+    print(input$ab_ppi_highlight_nodes)
+    print(2)
+    print(input$si_ppi_color_nodes)
+    print(input$si_ppi_color_edges)
+    print(3)
+    print(head(rv_ppi))
+    print(4)
+    print(head(rv_ppi$edges))
+    
+    if (input$si_ppi_highlight_nodes == 'Nodes') {
+      feature <- input$si_ppi_color_nodes
+      values <- rv_ppi$nodes[[feature]]
+      ind <- values >= input$ni_ppi_highlight_nodes_min & values <= input$ni_ppi_highlight_nodes_max
+      ids <- rv_ppi$nodes$id[ind]
+      visNetwork::visNetworkProxy("vno_ppi_visnetwork") %>%
+        visNetwork::visSelectNodes(
+          id = ids,
+          highlightEdges = FALSE,
+          clickEvent = FALSE
+        )
+    } else if (input$si_ppi_highlight_nodes == 'Edges') {
+      feature <- input$si_ppi_color_edges
+      values <- rv_ppi$edges[[feature]]
+      ind <- values >= input$ni_ppi_highlight_nodes_min & values <= input$ni_ppi_highlight_nodes_max
+      ids <- rv_ppi$edges$id[ind]
+      
+      print(ids)
+      
+      # TODO if keep edges, keep connected nodes
+      ## TODO also highlight the edges 
+      visNetwork::visNetworkProxy("vno_ppi_visnetwork") %>%
+        visNetwork::visSelectEdges(id = ids)
+    }
+    
+
+    
+    print(7)
+  })
+  
   observeEvent(input$ab_ppi_subset, {
     runjs("Shiny.setInputValue('ppigraph_update', 'ab_ppi_subset', {priority: 'event'});")
   })
@@ -399,10 +479,12 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   }
   shiny::observeEvent(input$ab_genefsi_icheatmap_plot, {
     rv_ppi$p <- unique(c(rv_genes$all_selected, process_string_input(input$tai_genefsi_add_genes)))
+    
+    shinyjs::runjs("$('#vto_genefsi_icheatmap').css('color', '#ff0000');")
+    rv_genefsi_icheatmap$text <- "Make sure any genes are in global gene selection..."
     req(rv_ppi$p) # cannot be empty: character(0)
 
     shinyjs::show("ab_genefsi_icheatmap_plot_loader")
-    shinyjs::runjs("$('#vto_genefsi_icheatmap').css('color', '#ff0000');")
     
     data_genelists <- rv_genelists()
     
@@ -415,7 +497,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     )
     rv_genefsi_icheatmap$heatmap <- ch
 
-    InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, output, session, ht_list = ch, heatmap_id = "genefsi_icheatmap", click_action = genefsi_icheatmap_action, brush_action = genefsi_icheatmap_action)
+    InteractiveComplexHeatmap::makeInteractiveComplexHeatmap(input, output, session, ht_list = ch, heatmap_id = "genefsi_icheatmap")
 
     rv_genefsi_icheatmap$success <- TRUE 
     shinyjs::runjs("$('#vto_genefsi_icheatmap').css('color', '#32CD32');")
@@ -485,7 +567,12 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
         min_ngenes_input = input$ni_enrichment_filter_ngenes_input,
         min_ngenes_signif = input$ni_enrichment_filter_ngenes_signif,
         min_abs_zscore = input$ni_enrichment_filter_zscore,
-        max_pvalue_adjust = input$ni_enrichment_filter_pvalue_adjust
+        min_pvalue_adjust = input$ni_enrichment_filter_pvalue_adjust,
+        max_ngenes = input$ni_enrichment_filter_ngenes_max,
+        max_ngenes_input = input$ni_enrichment_filter_ngenes_input_max,
+        max_ngenes_signif = input$ni_enrichment_filter_ngenes_signif_max,
+        max_abs_zscore = input$ni_enrichment_filter_zscore_max,
+        max_pvalue_adjust = input$ni_enrichment_filter_pvalue_adjust_max
       )
     }
     shinyjs::hide("ab_filter_enrichment_loader")
@@ -662,6 +749,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   })
   
   shiny::observeEvent(input$ab_set_significant_genes, {
+    shinyjs::disable('ab_run_enrichment')
     shinyjs::disable('ab_run_volcano')
     data <- rv_genelists()
 
@@ -697,6 +785,8 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
       selected = names(data)[1] 
     )
     shinyjs::enable('ab_run_volcano')
+    shinyjs::runjs("$('#vto_filter_genesets').css('color', 'white');")
+    rv_genesets$text_filter <- "Filter genesets after (re)setting significant genes"
   })
   
   shiny::observeEvent(input$ab_set_names, {
@@ -857,7 +947,61 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
       tags$p("Click 'reset selected genes' to reset the gene selection."),
     ))
   })
-  
+  observeEvent(input$ab_genefsi_heatmap_modal, {
+    showModal(modalDialog(
+      easyClose = TRUE, footer = NULL,
+      title = "Interactive heatmap - post enrichment",
+      tags$h3("Plotting"),
+      tags$p("Make sure some genes are selected, or add them through typing additional genes."),
+      tags$p("For speed and clarity, a max N genes out of the selection can be plotted."),
+      tags$p("Genes and genelists can be clustered based on effectsize by opting for the dendrograms."),
+      tags$p("Exporting the plot can be done via the interactive buttons of the plot itself."),
+    ))
+  })
+  observeEvent(input$ab_global_modal, {
+    showModal(modalDialog(
+      easyClose = TRUE, footer = NULL,
+      title = "Initialization",
+      tags$h3("Global parameters"),
+      tags$p("Selected organism is used for gene specific annotations and to load Gene Ontology AnnotationDbi gene sets."),
+      tags$p("Selected output type is for all exported tables."),
+      tags$p("Annotate genes adds a small gene description as metadata. It is shown in exporting tables and when hovering genes in the Protein-Protein Interaction graphs."),
+      tags$hr(),
+      tags$h3("Loading genelists"),
+      tags$p("Browse to your file(s), use the parameters for loading differently."),
+      tags$p("Remove Rik(en) and Gm (predicted) mouse genes could be potentially useful for mouse specifically."),
+      tags$p("IDs are expected to be in Entrez (NCBI) format."),
+      tags$hr(),
+      tags$h3("Setting significant genes"),
+      tags$p("Adds the $signif column to the data, used by the GOAT algorithm and for visualizations."),
+      tags$p("If set to 'pvalue_effectsize' both are used for setting significance, if either is selected the other cutoff is ignored."),
+      tags$p("Keep max N genes is useful as the standard goat method can take a maximal number of genes, as defined by the max(goat::null_distributions$N) command."),
+      tags$p("If there is need be for more genes, use the goat_bootstrap method, a warning will be given if there are too many genes for the goat method."),
+      tags$p("Also here, the pvalue or effectsize can be used to order the genelist before keeping the top genes."),
+      tags$hr(),
+      tags$h3("Set names"),
+      tags$p("Often sample shortnames, useful for visual clarity in the plots."),
+      tags$hr(),
+      tags$h3("Download genelists overlap"),
+      tags$p("After setting significant genes, a gene overview with potential overlap info for multiple samples is generated and used in the background."),
+      tags$hr(),
+      tags$h3("Loading genesets"),
+      tags$p("Either organism specific Gene Ontology AnnotationDbi genesets can be downloaded via goat, or a .gmt file with genesets (e.g. from Molecular Signatures Database) can be provided."),
+      tags$p("The loaded genesets will then be filtered by parameter stats and overlapped with the loaded genelists."),
+      tags$p("Any time the loaded genelists are re-loaded, the genesets will have to be filtered again."),
+    ))
+  })
+  observeEvent(input$ab_enrichment_modal, {
+    showModal(modalDialog(
+      easyClose = TRUE, footer = NULL,
+      title = "Enrichment",
+      tags$h3("Analysis"),
+      tags$p("All implemented enrichment methods by goat can be used."),
+      tags$p("Some parameters are goat specific, which can be read in its documentation online."),
+      tags$p("Once the enrichment has run, all enrichments can be filtered by using the parameters."),
+      tags$p("The currently shown enrichment will be used for plotting the gene-geneset heatmap."),
+    ))
+  })
   ## explain page and function as graph legend
   observeEvent(input$ab_ppi_modal, {
     showModal(modalDialog(
@@ -1015,7 +1159,6 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     contentType = "text/csv/xlsx"
   )
   
-  
   #### render texts for (verbatim)TextOutputs ----
   output$vto_volcano <- shiny::renderText({paste(rv_volcano$text, collapse = "\n")})
   output$vto_load_genelists <- shiny::renderText({paste(rv_load_genelists$text, collapse = "\n")})
@@ -1026,6 +1169,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
   output$vto_test_enrichment <- shiny::renderText({rv_enrichment$text})
   output$vto_genelist_overlap <- shiny::renderText({rv_genelists_overlap$text})
   output$vto_icheatmap <- shiny::renderText({rv_icheatmap$text})
+  output$vto_genefsi_icheatmap <- shiny::renderText({rv_genefsi_icheatmap$text})
   
   output$to_upset_hovered <- renderText({input$po_genelist_overlap_hover$name})
   output$to_upset_clicked <- renderText({input$po_genelist_overlap_click$name})
@@ -1108,7 +1252,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
                  color = list(
                    color = colors$text,
                    highlight = colors$focus,
-                   hover = colors$darker_bg)) %>%
+                   hover = colors$focus)) %>%
         visNetwork::visNodes(shape = 'box',
                  borderWidth = 5,
                  color = list(
@@ -1164,7 +1308,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
                  color = list(
                    color = colors$text,
                    highlight = colors$focus,
-                   hover = colors$darker_bg)) %>%
+                   hover = colors$focus)) %>%
         visNetwork::visNodes(shape = 'box',
                  borderWidth = 5,
                  color = list(
@@ -1237,6 +1381,6 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_termtree")
   })
   shiny::observeEvent(c(input$ab_go_to_genefsi_icheatmap, input$ab_go_to_genefsi_icheatmap_PPI, input$ab_go_to_genefsi_icheatmap_icheatmap, input$ab_go_to_genefsi_icheatmap_splitdot, input$ab_go_to_genefsi_icheatmap_termtree), ignoreInit = TRUE, {
-    shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_termtree")
+    shinydashboard::updateTabItems(session, "menu_tabs", "menu_plot_genefsi_heatmap")
   })
 }

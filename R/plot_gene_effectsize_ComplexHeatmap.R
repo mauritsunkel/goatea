@@ -62,6 +62,5 @@ plot_gene_effectsize_ComplexHeatmap <- function (
     annotation_legend_side = "right",
     annotation_legend_list = list(legend_pval)
   )
-
   return(ch)
 }
