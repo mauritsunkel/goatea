@@ -194,12 +194,6 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     if ( ! is.null(rv_genelists_overlap$gene_overview)) genes_overview <- rv_genelists_overlap$gene_overview
     ## set sample selection
     data_genelists <- rv_genelists()
-    updateSelectInput(
-      session,
-      "si_ppi_sample",
-      choices = names(data_genelists),
-      selected = names(data_genelists)[1] 
-    )
     vis <- get_visNetwork(g, genes_overview = genes_overview, sample_name = input$si_ppi_sample)
     rv_ppi$nodes <- vis$nodes
     rv_ppi$edges <- vis$edges
@@ -334,7 +328,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
       left_join(rv_ppi_subgraph$nodes %>% select(id, from_symbol = label), by = c("from" = "id")) %>%
       left_join(rv_ppi_subgraph$nodes %>% select(id, to_symbol = label), by = c("to" = "id")) %>%
       select(from_symbol, to_symbol, combined_score, from, to)
-    g <- get_ppigraph(ppi_data, vertex_cluster = vertex_attr(g, 'cluster'))
+    g <- get_ppigraph(ppi_data, vertex_clustering = vertex_attr(g, 'cluster'))
     genes_overview <- NULL
     if ( ! is.null(rv_genelists_overlap$gene_overview)) genes_overview <- rv_genelists_overlap$gene_overview
     vis <- get_visNetwork(g, genes_overview = genes_overview, sample_name = input$si_ppi_sample)
@@ -638,6 +632,12 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
       )
       updateSelectInput(
         session,
+        "si_ppi_sample",
+        choices = names(data_genelists),
+        selected = names(data_genelists)[1] 
+      )
+      updateSelectInput(
+        session,
         "si_show_enrichment_source",
         choices = unique(data_genesets[[1]]$source),
         selected = unique(data_genesets[[1]]$source)[1] 
@@ -654,6 +654,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
         choices = unique(data_genesets[[1]]$source),
         selected = unique(data_genesets[[1]]$source)[1] 
       )
+      
       shinyjs::runjs("$('#vto_test_enrichment').css('color', '#32CD32');") # success color
       rv_enrichment$text <- "Enrichment ran successfully"
     }
