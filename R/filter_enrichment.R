@@ -27,6 +27,11 @@ filter_enrichment <- function(
     min_ngenes_input = 0,
     min_ngenes_signif = 0,
     min_abs_zscore = 0,
+    min_pvalue_adjust = 0,
+    max_ngenes = 1e6,
+    max_ngenes_input = 1e6,
+    max_ngenes_signif = 1e6,
+    max_abs_zscore = 1e6,
     max_pvalue_adjust = 1
 ) {
   genes_any_all <- match.arg(genes_any_all)
@@ -67,10 +72,11 @@ filter_enrichment <- function(
     df <- df[df$name %in% hits,]
   }
   ## filter numericals
-  df <- df[df$ngenes >= min_ngenes,]
-  df <- df[df$ngenes_input >= min_ngenes_input,]
-  df <- df[df$ngenes_signif >= min_ngenes_signif,]
-  df <- df[abs(df$zscore) >= min_abs_zscore,]
-  df <- df[df$pvalue_adjust <= max_pvalue_adjust,]
+  df <- df[df$ngenes >= min_ngenes & df$ngenes <= max_ngenes,]
+  df <- df[df$ngenes_input >= min_ngenes_input & df$ngenes_input <= max_ngenes_input,]
+  df <- df[df$ngenes_signif >= min_ngenes_signif & df$ngenes_signif <= max_ngenes_signif,]
+  df <- df[abs(df$zscore) >= min_abs_zscore & abs(df$zscore) <= max_abs_zscore,]
+  df <- df[df$pvalue_adjust >= min_pvalue_adjust & df$pvalue_adjust <= max_pvalue_adjust,]
+  
   return(df)
 }
