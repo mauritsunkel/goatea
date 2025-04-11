@@ -32,7 +32,8 @@ goatea_ui <- function() {
       tags$head(
         tags$link(rel = "stylesheet", type = "text/css", href = "www/styles.css"), # load .css stylesheet
         tags$script(src = "www/colors.js"), # load JS initializing .css colors 
-        tags$script(src = "www/menu_toggle.js") # # load JS to keep all menu items visible and disable their toggling-to-close
+        tags$script(src = "www/menu_toggle.js"), # # load JS to keep all menu items visible and disable their toggling-to-close
+        tags$script(src = "www/visnetwork_hover_tooltip_style.js")
       ),
       tabItems(
         tabItem(tabName = "menu_initialize",
