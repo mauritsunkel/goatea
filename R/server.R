@@ -9,7 +9,7 @@
 #' @import shinydashboard
 #'
 #' @export
-goatea_server <- function(input, output, session, css_colors, stringdb_versions, mm_genesets) {
+goatea_server <- function(input, output, session, css_colors, stringdb_versions, mm_genesets = NULL) {
   colors <- shiny::reactiveValues(
     main_bg = css_colors$main_bg,
     darker_bg = css_colors$darker_bg,
@@ -187,8 +187,7 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
     req(rv_ppi$p) # cannot be empty: character(0)
     
     shinyjs::show('ab_ppi_graph_loader')
-    
-    PPI <- get_string_ppi(aliases = rv_ppi$p, score_threshold = input$ni_ppi_score_threshold, version = input$si_ppi_version, versions = rv_ppi$stringdb_versions, organism = as.numeric(input$si_organism))
+    PPI <- get_string_ppi(aliases = rv_ppi$p, score_threshold = input$ni_ppi_score_threshold, version = input$si_ppi_version, versions = rv_ppi$stringdb_versions, organism = as.numeric(input$si_organism), folder = set_base_folder(input$ti_global_base_folder))
     g <- get_ppigraph(PPI)
     genes_overview <- NULL
     if ( ! is.null(rv_genelists_overlap$gene_overview)) genes_overview <- rv_genelists_overlap$gene_overview
@@ -342,23 +341,13 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
       )
   })
   
-  # TODO test
   observeEvent(input$ab_ppi_highlight_nodes, {
-    print(1)
-    print(input$ab_ppi_highlight_nodes)
-    print(2)
-    print(input$si_ppi_color_nodes)
-    print(input$si_ppi_color_edges)
-    print(3)
-    print(head(rv_ppi))
-    print(4)
-    print(head(rv_ppi$edges))
-    
     if (input$si_ppi_highlight_nodes == 'Nodes') {
       feature <- input$si_ppi_color_nodes
       values <- rv_ppi$nodes[[feature]]
       ind <- values >= input$ni_ppi_highlight_nodes_min & values <= input$ni_ppi_highlight_nodes_max
       ids <- rv_ppi$nodes$id[ind]
+      
       visNetwork::visNetworkProxy("vno_ppi_visnetwork") %>%
         visNetwork::visSelectNodes(
           id = ids,
@@ -370,18 +359,45 @@ goatea_server <- function(input, output, session, css_colors, stringdb_versions,
       values <- rv_ppi$edges[[feature]]
       ind <- values >= input$ni_ppi_highlight_nodes_min & values <= input$ni_ppi_highlight_nodes_max
       ids <- rv_ppi$edges$id[ind]
-      
-      print(ids)
-      
-      # TODO if keep edges, keep connected nodes
-      ## TODO also highlight the edges 
-      visNetwork::visNetworkProxy("vno_ppi_visnetwork") %>%
-        visNetwork::visSelectEdges(id = ids)
-    }
-    
 
-    
-    print(7)
+      visNetwork::visNetworkProxy("vno_ppi_visnetwork") %>%
+        visNetwork::visSetSelection(
+          edgesId = ids,
+          nodesId = unique(unlist(strsplit(ids, "_"))),
+          unselectAll = TRUE,
+          highlightEdges = FALSE,
+          clickEvent = FALSE
+        )
+    }
+  })
+  observeEvent(input$ab_ppi_highlight_nodes_subgraph, {
+    if (input$si_ppi_highlight_nodes_subgraph == 'Nodes') {
+      feature <- input$si_ppi_color_nodes_subgraph
+      values <- rv_ppi_subgraph$nodes[[feature]]
+      ind <- values >= input$ni_ppi_highlight_nodes_min_subgraph & values <= input$ni_ppi_highlight_nodes_max_subgraph
+      ids <- rv_ppi_subgraph$nodes$id[ind]
+      
+      visNetwork::visNetworkProxy("vno_ppi_visnetwork_subgraph") %>%
+        visNetwork::visSelectNodes(
+          id = ids,
+          highlightEdges = FALSE,
+          clickEvent = FALSE
+        )
+    } else if (input$si_ppi_highlight_nodes_subgraph == 'Edges') {
+      feature <- input$si_ppi_color_edges_subgraph
+      values <- rv_ppi_subgraph$edges[[feature]]
+      ind <- values >= input$ni_ppi_highlight_nodes_min_subgraph & values <= input$ni_ppi_highlight_nodes_max_subgraph
+      ids <- rv_ppi_subgraph$edges$id[ind]
+      
+      visNetwork::visNetworkProxy("vno_ppi_visnetwork_subgraph") %>%
+        visNetwork::visSetSelection(
+          edgesId = ids,
+          nodesId = unique(unlist(strsplit(ids, "_"))),
+          unselectAll = TRUE,
+          highlightEdges = FALSE,
+          clickEvent = FALSE
+        )
+    }
   })
   
   observeEvent(input$ab_ppi_subset, {
