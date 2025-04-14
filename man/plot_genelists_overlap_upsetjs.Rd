@@ -6,7 +6,7 @@
 \usage{
 plot_genelists_overlap_upsetjs(
   genelists,
-  mode = "intersect",
+  mode = "distinct",
   interactive = FALSE,
   main.color = "white",
   highlight.color = "green"

@@ -238,3 +238,38 @@ hexcolor2rgba <- function(hexcolors, alpha = NULL) {
   }
   return(paste0('rgba(', r, ',', g, ',', b, ',', alpha*100, ')')) # convert to RGBA format
 }
+
+#' Set base folder
+#'
+#' @param folder_path character, default NULL, else existing directory
+#'
+#' @description
+#' sets given folder path if provided
+#' else checks in order: 
+#' - path.expand("~") (tilde (~) expands to HOME folder path)
+#' - Sys.getenv("R_USER") (set on R session start)
+#' - Sys.getenv("USERPROFILE") (Windows specific) 
+#'
+#' @returns character folder path
+#' 
+#' @export
+#'
+#' @examples
+#' set_base_folder()
+set_base_folder <- function(folder_path = NULL) {
+  if ( ! is.null(folder_path)) {
+    if ( ! is.character(folder_path)) stop("if providing path, it must be a character")
+    if (dir.exists(folder_path)) return(folder_path)
+  }
+  
+  path_opts <- c(
+    path.expand("~"),
+    Sys.getenv("R_USER"),
+    Sys.getenv("USERPROFILE")
+  )
+  for (p in path_opts) {
+    if (p != "" & dir.exists(p)) return(p)
+  }
+  
+  warning("no existing folder path given, and all base folder path options returned '' or do not exist, please supply an existing base folder path...")
+}

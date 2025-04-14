@@ -16,6 +16,11 @@ filter_enrichment(
   min_ngenes_input = 0,
   min_ngenes_signif = 0,
   min_abs_zscore = 0,
+  min_pvalue_adjust = 0,
+  max_ngenes = 1e+06,
+  max_ngenes_input = 1e+06,
+  max_ngenes_signif = 1e+06,
+  max_abs_zscore = 1e+06,
   max_pvalue_adjust = 1
 )
 }
