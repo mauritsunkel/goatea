@@ -6,6 +6,7 @@
 #'   Must include `name` (gene set names) and `symbol` (listed genes associated with gene sets)
 #' @param genelist dataframe with gene-level statistics, including at least
 #'   `symbol`, `pvalue`, `effectsize`, and `signif` columns
+#' @param genes character, default: NULL, if genes given, these are prioritized for visualization
 #' @param n_cluster default: 1, integer, number of hierarchical clusters to define
 #' @param cluster_method default: 'single', else one of \link{hclust} methods
 #' @param n_top_terms default: NULL, if integer, plot only top genesets (recommended for visual clarity: 70)
@@ -43,6 +44,7 @@
 plot_ComplexHeatmap <- function(
     enrichment_result,
     genelist,
+    genes = NULL,
     cluster_method = 'single',
     n_cluster = 1,
     n_top_terms = NA,
@@ -86,7 +88,16 @@ plot_ComplexHeatmap <- function(
     matched_genelist$ncount <- ncount_genes[matched_genelist$symbol]
     matched_genelist <- matched_genelist[order(-matched_genelist$ncount, -abs(matched_genelist$effectsize)), ]
     if (n_top_genes > nrow(matched_genelist)) n_top_genes <- nrow(matched_genelist)
-    unique_genes <- matched_genelist$symbol[1:n_top_genes]
+    if ( ! is.null(genes)) {
+      if (length(genes) >= n_top_genes) {
+        unique_genes <- genes
+      } else {
+        unique_genes <- c(genes, matched_genelist$symbol[1:(n_top_genes-length(genes))])
+      }
+    } else {
+      unique_genes <- matched_genelist$symbol[1:n_top_genes]
+    }
+    
     m_data <- m_data[m_data$symbol %in% unique_genes, ]
   }
   
