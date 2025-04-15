@@ -1,4 +1,4 @@
-library(goatea)
+library(GOATEA)
 
 ## manual coloring
 css_colors <- list(

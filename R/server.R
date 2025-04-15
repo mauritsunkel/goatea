@@ -5,7 +5,6 @@
 #' @param session Shiny handling reactivity in app
 #' @param css_colors see app.R, user set manual colors for the GOATEA UI
 #' 
-#' 
 #' @importFrom shiny reactiveVal reactiveValues updateSelectInput observe req isolate observeEvent showModal  modalDialog downloadHandler renderText renderPlot showNotification
 #' @importFrom shinyjs enable disable runjs show hide
 #' @importFrom purrr walk
