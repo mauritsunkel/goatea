@@ -41,11 +41,11 @@ goatea_server <- function(input, output, session, css_colors, mm_genesets = NULL
       text = NULL,
       filter_text = NULL,
       success = FALSE,
-      succes_filter = FALSE,
+      success_filter = FALSE,
       genesets = NULL,
       filtered_genesets = NULL
     )
-  } else { # keep for testing purposes 
+  } else { # keep for testing purposes
     shinyjs::runjs("$('#vto_load_genesets').css('color', '#32CD32');")
     rv_genesets <- shiny::reactiveValues(
       text = "Successfully loaded: org.Mm.eg.db",

@@ -1,9 +1,9 @@
-#' UI for goatea package
+#' UI for GOATEA package
 #'
 #' @export
 #' 
 #' @importFrom shiny addResourcePath fluidRow column selectInput textInput actionButton textOutput checkboxInput radioButtons fileInput verbatimTextOutput numericInput downloadButton textAreaInput plotOutput
-#' @importFrom shinyjs useShinyjs disabled
+#' @importFrom shinyjs useShinyjs disabled hidden
 #' @importFrom shinydashboard box tabItem tabItems dashboardPage dashboardHeader dashboardSidebar sidebarMenu menuItem menuSubItem dashboardBody
 #' @importFrom htmltools tags div
 #' @importFrom plotly plotlyOutput
@@ -92,7 +92,7 @@ goatea_ui <- function() {
                                                     hovertip = "Remove Gm non-canonical mouse genes")),
                     column(width = 12, verbatimTextOutput("vto_load_genelists", placeholder = TRUE)),
                     
-                    column(width = 2, disabled(actionButton("ab_set_significant_genes", "Set signif and N genes", value = TRUE, width = 115))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_set_significant_genes", "Set signif and N genes", value = TRUE, width = 115))),
                     column(width = 2, wrap_hovertip(selectInput("si_set_significant_genes", "Set significant genes", choices = c("pvalue_effectsize", "pvalue", "effectsize")),
                                                     hovertip = 'Set significant and N genes by pvalue and/or effectsize')),
                     column(width = 2, wrap_hovertip(numericInput("ni_set_significant_pvalue", "P-value <=", 0.05, min = 0, step = 0.01),
@@ -105,7 +105,7 @@ goatea_ui <- function() {
                     column(width = 2, wrap_hovertip(selectInput("si_keep_maxN_genes", "Keep max N genes by pvalue/effectsize", choices = c("pvalue", "effectsize")),
                                                     hovertip = 'When keeping max N genes, do so by lowest p-values or by highest absolute effect sizes')),
                     column(width = 12, verbatimTextOutput("vto_set_significant_genes", placeholder = TRUE)),
-                    column(width = 2, disabled(actionButton("ab_set_names", "Set names", value = TRUE, width = 115))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_set_names", "Set names", value = TRUE, width = 115))),
                     column(width = 9, textInput("ti_set_names", label = NULL, placeholder = "Enter genelist names separated by a space...")),
                     column(width = 12, verbatimTextOutput("vto_set_names", placeholder = TRUE)),
                     column(width = 4, wrap_hovertip(downloadButton("db_run_genelist_overlap", "Download genelists overlap"), 
@@ -126,7 +126,7 @@ goatea_ui <- function() {
                                                     hovertip = 'Set genesets source column label, default: "GMT"')),
                     column(width = 12, verbatimTextOutput("vto_load_genesets", placeholder = TRUE)),
                     column(width = 12, tags$hr()),
-                    column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_filter_genesets_loader", actionButton("ab_filter_genesets", "Filter genesets"))), 
+                    column(width = 2, wrap_hovertip(shinyjs::disabled(wrap_loader(id = "ab_filter_genesets_loader", actionButton("ab_filter_genesets", "Filter genesets"))), 
                                                     hovertip = "Filter loaded genesets for enrichment analysis")),
                     column(width = 2, wrap_hovertip(numericInput("ni_genesets_min_overlap", "Min overlap", 10L, min = 1), 
                                                     hovertip = "Minimum number of genes in the genelist table that must match a geneset")),
@@ -145,11 +145,11 @@ goatea_ui <- function() {
                     id = "box_go_to_analysis",
                     title = "GO TO analysis",
                     width = NULL,
-                    column(width = 2, wrap_hovertip(disabled(actionButton("ab_go_to_volcano", "Go to volcano")), 
+                    column(width = 2, wrap_hovertip(shinyjs::disabled(actionButton("ab_go_to_volcano", "Go to volcano")), 
                                                     hovertip = "Create DEG EnahandcedVolcano plot of genelist(s)")),
-                    column(width = 2, wrap_hovertip(disabled(actionButton("ab_go_to_overlap", "Go to overlap")), 
+                    column(width = 2, wrap_hovertip(shinyjs::disabled(actionButton("ab_go_to_overlap", "Go to overlap")), 
                                                     hovertip = "Overlap genelists by significant genes, plot overlap and create annotated gene overview")),
-                    column(width = 2, wrap_hovertip(disabled(actionButton("ab_go_to_enrichment", "Go to enrichment")), 
+                    column(width = 2, wrap_hovertip(shinyjs::disabled(actionButton("ab_go_to_enrichment", "Go to enrichment")), 
                                                     hovertip = "Load genelists and genesets to go to enrichment analysis"))
                   )
                 )
@@ -160,7 +160,7 @@ goatea_ui <- function() {
                     id = "box_run_volcano",
                     title = "EnhancedVolcano",
                     width = NULL,
-                    column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_run_volcano_loader", actionButton("ab_run_volcano", "Plot EnhancedVolcano"))),
+                    column(width = 2, wrap_hovertip(shinyjs::disabled(wrap_loader(id = "ab_run_volcano_loader", actionButton("ab_run_volcano", "Plot EnhancedVolcano"))),
                                                      hovertip = "Plot EnhancedVolcano plot for selected genelist")),
                     column(width = 2, wrap_hovertip(selectInput("si_volcano_sample", label = "Volcano genelist sample", choices = NULL),
                                                     hovertip = "Select genelist sample to plot EnhandcedVolcano")),
@@ -197,7 +197,7 @@ goatea_ui <- function() {
                     id = "box_run_genelist_overlap",
                     title = "Genelist overlap",
                     width = NULL,
-                    column(width = 3, wrap_hovertip(disabled(wrap_loader(id = "ab_plot_overlap_upset_loader", actionButton("ab_plot_overlap_upset", "Plot significant gene overlap"))), 
+                    column(width = 3, wrap_hovertip(shinyjs::disabled(wrap_loader(id = "ab_plot_overlap_upset_loader", actionButton("ab_plot_overlap_upset", "Plot significant gene overlap"))), 
                                                     hovertip = "Plot genelists gene overlap in an UpSet plot")),
                     column(width = 3, wrap_hovertip(selectInput("si_plot_overlap_upset", "Overlap mode", choices = c('distinct', 'intersect', 'union')), 
                                                     hovertip = "Mode for overlapping genes: intersect (totals of genes), distinct (unique genes), union (sums of genes)")),
@@ -240,7 +240,7 @@ goatea_ui <- function() {
                     title = "Geneset enrichment",
                     width = NULL,
                     ## geneset enrichment
-                    column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_run_enrichment_loader", actionButton("ab_run_enrichment", "Run enrichment"))), 
+                    column(width = 2, wrap_hovertip(shinyjs::disabled(wrap_loader(id = "ab_run_enrichment_loader", actionButton("ab_run_enrichment", "Run enrichment"))), 
                                                     hovertip = "Run geneset enrichment")),
                     column(width = 3, wrap_hovertip(selectInput("si_test_method", "Method",
                                                                 choices = c("goat", "goat_bootstrap", "hypergeometric", "fisherexact", "fisherexact_ease", "gsea", "idea"),
@@ -277,7 +277,7 @@ goatea_ui <- function() {
                                column(width = 2, wrap_hovertip(actionButton("ab_enrichment_reset", "Reset filtered enrichments"), 
                                                                hovertip = "Restore original enrichment result(s), reset any applied filters")),
                                column(width = 12, DT::DTOutput("dto_test_enrichment")),
-                               column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_filter_enrichment_loader", actionButton("ab_filter_enrichment", "Filter enrichments"))), 
+                               column(width = 2, wrap_hovertip(shinyjs::disabled(wrap_loader(id = "ab_filter_enrichment_loader", actionButton("ab_filter_enrichment", "Filter enrichments"))), 
                                                                hovertip = "Filter all loaded geneset enrichment output tables, order by column arrows")),
                                column(width = 2, wrap_hovertip(numericInput("ni_enrichment_filter_ngenes", "Min n genes", 0, min = 0, step = 1), 
                                                                hovertip = "Minimum number of genes in genesets")),
@@ -319,11 +319,11 @@ goatea_ui <- function() {
                     id = "box_go_to_plotting",
                     title = "GO TO plotting",
                     width = NULL,
-                    column(width = 2, disabled(actionButton("ab_go_to_heatmap", "GO TO gene/genesets heatmap"))),
-                    column(width = 2, disabled(actionButton("ab_go_to_genefsi_icheatmap", "GO TO gene/effectsize heatmap"))),
-                    column(width = 2, disabled(actionButton("ab_go_to_PPI", "GO TO PPI"))),
-                    column(width = 2, disabled(actionButton("ab_go_to_splitdot", "GO TO splitdot"))),
-                    column(width = 2, disabled(actionButton("ab_go_to_termtree", "GO TO termtree"))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_heatmap", "GO TO gene/genesets heatmap"))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_genefsi_icheatmap", "GO TO gene/effectsize heatmap"))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_PPI", "GO TO PPI"))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_splitdot", "GO TO splitdot"))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_termtree", "GO TO termtree"))),
                   )
                 )
         ),
@@ -333,7 +333,7 @@ goatea_ui <- function() {
                     id = "box_plot_splitdot",
                     title = "Plot splitdot",
                     width = NULL,
-                    column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_splitdot_plot_loader", actionButton("ab_splitdot_plot", "Plot splitdot"))), 
+                    column(width = 2, wrap_hovertip(shinyjs::disabled(wrap_loader(id = "ab_splitdot_plot_loader", actionButton("ab_splitdot_plot", "Plot splitdot"))), 
                                                     hovertip = "Plot selected (and filtered) enrichment")),
                     column(width = 2, wrap_hovertip(numericInput("ni_splitdot_topN", "top N terms", 50, min = 2, step = 1), 
                                                     hovertip = "Plot terms ordered by adjusted pvalue")),
@@ -348,10 +348,10 @@ goatea_ui <- function() {
                     id = "box_go_to_plotting_splitdot",
                     title = "GO TO plotting",
                     width = NULL,
-                    column(width = 2, disabled(actionButton("ab_go_to_genefsi_icheatmap_splitdot", "GO TO gene/effectsize heatmap"))),
-                    column(width = 2, disabled(actionButton("ab_go_to_heatmap_splitdot", "GO TO gene/genesets heatmap"))),
-                    column(width = 2, disabled(actionButton("ab_go_to_termtree_splitdot", "GO TO termtree"))),
-                    column(width = 2, disabled(actionButton("ab_go_to_PPI_splitdot", "GO TO PPI")))
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_genefsi_icheatmap_splitdot", "GO TO gene/effectsize heatmap"))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_heatmap_splitdot", "GO TO gene/genesets heatmap"))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_termtree_splitdot", "GO TO termtree"))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_PPI_splitdot", "GO TO PPI")))
                   )
                 )
         ),
@@ -361,7 +361,7 @@ goatea_ui <- function() {
                     id = "box_plot_termtree",
                     title = "Plot termtree",
                     width = NULL,
-                    column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_termtree_plot_loader", actionButton("ab_termtree_plot", "Plot termtree"))), 
+                    column(width = 2, wrap_hovertip(shinyjs::disabled(wrap_loader(id = "ab_termtree_plot_loader", actionButton("ab_termtree_plot", "Plot termtree"))), 
                                                     hovertip = "NOTE: requires 'enrichplot' package - Plot selected (and filtered) enrichment")),
                     column(width = 2, wrap_hovertip(numericInput("ni_termtree_Nterms", "top N terms", 50, min = 2, step = 1), 
                                                     hovertip = "Plot terms ordered by adjusted pvalue")),
@@ -379,10 +379,10 @@ goatea_ui <- function() {
                     id = "box_go_to_plotting_termtree",
                     title = "GO TO plotting",
                     width = NULL,
-                    column(width = 2, disabled(actionButton("ab_go_to_genefsi_icheatmap_termtree", "GO TO gene/effectsize heatmap"))),
-                    column(width = 2, disabled(actionButton("ab_go_to_heatmap_termtree", "GO TO gene/genesets heatmap"))),
-                    column(width = 2, disabled(actionButton("ab_go_to_splitdot_termtree", "GO TO splitdot"))),
-                    column(width = 2, disabled(actionButton("ab_go_to_PPI_termtree", "GO TO PPI"))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_genefsi_icheatmap_termtree", "GO TO gene/effectsize heatmap"))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_heatmap_termtree", "GO TO gene/genesets heatmap"))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_splitdot_termtree", "GO TO splitdot"))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_go_to_PPI_termtree", "GO TO PPI"))),
                   )
                 )
         ),
@@ -392,7 +392,7 @@ goatea_ui <- function() {
                     id = "box_plot_heatmap",
                     title = "Plot Interactive Heatmap of genes vs gene sets",
                     width = NULL,
-                    column(width = 2, wrap_hovertip(disabled(wrap_loader(id = "ab_icheatmap_plot_loader", actionButton("ab_icheatmap_plot", "Plot heatmap"))), 
+                    column(width = 2, wrap_hovertip(shinyjs::disabled(wrap_loader(id = "ab_icheatmap_plot_loader", actionButton("ab_icheatmap_plot", "Plot heatmap"))), 
                                                     hovertip = "Plot selected (and filtered) enrichment")),
                     column(width = 2, wrap_hovertip(selectInput("si_icheatmap_cluster_method", "Cluster method",
                                                                 choices = c("single", "ward.D", "ward.D2", "complete", "average", "mcquitty", "median", "centroid"),

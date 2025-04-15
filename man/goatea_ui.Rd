@@ -2,10 +2,10 @@
 % Please edit documentation in R/ui.R
 \name{goatea_ui}
 \alias{goatea_ui}
-\title{UI for goatea package}
+\title{UI for GOATEA package}
 \usage{
 goatea_ui()
 }
 \description{
-UI for goatea package
+UI for GOATEA package
 }

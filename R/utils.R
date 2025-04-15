@@ -46,6 +46,8 @@ wrap_loader <- function(id, ui_element) {
 #' @param text 
 #' @param ui_element 
 #'
+#' @importFrom htmltools tags
+#'
 #' @export
 wrap_hovertip <- function(ui_element, hovertip) {
   tags$div(title = hovertip, ui_element)
