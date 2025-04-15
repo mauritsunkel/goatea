@@ -17,9 +17,7 @@
 #' @export
 #' 
 #' @import dplyr
-#' @importFrom arrow read_delim_arrow
-#' @importFrom arrow write_parquet
-#' @importFrom arrow open_dataset
+#' @importFrom arrow read_delim_arrow write_parquet open_dataset
 #'
 #' @examples
 #' get_string_ppi(c("TP53", "EGFR", "BRCA1", "MTOR", "MYC"))
@@ -74,7 +72,7 @@ get_string_ppi <- function(aliases, score_threshold = 0L, organism = 9606L, netw
   map_df <- arrow::open_dataset(paste0(file.path(folder, basename(urls["aliases_url"])), ".parquet")) %>%
     select(all_of(1:3)) %>%
     rename_with(~ c("#string_protein_id", "alias", "source")[seq_along(.)]) %>%
-    filter(alias %in% aliases) %>%
+    filter(.data$alias %in% aliases) %>%
     collect()
   map_df <- map_df[match(aliases, map_df$alias),]
   string_ids <- map_df$`#string_protein_id`
@@ -83,15 +81,15 @@ get_string_ppi <- function(aliases, score_threshold = 0L, organism = 9606L, netw
   return(arrow::open_dataset(paste0(file.path(folder, basename(urls["interactions_url"])), ".parquet")) %>%
            select(all_of(1:3)) %>%
            rename_with(~ c("protein1", "protein2", "combined_score")[seq_along(.)]) %>%
-           filter(protein1 %in% string_ids & protein2 %in% string_ids & combined_score >= score_threshold) %>%
+           filter(.data$protein1 %in% string_ids & .data$protein2 %in% string_ids & .data$combined_score >= score_threshold) %>%
            collect() %>%
-           mutate(protein_min = pmin(protein1, protein2), protein_max = pmax(protein1, protein2)) %>%
-           distinct(protein_min, protein_max, .keep_all = TRUE) %>%
+           mutate(protein_min = pmin(.data$protein1, .data$protein2), protein_max = pmax(.data$protein1, .data$protein2)) %>%
+           distinct(.data$protein_min, .data$protein_max, .keep_all = TRUE) %>%
            left_join(map_df, by = c("protein1" = "#string_protein_id"), multiple = 'first') %>%
-           rename(from_symbol = alias) %>%
+           rename(from_symbol = .data$alias) %>%
            left_join(map_df, by = c("protein2" = "#string_protein_id"), multiple = 'first') %>%
-           rename(to_symbol = alias) %>%
-           select(from_symbol, to_symbol, combined_score, protein1, protein2, -protein_min, -protein_max) %>%
-           rename(from = protein1, to = protein2)
+           rename(to_symbol = .data$alias) %>%
+           select(.data$from_symbol, .data$to_symbol, .data$combined_score, .data$protein1, .data$protein2, -.data$protein_min, -.data$protein_max) %>%
+           rename(from = .data$protein1, to = .data$protein2)
   )
 }

@@ -3,6 +3,8 @@
 #' @param genelists UI value/list of tibbles/dataframes
 #'
 #' @export
+#' 
+#' @importFrom tibble tibble
 #'
 #' @return tibble/dataframe with (annotated) genes and p-value/effectsize info for each genelist, concluding with overlapping genelists by significant genes
 run_genelists_overlap <- function(genelists) {

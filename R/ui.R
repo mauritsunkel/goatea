@@ -1,7 +1,21 @@
 #' UI for goatea package
 #'
 #' @export
+#' 
+#' @importFrom shiny addResourcePath fluidRow column selectInput textInput actionButton textOutput checkboxInput radioButtons fileInput verbatimTextOutput numericInput downloadButton textAreaInput plotOutput
+#' @importFrom shinyjs useShinyjs
+#' @importFrom shinydashboard box tabItem tabItems dashboardPage dashboardHeader dashboardSidebar sidebarMenu menuItem menuSubItem dashboardBody
+#' @importFrom htmltools tags div
+#' @importFrom plotly plotlyOutput
+#' @importFrom upsetjs upsetjsOutput
+#' @importFrom DT DTOutput
+#' @importFrom shinyjqui jqui_resizable
+#' @importFrom InteractiveComplexHeatmap InteractiveComplexHeatmapOutput
+#' @importFrom visNetwork visNetworkOutput
 goatea_ui <- function() {
+  ## adds custom css styling and Javascript functionalities
+  shiny::addResourcePath("www", system.file("www", package = "goatea"))
+  
   dashboardPage(
     dashboardHeader(title = "GOATEA"),
     dashboardSidebar(
@@ -10,14 +24,14 @@ goatea_ui <- function() {
         menuItem("Initialize", tabName = "global_initialize", icon = icon("dashboard"),
                  menuSubItem("Load data", tabName = "menu_initialize", selected = TRUE)
         ),
-        menuItem("Pre-enrichment plotting", tabName = "global_preplot", icon = icon("dashboard"),
+        menuItem("Pre-enrichment plots", tabName = "global_preplot", icon = icon("dashboard"),
                  menuSubItem("Volcano", tabName = "menu_run_volcano"),
                  menuSubItem("Overlap", tabName = "menu_run_genelist_overlap")
         ),
         menuItem("Run enrichment", tabName = "global_enrichment", icon = icon("dashboard"),
                  menuSubItem("Gene set enrichment", tabName = "menu_run_enrichment")
         ),
-        menuItem("Post-enrichment plotting", tabName = "global_postplot", icon = icon("dashboard"),
+        menuItem("Post-enrichment plots", tabName = "global_postplot", icon = icon("dashboard"),
                  menuSubItem("Splitdot", tabName = "menu_plot_splitdot"),
                  menuSubItem("Termtree", tabName = "menu_plot_termtree"),
                  menuSubItem("Heatmap (gene-term)", tabName = "menu_plot_heatmap"),
@@ -28,7 +42,7 @@ goatea_ui <- function() {
     ),
     
     dashboardBody(
-      useShinyjs(), # initialize shinyjs
+      shinyjs::useShinyjs(), # initialize shinyjs
       tags$head(
         tags$link(rel = "stylesheet", type = "text/css", href = "www/styles.css"), # load .css stylesheet
         tags$script(src = "www/colors.js"), # load JS initializing .css colors 
@@ -47,7 +61,7 @@ goatea_ui <- function() {
                                                                  "Rat" = 10116, "Zebrafish" = 7955, "Fruit fly" = 7227, "Worm" = 6239),
                                                   selected = "Human"),
                                                   hovertip = "Select organism for loading Gene Ontology Bioconductor AnnotationDbi genesets, gene annotation and STRINGDB protein-protein interactions")), 
-                    column(width = 2, wrap_hovertip(textInput("ti_global_base_folder", "Base folder", placeholder = "'R_USER' HOME or input"),
+                    column(width = 2, wrap_hovertip(textInput("ti_global_base_folder", "Base folder", placeholder = "'R_USER' HOME"),
                                                     hovertip = "Base folder used for download if not user selectable, and for STRING database Protein-Protein-Interactions data, using 'R_user' HOME environment variable if not specified, see ?goatea::set_base_folder")),
                     column(width = 2, wrap_hovertip(radioButtons("rb_global_output_type", "Select output type",
                                                                  choices = list("CSV" = ".csv", "Excel" = ".xlsx"),
@@ -103,9 +117,8 @@ goatea_ui <- function() {
                     id = "box_load_genesets",
                     title = "Genesets",
                     width = NULL,
-                    wrap_hovertip(column(width = 2, disabled(wrap_loader(id = "ab_load_GOB_genesets_loader", 
-                                                                         actionButton("ab_load_GOB_genesets", "Load GO AnnotationDbi genesets")))), 
-                                  hovertip = "Load Gene Ontology Bioconductor AnnotationDbi genesets using selected organism, NOTE: individual organism packages need to be installed manually, if not, a warning message will be thrown."),
+                    wrap_hovertip(column(width = 2, wrap_loader(id = "ab_load_GOB_genesets_loader", actionButton("ab_load_GOB_genesets", "Load GO AnnotationDbi genesets"))), 
+                                                    hovertip = "Load Gene Ontology Bioconductor AnnotationDbi genesets using selected organism, NOTE: individual organism packages need to be installed manually, if not, a warning message will be thrown."),
                     column(width = 2),
                     column(width = 2, wrap_hovertip(fileInput("fi_load_genesets_GMT", "Load GMT genesets"),
                                                     hovertip = "Load genesets from .gmt format, for instance downloaded from the Molecular Signatures Database")),
@@ -186,7 +199,7 @@ goatea_ui <- function() {
                     width = NULL,
                     column(width = 3, wrap_hovertip(disabled(wrap_loader(id = "ab_plot_overlap_upset_loader", actionButton("ab_plot_overlap_upset", "Plot significant gene overlap"))), 
                                                     hovertip = "Plot genelists gene overlap in an UpSet plot")),
-                    column(width = 3, wrap_hovertip(selectInput("si_plot_overlap_upset", "Overlap mode", choices = c('intersect', 'distinct', 'union')), 
+                    column(width = 3, wrap_hovertip(selectInput("si_plot_overlap_upset", "Overlap mode", choices = c('distinct', 'intersect', 'union')), 
                                                     hovertip = "Mode for overlapping genes: intersect (totals of genes), distinct (unique genes), union (sums of genes)")),
                     column(width = 3),
                     column(width = 3, wrap_hovertip(actionButton("ab_overlap_modal", label = icon("question"), style = "font-size: 24px;"),
@@ -442,7 +455,7 @@ goatea_ui <- function() {
                     title = "GO TO plotting",
                     width = NULL,
                     column(width = 2, actionButton("ab_go_to_PPI_genefsi_icheatmap", "GO TO PPI")),
-                    column(width = 2, actionButton("ab_go_to_heatmap_genefsi_icheatmap", "GO TO PPI")),
+                    column(width = 2, actionButton("ab_go_to_heatmap_genefsi_icheatmap", "GO TO gene-efsi heatmap")),
                     column(width = 2, actionButton("ab_go_to_splitdot_genefsi_icheatmap", "GO TO splitdot")),
                     column(width = 2, actionButton("ab_go_to_termtree_genefsi_icheatmap", "GO TO termtree")),
                   )

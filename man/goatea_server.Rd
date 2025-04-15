@@ -4,14 +4,7 @@
 \alias{goatea_server}
 \title{Server for goatea package}
 \usage{
-goatea_server(
-  input,
-  output,
-  session,
-  css_colors,
-  stringdb_versions,
-  mm_genesets
-)
+goatea_server(input, output, session, css_colors, mm_genesets = NULL)
 }
 \arguments{
 \item{input}{Shiny input elements handling}
@@ -19,6 +12,8 @@ goatea_server(
 \item{output}{Shiny input elements handling}
 
 \item{session}{Shiny handling reactivity in app}
+
+\item{css_colors}{see app.R, user set manual colors for the GOATEA UI}
 }
 \description{
 Server for goatea package

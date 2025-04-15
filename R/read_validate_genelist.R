@@ -11,6 +11,12 @@
 #' if 'effectsize' is not in the genelist columns, it is set and defaulted to 0 for visualization purposes 
 #'
 #' @export
+#' 
+#' @importFrom openxlsx read.xlsx 
+#' @importFrom tibble as_tibble
+#' @importFrom org.Hs.eg.db org.Hs.eg.db
+#' @importFrom org.Mm.eg.db org.Mm.eg.db
+#' @importFrom AnnotationDbi mapIds
 read_validate_genelist <- function(file, map_organism = NULL, remove_non_numerical_ids = TRUE, remove_duplicated = TRUE,
                           remove_Rik_genes = TRUE, remove_Gm_genes = TRUE) {
   message("Checking file format...")

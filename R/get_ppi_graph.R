@@ -81,7 +81,7 @@ get_ppigraph <- function(ppi_data, vertex_clustering = NULL) {
   }
   ## set graph reportable metrics
   g <- set_graph_attr(g, 'central gene', V(g)[graph_center(g)]$name) # most central node(s)
-  g <- set_graph_attr(g, 'modularity', modularity(g, membership = igraph::membership(cl))) # cluster modularity 
+  g <- set_graph_attr(g, 'modularity', modularity(g, membership = membership(cl))) # cluster modularity 
   g <- set_graph_attr(g, 'transitivity', transitivity(g, isolates = "zero")) # clustering coefficient: probability of adjacent vertex connectivity
   g <- set_graph_attr(g, 'assortattivity', assortativity_degree(g)) # positive if vertices are similarly connected, otherwise negative
   g <- set_graph_attr(g, 'mean distance', mean_distance(g)) # mean length of all shortest paths 

@@ -14,6 +14,8 @@
 #'
 #' @returns the input genesets, with results stored in columns 'pvalue', 'pvalue_adjust' and 'signif'
 #' @export
+#' 
+#' @importFrom goat test_genesets
 run_geneset_enrichment <- function(
     genesets, 
     genelist, 

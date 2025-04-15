@@ -7,14 +7,14 @@
 lhs \%>\% rhs
 }
 \arguments{
-\item{lhs}{A value or the magrittr placeholder.}
+\item{lhs}{A value or the dplyr placeholder.}
 
-\item{rhs}{A function call using the magrittr semantics.}
+\item{rhs}{A function call using the dplyr semantics.}
 }
 \value{
 The result of calling \code{rhs(lhs)}.
 }
 \description{
-See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
+See \code{dplyr::\link[dplyr:pipe]{\%>\%}} for details.
 }
 \keyword{internal}

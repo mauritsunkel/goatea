@@ -8,6 +8,10 @@
 #'
 #' @returns ComplexHeatmap object
 #' 
+#' @importFrom tibble column_to_rownames
+#' @importFrom ComplexHeatmap HeatmapAnnotation Heatmap Legend draw
+#' @importFrom purrr set_names
+#' 
 #' @export
 plot_gene_effectsize_ComplexHeatmap <- function (
     genes, 

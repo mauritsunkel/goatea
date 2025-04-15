@@ -64,6 +64,8 @@ wrap_hovertip <- function(ui_element, hovertip) {
 #' * 7227 = Fruit fly (Drosophila melanogaster)
 #' * 6239 = Worm (Caenorhabditis elegans)
 #'
+#' @importFrom plyr mapvalues
+#'
 #' @export
 get_gene_annotation <- function(gene_symbols, organism = '9606') {
   annodata <- switch(
@@ -145,6 +147,7 @@ process_string_input <- function(string_input) {
 #' @importFrom dplyr left_join
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
+#' @importFrom openxlsx write.xlsx
 #' 
 #' @keywords internal
 process_write_merged_enrichments <- function(merged_enrichment, output_folder, filename, top_n = NULL) {

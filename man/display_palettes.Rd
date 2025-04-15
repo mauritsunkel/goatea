@@ -22,7 +22,7 @@ Note that discrete palettes with maximum n colors will be repeated in plotting.
 
 Any numeric i_palettes over maximum amount of palettes are not displayed.
 
-Contains all Viridis palettes, including Turbo.
+Contains all Viridis palettes, excluding Turbo.
 }
 \examples{
 display_palettes()

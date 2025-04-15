@@ -59,9 +59,9 @@ get_visNetwork <- function(ppigraph, genes_overview = NULL, sample_name = NULL) 
     nodes$color.background <- colors
     nodes$color.border <- colors
   }
-  ## add metadata from GOATEA::genes_overview
+  ## add metadata
   if ( ! is.null(genes_overview)) {
-    ## add sample-wise metadata from GOATEA::genes_overview
+    ## add sample-wise metadata
     if ( ! is.null(sample_name)) {
       if ('genelist_overlap' %in% colnames(genes_overview)) genes_overview$signif <- ifelse(grepl(sample_name, genes_overview$genelist_overlap), 1, -1)
       genes_overview$updown <- ifelse(genes_overview[[paste0(sample_name, '_efsi')]] > 0, 1, -1)
@@ -74,7 +74,7 @@ get_visNetwork <- function(ppigraph, genes_overview = NULL, sample_name = NULL) 
         0, 
         max(genes_overview[[paste0(sample_name, '_efsi')]], na.rm = TRUE)))
 
-    nodes <- nodes %>% left_join(mutate(genes_overview, symbol_upper = toupper(symbol)), by = c('label' = 'symbol_upper'))
+    nodes <- nodes %>% left_join(mutate(genes_overview, symbol_upper = toupper(.data$symbol)), by = c('label' = 'symbol_upper'))
 
     ## map values to colors
     if ( ! is.null(sample_name)) {
@@ -93,8 +93,8 @@ get_visNetwork <- function(ppigraph, genes_overview = NULL, sample_name = NULL) 
   edges <- as.data.frame(edge_attr(ppigraph)) %>% 
     rename('width' = 'weight') %>% # visNetwork edge size
     mutate(
-      id = paste(from, to, sep = "_"),
-      width = width * 10, # edge visual size 
+      id = paste(.data$from, .data$to, sep = "_"),
+      width = .data$width * 10, # edge visual size 
       title = edge_title # tooltip
     ) 
   

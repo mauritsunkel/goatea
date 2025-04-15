@@ -7,6 +7,8 @@
 #' @returns upset plot
 #' 
 #' @export 
+#' 
+#' @importFrom upsetjs upsetjs fromList generateIntersections generateDistinctIntersections generateUnions chartTheme interactiveChart
 #'
 #' @examples
 #' # https://upset.js.org/integrations/r/articles/combinationModes.html#distinct-intersection-mode
@@ -42,6 +44,8 @@ plot_genelists_overlap_upsetjs <- function(genelists, mode = 'distinct', interac
 #' @param empty_intersections default: UI/value/TRUE, if FALSE, shouldn't print intersects with 0 overlaps, error in UpSetR package
 #' 
 #' @export 
+#' 
+#' @importFrom UpSetR intersects fromList upset
 #' 
 #' @return plot to render
 plot_genelists_overlap_upsetR <- function(genelists, grayscale_colors = TRUE, empty_intersections = TRUE) {
@@ -109,6 +113,9 @@ plot_genelists_overlap_upsetR <- function(genelists, grayscale_colors = TRUE, em
 #' @param genelists UI value/list of tibbles/dataframes
 
 #' @export 
+#' 
+#' @importFrom ggVennDiagram Venn process_data venn_regionedge venn_setedge venn_setlabel venn_regionlabel
+#' @importFrom ggplot2 ggplot aes geom_polygon geom_path geom_text geom_label coord_equal scale_fill_manual theme_void scale_x_continuous expansion
 #' 
 #' @return plot to render
 plot_genelists_overlap_venn <- function(genelists) {

@@ -180,8 +180,6 @@ colorify <- function(
     } else if (original_palette %in% grDevices::hcl.pals()) {
       if (is.null(n)) stop("To select hcl palette, pass n colors.")
       grDevices::hcl.colors(n, palette = original_palette)
-    } else if (original_palette == "Turbo") {
-      turbo(n)
     } else if (original_palette == "Rainbow") {
       grDevices::rainbow(n)
     } else if (original_palette == "Heat") {
@@ -362,7 +360,7 @@ colorify_map <- function(colors, breakpoints, ...) {
 #'
 #' Any numeric i_palettes over maximum amount of palettes are not displayed.
 #'
-#' Contains all Viridis palettes, including Turbo.
+#' Contains all Viridis palettes, excluding Turbo.
 #'
 #' @examples
 #' display_palettes()
@@ -383,15 +381,14 @@ display_palettes <- function(n = 10, i_palettes = 1:1000, border = FALSE) {
   )
   
   ## get base R grDevices palettes
-  viridis_palette_names <- c("Viridis", "Plasma", "Inferno", "Cividis", "Rocket", "Mako", "Turbo")
+  viridis_palette_names <- c("Viridis", "Plasma", "Inferno", "Cividis", "Rocket", "Mako")
   grDevices_palettes <- c("Rainbow", "Heat", "Terrain", "Topo", "Cm")
   hcl_palettes <- grDevices::hcl.pals()
   base_palettes <- grDevices::palette.pals()
-  turbo_palette <- setNames("Turbo", "Viridis-turbo")
   grd_palettes <- setNames(grDevices_palettes, rep("grDevices", length(grDevices_palettes)))
   hcl_palettes <- setNames(hcl_palettes, rep("hcl", length(hcl_palettes)))
   base_palettes <- setNames(base_palettes, rep("pal", length(base_palettes)))
-  all_palettes <- c(turbo_palette, grd_palettes, hcl_palettes, base_palettes)
+  all_palettes <- c(grd_palettes, hcl_palettes, base_palettes)
   
   if (is.character(i_palettes)) {
     i_palettes <- unlist(sapply(i_palettes, function(pal) {
@@ -431,8 +428,6 @@ display_palettes <- function(n = 10, i_palettes = 1:1000, border = FALSE) {
       colors <- grDevices::hcl.colors(n, palette = all_palettes[i])
     } else if (names(all_palettes[i]) == "pal") {
       colors <- grDevices::palette.colors(palette = all_palettes[i])
-    } else if (all_palettes[i] == "Turbo") {
-      colors <- turbo(n)
     } else if (all_palettes[i] == "Rainbow") {
       colors <- grDevices::rainbow(n)
     } else if (all_palettes[i] == "Heat") {
@@ -477,7 +472,7 @@ display_palettes <- function(n = 10, i_palettes = 1:1000, border = FALSE) {
 palette_name_mapping <- function(palette) {
   palette_mapping <- list(
     ## custom palettes
-    "turbo" = "Turbo", "rainbow" = "Rainbow", "heat" = "Heat",
+    "rainbow" = "Rainbow", "heat" = "Heat",
     "terrain" = "Terrain", "topo" = "Topo", "cm" = "Cm",
     ## all RColorBrewer palettes
     ## grDevices::palette.pals()

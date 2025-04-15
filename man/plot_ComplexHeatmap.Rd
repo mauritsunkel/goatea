@@ -7,6 +7,7 @@
 plot_ComplexHeatmap(
   enrichment_result,
   genelist,
+  genes = NULL,
   cluster_method = "single",
   n_cluster = 1,
   n_top_terms = NA,
@@ -21,6 +22,8 @@ Must include \code{name} (gene set names) and \code{symbol} (listed genes associ
 
 \item{genelist}{dataframe with gene-level statistics, including at least
 \code{symbol}, \code{pvalue}, \code{effectsize}, and \code{signif} columns}
+
+\item{genes}{character, default: NULL, if genes given, these are prioritized for visualization}
 
 \item{cluster_method}{default: 'single', else one of \link{hclust} methods}
 

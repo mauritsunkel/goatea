@@ -6,7 +6,7 @@
 #' @returns ggplot2 object
 #' @export
 #' 
-#' @import ggplot2
+#' @importFrom ggplot2 ggplot aes geom_point scale_x_continuous scale_color_gradient scale_size_continuous theme_minimal labs facet_wrap theme element_rect element_text
 plot_splitdot <- function(enrichment, topN = NA) {
   if ("source" %in% colnames(enrichment)) if (length(unique(enrichment$source)) > 1) stop("pass a single source for plotting splitdot") 
   if (is.na(topN) || topN > nrow(enrichment)) topN <- nrow(enrichment)

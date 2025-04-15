@@ -1,25 +1,29 @@
-Package: goatea
+Package: GOATEA
 Type: Package
-Title: A Shiny interface for Gene Set Enrichment Analysis with GOAT.
-Version: 0.1.19
+Title: A Shiny interface for Gene Set Enrichment Analysis with GOAT
+Version: 1.0.0
 Authors@R: 
     person(given = "Maurits",
 	       family = "Unkel",
 		   role = c("aut", "cre"),
-		   email = "mauritsunkel@gmail.com")
+		   email = "m.unkel@erasmusmc.nl")
+Author: Maurits Unkel [aut, cre]
 Maintainer: Maurits Unkel <m.unkel@erasmusmc.nl>
-Description: goatea provides a Shiny interface for performing gene set enrichment analysis using the GOAT package and includes interactive visualizations.
+Description: GOATEA provides a Shiny interface with interactive visualizations and utility functions for performing and analysing gene set enrichment analysis using the GOAT package. 
+    GOATEA is designed to support large-scale and user-friendly enrichment workflows across multiple gene lists and comparisons, with flexible plotting and output options.
+    Visualizations pre-enrichment include interactive Volcano and UpSet (overlap) plots. Visualizations pre-enrichment include interactive geneset dotplot, geneset treeplot, gene-effectsize heatmap, gene-geneset heatmap and STRING databas protein-protein-interactions network plot. 
+URL: https://github.com/mauritsunkel/goatea
+BugReports: https://github.com/mauritsunkel/goatea/issues
 License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
-LazyData: true
-LazyDataCompression: xz
+LazyData: false
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Config/testthat/edition: 3
-biocViews: 
+biocViews: GeneSetEnrichment, Visualization, ShinyApps, GUI, Transcriptomics, Genomics, FunctionalGenomics, DifferentialExpression
 Depends: 
-    R (>= 4.2),
-	dplyr (>= 1.0.3)
+    R (>= 4.4.2),
+	dplyr (>= 1.1.4)
 Imports:
     goat (>= 1.0),
 	shiny (>= 1.10.0),
@@ -31,18 +35,16 @@ Imports:
 	ComplexHeatmap (>= 2.20.0),
 	InteractiveComplexHeatmap (>= 1.12.0),
 	EnhancedVolcano (>= 1.22.0),
-	dplyr (>= 1.1.4),
 	tidyr (>= 1.3.1),
 	purrr (>= 1.0.2),
 	ggplot2 (>= 3.5.1),
 	plotly (>= 4.10.4),
 	igraph (>= 2.1.4),
 	visNetwork (>= 2.1.2),
-	arrow (>= 18.1.0.1)
+	arrow (>= 18.1.0.1),
+	htmltools (>= 0.5.8.1)
 Suggests:
     AnnotationDbi,
     org.Hs.eg.db,
 	org.Mm.eg.db,
 	enrichplot
-Remotes:
-	stephenturner/annotables

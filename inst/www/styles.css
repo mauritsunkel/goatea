@@ -1,0 +1,157 @@
+/* :root variables for coloring defined from Shiny server initialization */
+
+/* visnet styling*/
+#vno_ppi_visnetwork, #vno_ppi_visnetwork_subgraph {
+  background-color: var(--main-bg-color) !important;
+}
+/* hide outline when multiselecting pressing shiftKey */
+.vis-network:focus {
+  outline: none !important;
+}
+/* vno_ppi_visnetwork, vno_ppi_visnetwork_subgraph: show only reset view navigation button*/
+.vis-button.vis-zoomIn, 
+.vis-button.vis-zoomOut, 
+.vis-button.vis-expand,
+.vis-button.vis-up, 
+.vis-button.vis-down, 
+.vis-button.vis-left, 
+.vis-button.vis-right {
+  display: none !important;
+}
+/* visnet hover tooltip coloring - DEVNOTE: can break if div:nth-child(2) order changes in visnetwork internally */
+#graphvno_ppi_visnetwork > div:nth-child(2), #graphvno_ppi_visnetwork_subgraph > div:nth-child(2) {
+  background-color: var(--main-bg-color) !important;
+  color: var(--text-color) !important; /* text color */
+}
+
+/* DT datatable styling */
+.dataTable th {
+  background-color: var(--hover-color);
+  color: var(--text-color);
+}
+.dataTable td {
+  background-color: var(--main-bg-color);
+  color: var(--text-color);
+}
+.dataTable td:hover {
+  background-color: var(--focus-color);
+}
+div.dataTables_wrapper .dataTables_info {
+  color: var(--text-color) !important;
+  font-weight: bold;
+}
+div.dataTables_wrapper .dataTables_paginate {
+  color: var(--text-color) !important;
+  font-weight: bold;
+}
+
+/* hr divider */
+hr {
+  height: 2px;
+  background-color: var(--border-color);
+}
+
+/* Styling selectInput (selectize JS) */
+.selectize-control .selectize-input {
+  background-color: var(--main-bg-color);
+  color: var(--text-color);
+  border: 2px solid var(--border-color);
+}
+.selectize-control .selectize-input.focus {
+  background-color: var(--main-bg-color);
+  color: var(--text-color);
+}
+.selectize-dropdown, .selectize-dropdown-content {
+  background-color: var(--main-bg-color);
+  color: var(--text-color);
+}
+.selectize-dropdown-content .active {
+  background-color: var(--focus-color);
+  color: var(--text-color);
+}
+.selectize-dropdown-content .active:hover {
+  background-color: var(--focus-color);
+  color: var(--text-color);
+}
+
+/* Numeric Input */
+ .form-control {
+  background-color: var(--main-bg-color);
+  color: var(--text-color);
+  border: 2px solid var(--border-color);
+}
+
+/* Box Styling */
+.box {
+  background-color: var(--main-bg-color);
+  color: var(--text-color);
+  border: 4px solid var(--border-color);
+}
+.box-header {
+  color: var(--text-color);
+}
+/* Button Styling */
+.btn {
+  background-color: var(--focus-color);
+  color: var(--text-color);
+  border: 3px solid var(--border-color);
+}
+.btn:hover {
+  background-color: var(--hover-color);
+  color: var(--text-color);
+}
+.btn:disabled:hover,
+.btn[disabled]:hover {
+  background-color: var(--hover-color);
+  color: var(--text-color);
+}
+
+/* Verbatim Text Output */
+.shiny-text-output {
+  background-color: var(--main-bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+/* Checkbox and Radiobuttons selection color */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--focus-color);
+}
+
+/* Background color */
+.content-wrapper {
+  background-color: var(--darker-bg-color);
+}
+
+/* Sidebar Styling */
+.sidebar-menu > li > a {
+  background-color: var(--main-bg-color);
+  color: var(--text-color);
+}
+.sidebar-menu > li > a:hover {
+  background-color: var(--hover-color) !important;
+  border-left: none !important;
+}
+.sidebar-menu > li.active > a {
+  background-color: var(--focus-color) !important;
+  color: var(--text-color);
+  border-left: none !important;
+}
+
+/* Header Styling */
+.skin-blue .main-header .logo {
+  background-color: var(--hover-color);
+}
+.skin-blue .main-header .logo:hover {
+  background-color: var(--hover-color);
+}
+.skin-blue .main-header .sidebar-toggle {
+  background-color: var(--hover-color);
+}
+.skin-blue .main-header .sidebar-toggle:hover {
+  background-color: var(--hover-color) !important;
+}
+.skin-blue .main-header .navbar {
+  background-color: var(--hover-color);
+}

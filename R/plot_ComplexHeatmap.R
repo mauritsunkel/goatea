@@ -22,7 +22,11 @@
 #'   - Customized row/column labels highlighting significant elements.
 #'   - A color-mapped heatmap showing clustering results.
 #'
-#' @export
+#' @export 
+#' 
+#' @importFrom tidyr unnest
+#' @importFrom ComplexHeatmap Heatmap HeatmapAnnotation draw
+#' @importFrom grid gpar
 #'
 #' @examples
 #' \dontrun{
