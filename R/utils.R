@@ -273,3 +273,31 @@ set_base_folder <- function(folder_path = NULL) {
   
   warning("no existing folder path given, and all base folder path options returned '' or do not exist, please supply an existing base folder path...")
 }
+
+#' Rename the gene overview
+#'
+#' @param names names to rename gene overview
+#' @param genes_overview UI given genes overview dataframe (rv_genelists_overlap$gene_overview)
+#'
+#' @returns genes overview renamed
+rename_gene_overview <- function(names, genes_overview) {
+  df <- genes_overview
+  
+  sample_cols <- df %>%
+    select(matches("(_efsi|_pval|_perc|_geneSetRatio)$")) %>%
+    colnames()
+  
+  old_sample_names <- unique(gsub("(_efsi|_pval|_perc|_geneSetRatio)$", "", sample_cols))
+  
+  for (i in seq_along(old_sample_names)) {
+    old_name <- old_sample_names[i]
+    new_name <- names[i]
+    df <- df %>%
+      rename_with(
+        .fn = function(x) gsub(paste0("^", old_name, "(?=_efsi|_pval|_perc|_geneSetRatio)"), new_name, x, perl = TRUE),
+        .cols = matches(paste0("^", old_name, "(_efsi|_pval|_perc|_geneSetRatio)$"))
+      )
+    df$genelist_overlap <- gsub(paste0("\\b", old_name, "\\b"), new_name, df$genelist_overlap)
+  }
+  return(df)
+}
