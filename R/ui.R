@@ -3,7 +3,7 @@
 #' @export
 #' 
 #' @importFrom shiny addResourcePath fluidRow column selectInput textInput actionButton textOutput checkboxInput radioButtons fileInput verbatimTextOutput numericInput downloadButton textAreaInput plotOutput
-#' @importFrom shinyjs useShinyjs
+#' @importFrom shinyjs useShinyjs disabled
 #' @importFrom shinydashboard box tabItem tabItems dashboardPage dashboardHeader dashboardSidebar sidebarMenu menuItem menuSubItem dashboardBody
 #' @importFrom htmltools tags div
 #' @importFrom plotly plotlyOutput
