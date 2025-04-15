@@ -14,7 +14,7 @@
 #' @importFrom visNetwork visNetworkOutput
 goatea_ui <- function() {
   ## adds custom css styling and Javascript functionalities
-  shiny::addResourcePath("www", system.file("www", package = "goatea"))
+  shiny::addResourcePath("www", system.file("www", package = "GOATEA"))
   
   dashboardPage(
     dashboardHeader(title = "GOATEA"),
