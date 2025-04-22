@@ -1,10 +1,16 @@
 #' Read and validate a table with genes (that should be tested in overrepresentation-analysis) for compatibility with this R package#'
 #' @param file full filepath to gene tibble in .csvs/.xlsx/.tsv 
-#' @param map_organism default: NULL, if "Hs" or "Mm", used for selecting org.Xx.eg.db to map gene symbols to gene column via AnnotationDbi::mapIds(keytype = 'ALIAS') - if mapped to NA the genes are removed`
 #' @param remove_non_numerical_ids boolean, default TRUE, if non-numerical in gene column, remove
 #' @param remove_duplicated boolean, default TRUE, removes duplicated gene symbols/ids
 #' @param remove_Rik_genes boolean, default TRUE, grepl("Rik$") search and remove Riken non-canonical mouse genes
 #' @param remove_Gm_genes boolean, default TRUE, grepl("^Gm") search and remove Gm non-canonical mouse genes
+#' @param map_organism default: NULL, if numeric taxid, used for selecting org.Xx.eg.db to map gene symbols to gene column via AnnotationDbi::mapIds(keytype = 'ALIAS') - if mapped to NA the genes are removed - need to download org.Xx.eg.db manually! Symbols are set toupper() to match formatting. Protein symbols could be used too. 
+#' * 9606 = Human (Homo sapiens) (org.Hs.eg.db)
+#' * 9544 = Rhesus monkey (Macaca mulatta) (org.Mmu.eg.db)
+#' * 10090 = Mouse (Mus musculus) (org.Mm.eg.db)
+#' * 10116 = Rat (Rattus norvegicus) (org.Rn.eg.db)
+#' * 7227 = Fruit fly (Drosophila melanogaster) (org.Dm.eg.db)
+#' * 6239 = Worm (Caenorhabditis elegans) (org.Ce.eg.db)
 #'
 #' @description
 #' if 'pvalue' is not in the genelist columns, it is set and defaulted to 1 for visualization purposes 
@@ -17,8 +23,8 @@
 #' @importFrom org.Hs.eg.db org.Hs.eg.db
 #' @importFrom org.Mm.eg.db org.Mm.eg.db
 #' @importFrom AnnotationDbi mapIds
-read_validate_genelist <- function(file, map_organism = NULL, remove_non_numerical_ids = TRUE, remove_duplicated = TRUE,
-                          remove_Rik_genes = TRUE, remove_Gm_genes = TRUE) {
+read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove_duplicated = TRUE,
+                          remove_Rik_genes = TRUE, remove_Gm_genes = TRUE, map_organism = NULL) {
   message("Checking file format...")
   if (file_extension(file) == "xlsx") {
     genelist <- openxlsx::read.xlsx(file)
@@ -33,17 +39,24 @@ read_validate_genelist <- function(file, map_organism = NULL, remove_non_numeric
   
   ## if mapping: note that NA and empty genes will be removed from genelist
   if ( ! is.null(map_organism)) {
-    match.arg(map_organism, choices = c("Hs", "Mm"))
-    if(map_organism == "Hs") {
-      org.xx.eg.db <- org.Hs.eg.db::org.Hs.eg.db
-    } else if (map_organism == "Mm") {
-      org.xx.eg.db <- org.Mm.eg.db::org.Mm.eg.db
-    }
-    message("map gene symbols via AnnotationDbi ALIAS to Entrez IDs")
-    genelist$gene <- AnnotationDbi::mapIds(org.xx.eg.db, keys = genelist$symbol, column = "ENTREZID", keytype = "ALIAS", multiVals = "first")
+    if ( ! 'symbol' %in% colnames(genelist)) return("map_symbol_to_gene parameter on, yet no 'symbol' column found in genelist")
+    org.xx.eg.db <- switch(
+      as.character(map_organism),
+      '9606' = org.Hs.eg.db::org.Hs.eg.db,
+      '7227' = org.Dm.eg.db::org.Dm.eg.db,
+      '9544' = org.Mmu.eg.db::org.Mmu.eg.db,
+      '10116' = org.Rn.eg.db::org.Rn.eg.db,
+      '6239' = org.Ce.eg.db::org.Ce.eg.db,
+      '10090' = org.Mm.eg.db::org.Mm.eg.db,
+      NULL
+    )
+    if (is.null(org.xx.eg.db)) return('search org.Xx.eg.db + organism to download package manually from Bioconductor')
+    message("mapping gene symbols via AnnotationDbi::mapIds ALIAS to NCBI Entrez IDs")
+    genelist$gene <- AnnotationDbi::mapIds(org.xx.eg.db, keys = toupper(genelist$symbol), column = "ENTREZID", keytype = "ALIAS", multiVals = "first")
+    warning(sum(is.na(genelist$gene)) / nrow(genelist), '% of symbols were not converted to ENTREZID')
     genelist <- genelist[ ! is.na(genelist$gene), ]
   }
-  
+
   # 1) data.frame with all required columns
   ok = is.data.frame(genelist) && 
     nrow(genelist) > 0 &&
@@ -57,7 +70,7 @@ read_validate_genelist <- function(file, map_organism = NULL, remove_non_numeric
     genelist$effectsize <- 0
   }
   if ( ! 'symbol' %in% colnames(genelist)) {
-    warning("no 'symbol' column in genelist: initializing with all 'symbol' = genelist$gene")
+    warning("no 'symbol' column in genelist, initializing with: genelist$symbol = genelist$gene")
     genelist$symbol <- genelist$gene
   }
   
@@ -115,9 +128,9 @@ read_validate_genelist <- function(file, map_organism = NULL, remove_non_numeric
   if (remove_non_numerical_ids) genelist <- genelist[ ! is.na(as.integer(genelist$gene)), ]
   
   # remove Riken uncanonical mouse genes
-  if (remove_Rik_genes) genelist <- genelist %>% filter( ! grepl("Rik$", gene))
+  if (remove_Rik_genes) genelist <- genelist %>% filter( ! grepl("Rik$", .data$gene))
   # remove Gm uncanonical mouse genes
-  if (remove_Gm_genes) genelist <- genelist %>% filter( ! grepl("^Gm", gene))
+  if (remove_Gm_genes) genelist <- genelist %>% filter( ! grepl("^Gm", .data$gene))
 
   return(genelist)
 }
