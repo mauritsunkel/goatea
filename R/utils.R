@@ -70,6 +70,8 @@ wrap_hovertip <- function(ui_element, hovertip) {
 #'
 #' @export
 get_gene_annotation <- function(gene_symbols, organism = '9606') {
+  if ( ! requireNamespace("annotables", quietly = TRUE)) return(NULL)
+  
   annodata <- switch(
     as.character(organism),
     '9606' = annotables::grch38,
