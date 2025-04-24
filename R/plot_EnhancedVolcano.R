@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @importFrom EnhancedVolcano EnhancedVolcano
-#' @importFrom ggplot2 coord_cartesian scale_x_continuous aes
+#' @importFrom ggplot2 coord_cartesian scale_x_continuous aes element_rect element_line element_text
 #' @importFrom plotly ggplotly
 plot_EnhancedVolcano <- function(genelist, effectsize_threshold = 1, pvalue_threshold = 0.05, background_color = 'black', foreground_color = 'white', interactive = FALSE) {
   x_axis_min <- floor(min(genelist$effectsize))
