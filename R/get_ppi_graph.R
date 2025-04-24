@@ -80,13 +80,7 @@ get_ppigraph <- function(ppi_data, vertex_clustering = NULL) {
     ## set diversity: requires graph weight
     g <- set_vertex_attr(g, 'diversity', value = diversity(g)) # Shannon entropy of incident edges 
   }
-  symbol_ids <- ppi_data %>% 
-    select(from_symbol, from) %>% 
-    rename(symbol = from_symbol, ids = from) %>% 
-    bind_rows(ppi_data %>% 
-      select(to_symbol, to) %>% rename(symbol = to_symbol, ids = to)) %>% 
-    distinct()
-  g <- set_vertex_attr(g, "id", value = symbol_ids$ids) # node PPI IDs
+  g <- set_vertex_attr(g, "id", value = unique(c(ppi_data$from, ppi_data$to))) # unique node IDs
   ## set graph reportable metrics
   g <- set_graph_attr(g, 'central gene', V(g)[graph_center(g)]$name) # most central node(s)
   g <- set_graph_attr(g, 'modularity', modularity(g, membership = membership(cl))) # cluster modularity 
