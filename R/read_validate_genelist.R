@@ -53,7 +53,7 @@ read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove
     if (is.null(org.xx.eg.db)) return('search org.Xx.eg.db + organism to download package manually from Bioconductor')
     message("mapping gene symbols via AnnotationDbi::mapIds ALIAS to NCBI Entrez IDs")
     genelist$gene <- AnnotationDbi::mapIds(org.xx.eg.db, keys = toupper(genelist$symbol), column = "ENTREZID", keytype = "ALIAS", multiVals = "first")
-    warning(sum(is.na(genelist$gene)) / nrow(genelist), '% of symbols were not converted to ENTREZID')
+    warning(round(sum(is.na(genelist$gene)) / nrow(genelist), digits = 2), '% of symbols were not converted to ENTREZID')
     genelist <- genelist[ ! is.na(genelist$gene), ]
   }
 
@@ -83,7 +83,7 @@ read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove
       types["effectsize"] %in% c("integer", "numeric", "double")
   }
   if( ! ok) {
-    return("genelist table should be a data.frame/tibble with these columns (and types); gene (character or integer)")
+    return("genelist table should be a data.frame/tibble with these columns (and types); gene (character or integer) - consider mapping symbol to gene parameter")
   }
   
   # 3) check for NA or empty-string values  (note that the 'signif' column can be NA)
