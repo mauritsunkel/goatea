@@ -2,7 +2,7 @@
 #'
 #' @export
 #' 
-#' @importFrom shiny addResourcePath fluidRow column selectInput textInput actionButton textOutput checkboxInput radioButtons fileInput verbatimTextOutput numericInput downloadButton textAreaInput plotOutput
+#' @importFrom shiny icon addResourcePath fluidRow column selectInput textInput actionButton textOutput checkboxInput radioButtons fileInput verbatimTextOutput numericInput downloadButton textAreaInput plotOutput
 #' @importFrom shinyjs useShinyjs disabled hidden
 #' @importFrom shinydashboard box tabItem tabItems dashboardPage dashboardHeader dashboardSidebar sidebarMenu menuItem menuSubItem dashboardBody
 #' @importFrom htmltools tags div

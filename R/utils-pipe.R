@@ -1,6 +1,6 @@
 #' Pipe operator
 #'
-#' See \code{dplyr::\link[dplyr:pipe]{\%>\%}} for details.
+#' See \code{\link[dplyr]{\%>\%}} for details.
 #'
 #' @name %>%
 #' @rdname pipe

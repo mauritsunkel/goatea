@@ -8,6 +8,7 @@ process_write_merged_enrichments(
   merged_enrichment,
   output_folder,
   filename,
+  genes_overview,
   top_n = NULL
 )
 }

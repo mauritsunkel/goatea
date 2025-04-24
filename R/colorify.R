@@ -1,63 +1,3 @@
-# TODO recreate
-# RColorBrewer::brewer.pal.info
-## TODO enable showing palettes based on types etc 
-## TODO add options for distinct color palettes'
-# TODO how RColorBrewer displays palettes 
-# image(1:n,1,as.matrix(1:n),col=brewer.pal(n,name), xlab=paste(name,palattr),ylab="",xaxt="n",yaxt="n",bty="n")
-
-# TODO mention package at https://stackoverflow.com/questions/15282580/how-to-generate-a-number-of-most-distinctive-colors-in-r and more in stackoverflow
-# TODO link documentations
-# TODO Github pages/Shiny color picker/palette creator
-
-# TODO colorblind: Viridis for continuous, Okabe-Ito for discrete, more?  
-# TODO add Github MD5 sum file in package 
-# TODO idea potentials
-## custom palettes
-## .t: threshold values, t_type: "lock", "filter"
-
-# TODO check R color packages: none in Bioconductor
-## Bioconductor: none
-## https://cran.r-project.org/web/packages/available_packages_by_name.html: search palet, color, colour 
-## RcolorBrewer X 
-## Viridis: perceptually uniform, colorblindness: basically darkblue to lightyellow colormap axis: https://www.youtube.com/watch?v=xAoljeRJ3lU (Latin for green, also made for Matplotlib, so snake, also fish and bird)
-## Paletteer
-## ggplot2 - ggthemes
-## colorspace::demoplot
-## colorize
-## Polychrome
-## pals
-## rcartocolor
-## ggsci
-
-# TODO be able to return a function? as some plots seem to require that 
-# TODO check scale_continuous need for colour output (need of function as output?)
-# TODO gradient_n = Inf for continuous, scale_continuous
-
-
-
-# TODO Rtistry
-## be able to loop Colorify to create rectangular palette displays 
-## modulo 2/3/... == 0,1,2 do something else (change lock and modification patterns)
-## change parameter, plot rectangles (functionize to easily plot 'gradients' of parameter changes, accept parameter ranges and step e.g. h = c(1:20,2))
-# TODO what if runif in hsl space
-## TODO if colors already given, see if runif() generator can plot other colors theoretically distinct from gives ones 
-
-
-# image(1:n,1,as.matrix(1:n),col=RColorBrewer::brewer.pal(n,name), xlab=paste(name,palattr),ylab="",xaxt="n",yaxt="n",bty="n")
-
-
-
-# TODO set min max parameter thresholds for RGB HSL
-# TODO make order of calling  RGB/HSL values/factors matter 
-# TODO in display: separate palette names from indices parameter 
-
-# TODO use ... to set gradient_space and gradient_interpolate, make notes in documentation, maybe same for rev/alpha
-
-# TODO check how ggplot scale_continuous returns colors
-#' TODO add @param colors_breakpoints & @param ... to pass arguments to grDevices::colorRamp(Palette)
-
-
-
 #' Create and/or modify color/gradient palettes
 #'
 #' Either generate theoretically maximally different colors, select an available R grDevices palette and/or modify the colors of the given gradient/palette
@@ -98,7 +38,6 @@
 #' @export
 #'
 #' @description
-#' TODO especially Viridis for colorblind continuous  
 #' Note for colorblind use: "Okabe-Ito"
 #' 
 #' Addition of values happens before multiplication with factors. 
@@ -107,9 +46,6 @@
 #' All RColorBrewer and Viridis palettes are included.
 #' 
 #' All grDevices plotting functions are provided as palettes, simply use colors = "rainbow", "heat", "terrain", "topo" or "cm".
-#' 
-#' TODO add description
-#'
 #'
 #' @examples
 #' ## if parameters identical, change seed to change generation
@@ -129,7 +65,6 @@
 #' colorify(colors = c("Okabe-Ito", "red", "blue", "yellow"), plot = T, n = 10)
 #' 
 #' ## no adjustments to locked indices 
-#' TODO more examples
 #' colorify(colors = "Okabe-Ito", colors_lock = c(F,F,T,T), plot = T, rv = -300)
 #' colorify(colors = "Okabe-Ito", colors_lock = c(F,F,T,T), plot = T, rv = 300)
 #' 
@@ -147,9 +82,6 @@
 #' colorify(colors="rainbow", n = 100, lf = .5, plot = T,)
 #' colorify(colors=grDevices::rainbow(100, start = .25, end = .75), plot = T)
 #' colorify(colors=grDevices::rainbow(100)[25:75], plot = T)
-#' 
-#' TODO rgb, hsl examples
-#' TODO all parameter examples
 colorify <- function(
     n = NULL, colors = character(0), colors_lock = NULL, colors_names = character(0), colors_breakpoints = numeric(0),
     gradient_n = n, gradient_space = c("rgb", "Lab"), gradient_interpolate = c("linear", "spline"),

@@ -2,8 +2,7 @@
 % Please edit documentation in R/colorify.R
 \name{colorify}
 \alias{colorify}
-\title{TODO add @param colors_breakpoints & @param ... to pass arguments to grDevices::colorRamp(Palette)
-Create and/or modify color/gradient palettes}
+\title{Create and/or modify color/gradient palettes}
 \usage{
 colorify(
   n = NULL,
@@ -94,7 +93,6 @@ colorify(
 vector of color hexcodes
 }
 \description{
-TODO especially Viridis for colorblind continuous
 Note for colorblind use: "Okabe-Ito"
 
 Addition of values happens before multiplication with factors.
@@ -103,8 +101,6 @@ Palette names are stripped of whitespace and lowered for name matching.
 All RColorBrewer and Viridis palettes are included.
 
 All grDevices plotting functions are provided as palettes, simply use colors = "rainbow", "heat", "terrain", "topo" or "cm".
-
-TODO add description
 }
 \details{
 Either generate theoretically maximally different colors, select an available R grDevices palette and/or modify the colors of the given gradient/palette
@@ -127,7 +123,6 @@ colorify(colors = "viridis", n = 10, plot = TRUE, l = .9)
 colorify(colors = c("Okabe-Ito", "red", "blue", "yellow"), plot = T, n = 10)
 
 ## no adjustments to locked indices 
-TODO more examples
 colorify(colors = "Okabe-Ito", colors_lock = c(F,F,T,T), plot = T, rv = -300)
 colorify(colors = "Okabe-Ito", colors_lock = c(F,F,T,T), plot = T, rv = 300)
 
@@ -145,7 +140,4 @@ colorify(colors=grDevices::rainbow(100, v = .5), plot = T)
 colorify(colors="rainbow", n = 100, lf = .5, plot = T,)
 colorify(colors=grDevices::rainbow(100, start = .25, end = .75), plot = T)
 colorify(colors=grDevices::rainbow(100)[25:75], plot = T)
-
-TODO rgb, hsl examples
-TODO all parameter examples
 }

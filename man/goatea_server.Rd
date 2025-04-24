@@ -4,7 +4,7 @@
 \alias{goatea_server}
 \title{Server for goatea package}
 \usage{
-goatea_server(input, output, session, css_colors, mm_genesets = NULL)
+goatea_server(input, output, session, css_colors)
 }
 \arguments{
 \item{input}{Shiny input elements handling}

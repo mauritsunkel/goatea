@@ -18,7 +18,7 @@ get_string_ppi(
 \arguments{
 \item{aliases}{character, vector with protein/gene symbols/aliases}
 
-\item{score_threshold}{integer, default: 0, to get all PPI, ranges between \link{0-1000}, 200 for low, 400 for medium and 700 for high/stringent scoring PPI}
+\item{score_threshold}{integer, default: 0, to get all PPI, ranges between \code{[0-1000]}, 200 for low, 400 for medium and 700 for high/stringent scoring PPI}
 
 \item{organism}{integer, default: 9606 (Homo Sapiens), see \code{?goat::load_genesets_go_bioconductor} taxid parameter for possible organism taxIDs}
 

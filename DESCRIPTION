@@ -43,12 +43,21 @@ Imports:
 	visNetwork (>= 2.1.2),
 	arrow (>= 18.1.0.1),
 	htmltools (>= 0.5.8.1),
-	methods (>= 4.5.0)
+	methods (>= 4.5.0),
+	AnnotationDbi (>= 1.69.1),
+	DT (>= 0.33),
+	enrichplot (>= 1.27.4),
+	ggVennDiagram (>= 1.5.2),
+	plyr (>= 1.8.9),
+	tibble(>= 3.2.1)
 Suggests:
-    AnnotationDbi,
+    knitr,
+    rmarkdown,
+	annotables,
     org.Hs.eg.db,
     org.Mm.eg.db,
-    enrichplot,
-    knitr,
-    rmarkdown
+	org.Dm.eg.db,
+	org.Mmu.eg.db,
+	org.Rn.eg.db,
+	org.Ce.eg.db
 VignetteBuilder: knitr

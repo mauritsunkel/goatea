@@ -1,7 +1,7 @@
 #' Get STRING database Protein-Protein Interactions
 #'
 #' @param aliases character, vector with protein/gene symbols/aliases
-#' @param score_threshold integer, default: 0, to get all PPI, ranges between [0-1000], 200 for low, 400 for medium and 700 for high/stringent scoring PPI
+#' @param score_threshold integer, default: 0, to get all PPI, ranges between \code{[0-1000]}, 200 for low, 400 for medium and 700 for high/stringent scoring PPI
 #' @param organism integer, default: 9606 (Homo Sapiens), see `?goat::load_genesets_go_bioconductor` taxid parameter for possible organism taxIDs
 #' @param version character, default: 'latest', else a version to check availability, e.g. "12.0", if version not available the available versions are printed
 #' @param versions NULL, else character vector with versions to choose from with version

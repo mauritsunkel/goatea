@@ -57,7 +57,7 @@ plot_EnhancedVolcano <- function(genelist, effectsize_threshold = 1, pvalue_thre
     }
     
     p <- plotly::ggplotly(
-      p + ggplot2::aes(key = symbol, x = effectsize, y = -log10(pvalue)) +
+      p + ggplot2::aes(key = .data$symbol, x = .data$effectsize, y = -log10(.data$pvalue)) +
         labs(
           x = 'effectsize (FC)',
           y = '-log10(pvalue) (P)',

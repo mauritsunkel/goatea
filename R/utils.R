@@ -33,6 +33,8 @@ check_dependency = function(pkg, msg) {
 #'
 #' @export
 #'
+#' @importFrom htmltools div
+#' @importFrom shiny icon
 wrap_loader <- function(id, ui_element) {
   div(ui_element,
       div(
@@ -70,24 +72,27 @@ wrap_hovertip <- function(ui_element, hovertip) {
 #'
 #' @export
 get_gene_annotation <- function(gene_symbols, organism = '9606') {
-  if ( ! requireNamespace("annotables", quietly = TRUE)) return(NULL)
-  
-  annodata <- switch(
-    as.character(organism),
-    '9606' = annotables::grch38,
-    '7227' = annotables::bdgp6,
-    '9544' = annotables::mmul801,
-    '10116' = annotables::rnor6,
-    '6239' = annotables::wbcel235,
-    '10090' = annotables::grcm38,
-    NULL
-  )
-  if (is.null(annodata)) return(NULL)
-  return(plyr::mapvalues(
-    x = gene_symbols,
-    from = annodata$symbol,
-    to = annodata$description,
-    warn_missing = FALSE))
+  if (requireNamespace("annotables", quietly = TRUE)) {
+    annodata <- switch(
+      as.character(organism),
+      '9606' = annotables::grch38,
+      '7227' = annotables::bdgp6,
+      '9544' = annotables::mmul801,
+      '10116' = annotables::rnor6,
+      '6239' = annotables::wbcel235,
+      '10090' = annotables::grcm38,
+      NULL
+    )
+    if (is.null(annodata)) return(NULL)
+    return(plyr::mapvalues(
+      x = gene_symbols,
+      from = annodata$symbol,
+      to = annodata$description,
+      warn_missing = FALSE))
+  } else {
+    warning("Package 'annotables' is required, install it with: remotes::install_github('stephenturner/annotables')")
+    return(NULL)
+  }
 }
 
 #' Get term names by searching with (partial) keywords
@@ -154,18 +159,18 @@ process_string_input <- function(string_input) {
 #' @importFrom openxlsx write.xlsx
 #' 
 #' @keywords internal
-process_write_merged_enrichments <- function(merged_enrichment, output_folder, filename, top_n = NULL) {
+process_write_merged_enrichments <- function(merged_enrichment, output_folder, filename, genes_overview, top_n = NULL) {
   
   merged_enrichment_sources <- lapply(unique(merged_enrichment$source), function(source) {
     dir.create(file.path(output_folder, "searches", source), recursive = TRUE)
     
     merged_enrichment_source <- merged_enrichment[merged_enrichment$source == source, ] %>%
-      select(genelist_ID, source, name, ngenes_input, ngenes, ngenes_signif, pvalue_adjust, zscore, symbol) %>%
+      select(.data$genelist_ID, source, .data$name, .data$ngenes_input, .data$ngenes, .data$ngenes_signif, .data$pvalue_adjust, .data$zscore, .data$symbol) %>%
       ## Select top 50 per genelist_ID based on pvalue_adjust before unnesting
-      { if (!is.null(top_n)) group_by(., genelist_ID) %>%
-          slice_min(pvalue_adjust, n = top_n, with_ties = FALSE) %>%
+      { if (!is.null(top_n)) group_by(.data = ., .data$genelist_ID) %>%
+          slice_min(.data$pvalue_adjust, n = top_n, with_ties = FALSE) %>%
           ungroup() else . } %>%
-      unnest(symbol) %>% ## long format by genes
+      unnest(.data$symbol) %>% ## long format by genes
       ## combine genesets with genes
       left_join(genes_overview, by = "symbol") %>%
       ## set best effectsize and pvalue columns based on respective values (excluding NA values)
@@ -181,8 +186,8 @@ process_write_merged_enrichments <- function(merged_enrichment, output_folder, f
       ) %>%
       ## order columns
       select(
-        genelist_ID, source, name, ngenes_input, ngenes, ngenes_signif, pvalue_adjust, zscore, symbol,
-        gene, gene_annotation, genelist_overlap, best_efsi, best_pval,
+        .data$genelist_ID, source, .data$name, .data$ngenes_input, .data$ngenes, .data$ngenes_signif, .data$pvalue_adjust, .data$zscore, .data$symbol,
+        .data$gene, .data$gene_annotation, .data$genelist_overlap, .data$best_efsi, .data$best_pval,
         ends_with("_efsi"),
         ends_with("_perc"),
         ends_with("_pval"),
@@ -212,7 +217,7 @@ scale_values_between <- function(values, old_min = min(values), old_max = max(va
 #' Hex code colors to rgba format
 #'
 #' @param hexcolors character (vector), hexcode colors (e.g. #FFFFFF)
-#' @param alpha numeric in range [0-1], default: NULL to use full opacity or given opacity (AA) in hexcolors (#RRGGBBAA)
+#' @param alpha numeric in range \code{[0-1]}, default: NULL to use full opacity or given opacity (AA) in hexcolors (#RRGGBBAA)
 #'
 #' @returns colors in rgba format
 #' 

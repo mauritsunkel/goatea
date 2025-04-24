@@ -23,7 +23,7 @@
 #' @importFrom shinydashboard updateTabItems        
 
 #' @export
-goatea_server <- function(input, output, session, css_colors, mm_genesets = NULL) {
+goatea_server <- function(input, output, session, css_colors) {
   colors <- shiny::reactiveValues(
     main_bg = css_colors$main_bg,
     darker_bg = css_colors$darker_bg,
@@ -35,25 +35,14 @@ goatea_server <- function(input, output, session, css_colors, mm_genesets = NULL
   ## set css colors
   session$onFlushed(function() session$sendCustomMessage("update_css_colors", css_colors), once = TRUE)
 
-  if (is.null(mm_genesets)) {
-    rv_genesets <- shiny::reactiveValues(
-      text = NULL,
-      filter_text = NULL,
-      success = FALSE,
-      genesets = NULL,
-      filtered_genesets = NULL
-    )
-  } else { # keep for testing purposes
-    shinyjs::runjs("$('#vto_load_genesets').css('color', '#32CD32');")
-    rv_genesets <- shiny::reactiveValues(
-      text = "Successfully loaded: org.Mm.eg.db",
-      text_filter = NULL,
-      success = TRUE,
-      genesets = mm_genesets
-    )
-  }
-  
   #### reactive values ----
+  rv_genesets <- shiny::reactiveValues(
+    text = NULL,
+    filter_text = NULL,
+    success = FALSE,
+    genesets = NULL,
+    filtered_genesets = NULL
+  )
   rv_load_genelists <- shiny::reactiveValues(
     text = NULL,
     success = FALSE
@@ -1152,7 +1141,7 @@ goatea_server <- function(input, output, session, css_colors, mm_genesets = NULL
   )
   output$db_ppigraph_metrics_subgraph <- shiny::downloadHandler(
     filename = function() {
-      req(rv_pp_subgraphi$g)
+      req(rv_ppi_subgraph$g)
       "metrics_subgraph.csv"
     },
     content = function(file) {
