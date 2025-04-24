@@ -22,7 +22,7 @@ plot_gene_effectsize_ComplexHeatmap <- function (
 {
   ## validate
   genes_ind <- match(genes, genes_overview$symbol)
-  if (length(genes_ind) < 1) stop("no selected genes matching the gene overview")
+  if (length(genes_ind) < 1) stop("no genes matching the gene overview")
   ## subset 
   go <- genes_overview[genes_ind, ]
   go_efsi <- go %>% select(symbol, ends_with("_efsi")) %>% rename_with(~ gsub("_efsi", "", .x))
@@ -35,15 +35,14 @@ plot_gene_effectsize_ComplexHeatmap <- function (
     select(-max_abs_val) %>%
     as.matrix()
   ## create row p-value annotation
-  go_pval <- go %>% select(ends_with("_pval")) %>% rename_with(~ gsub("_pval", "", .x))
-  col_fun <- colorify(colors = c("white", "black"), colors_breakpoints = range(go_pval, na.rm = TRUE))
+  go_pval <- go[match(rownames(mat), go$symbol),] %>% select(ends_with("_pval")) %>% rename_with(~ gsub("_pval", "", .x))
+  col_fun <- colorify(colors = c("black", "white"), colors_breakpoints = range(go_pval, na.rm = TRUE))
   cha_row <- ComplexHeatmap::HeatmapAnnotation(
     which = "row",
     df = go_pval,
     col = purrr::set_names(rep(list(col_fun), ncol(go_pval)), colnames(go_pval)),
     show_legend = FALSE
   )
-  
   ## plot
   ch <- ComplexHeatmap::Heatmap(
     mat,
