@@ -8,7 +8,7 @@
 #' 
 #' @export 
 #' 
-#' @importFrom upsetjs upsetjs fromList generateIntersections generateDistinctIntersections generateUnions chartTheme interactiveChart
+#' @importFrom upsetjs upsetjs generateIntersections generateDistinctIntersections generateUnions chartTheme interactiveChart
 #'
 #' @examples
 #' # https://upset.js.org/integrations/r/articles/combinationModes.html#distinct-intersection-mode
@@ -45,7 +45,7 @@ plot_genelists_overlap_upsetjs <- function(genelists, mode = 'distinct', interac
 #' 
 #' @export 
 #' 
-#' @importFrom UpSetR intersects fromList upset
+#' @importFrom UpSetR intersects upset
 #' 
 #' @return plot to render
 plot_genelists_overlap_upsetR <- function(genelists, grayscale_colors = TRUE, empty_intersections = TRUE) {
