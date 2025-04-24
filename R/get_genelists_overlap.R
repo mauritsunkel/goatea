@@ -24,8 +24,12 @@ run_genelists_overlap <- function(genelists) {
   df <- df %>%
     mutate(across(ends_with("_efsi"), ~ (2^. - 1) * 100, .names = "{.col}_perc")) %>%
     rename_with(~ gsub("_efsi_perc", "_perc", .), ends_with("_efsi_perc"))
+  
+  
+  # TODO test 
   ## list significant genes for efficiently checking overlap
   genelists_signif_genes <- lapply(genelists, function(df) df$symbol[df$signif == TRUE])
+  
   ## get genelist names of overlapping significant genes
   df$genelist_overlap <- sapply(df$symbol, function(symbol) {
     hits <- names(genelists_signif_genes)[
