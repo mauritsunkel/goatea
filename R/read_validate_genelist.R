@@ -38,17 +38,21 @@ read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove
   ## if mapping: note that NA and empty genes will be removed from genelist
   if ( ! is.null(map_organism)) {
     if ( ! 'symbol' %in% colnames(genelist)) return("map_symbol_to_gene parameter on, yet no 'symbol' column found in genelist")
-    org.xx.eg.db <- switch(
+
+    org_pkg <- switch(
       as.character(map_organism),
-      '9606' = org.Hs.eg.db::org.Hs.eg.db,
-      '7227' = org.Dm.eg.db::org.Dm.eg.db,
-      '9544' = org.Mmu.eg.db::org.Mmu.eg.db,
-      '10116' = org.Rn.eg.db::org.Rn.eg.db,
-      '6239' = org.Ce.eg.db::org.Ce.eg.db,
-      '10090' = org.Mm.eg.db::org.Mm.eg.db,
+      '9606' = "org.Hs.eg.db",
+      '7227' = "org.Dm.eg.db",
+      '9544' = "org.Mmu.eg.db",
+      '10116' = "org.Rn.eg.db",
+      '6239' = "org.Ce.eg.db",
+      '10090' = "org.Mm.eg.db",
       NULL
     )
-    if (is.null(org.xx.eg.db)) return('search org.Xx.eg.db + organism to download package manually from Bioconductor')
+    if (is.null(org_pkg)) return("organism package for specified taxid is not available")
+    if ( ! requireNamespace(org_pkg, quietly = TRUE)) stop(paste0('install organism package with: BiocManager::install("', org_pkg, '")'))
+    org.xx.eg.db <- getExportedValue(org_pkg, org_pkg)
+  
     message("mapping gene symbols via AnnotationDbi::mapIds ALIAS to NCBI Entrez IDs")
     genelist$gene <- AnnotationDbi::mapIds(org.xx.eg.db, keys = toupper(genelist$symbol), column = "ENTREZID", keytype = "ALIAS", multiVals = "first")
     warning(round(sum(is.na(genelist$gene)) / nrow(genelist), digits = 2), '% of symbols were not converted to ENTREZID')
