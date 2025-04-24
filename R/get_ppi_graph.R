@@ -1,6 +1,7 @@
 #' Get PPI igraph
 #'
 #' @param ppi_data dataframe, PPI by aliases/ids in columns 'from' and 'to'
+#' @param vertex_clustering NULL, else numerical vector of cluster IDs
 #' 
 #' @description
 #' Uses Leiden clustering on modularity for community detection.
@@ -54,17 +55,18 @@ get_ppigraph <- function(ppi_data, vertex_clustering = NULL) {
     
   ## convert ppi to igraph
   g <- graph_from_data_frame(ppi_data, directed = FALSE)
+  
   ## graph clustering
   cl <- cluster_leiden(g, objective_function = 'modularity', n_iterations = -1) # run until convergence
   ## set vertices metrics
   # community ID per vertex
-  if (is.null(vertex_clustering)) {
-    g <- set_vertex_attr(g, "cluster", value = membership(cl)) 
-  } else {
+  if ( ! length(unique(vertex_clustering)) %in% c(0, 1)) {
     g <- set_vertex_attr(g, "cluster", value = vertex_clustering)
+  } else {
+    g <- set_vertex_attr(g, "cluster", value = membership(cl)) 
   }
-  g <- set_vertex_attr(g, "id", value = unique(c(ppi_data$from, ppi_data$to))) # unique node IDs
-  g <- set_vertex_attr(g, "degree", value = degree(g)) # node edges amount 
+  
+  g <- set_vertex_attr(g, "degree", value = degree(g)) # node edges amount
   g <- set_vertex_attr(g, "betweenness", value = betweenness(g, directed = FALSE)) # node centrality: how often shortest path between all node pairs cross
   g <- set_vertex_attr(g, "closeness", value = closeness(g)) # node closeness centrality: mean weighted steps required to all other nodes
   g <- set_vertex_attr(g, "knn", value = knn(g)$knn) # average nearest neighbour degree
@@ -75,10 +77,16 @@ get_ppigraph <- function(ppi_data, vertex_clustering = NULL) {
     g <- set_edge_attr(g, 'weight', value = scale_values_between(values = E(g)$combined_score, 
                                                             old_min = min(E(g)$combined_score), old_max = max(E(g)$combined_score),
                                                             new_min = .05, new_max = .25)) # scaled STRING combined score for visual representation
-    
     ## set diversity: requires graph weight
     g <- set_vertex_attr(g, 'diversity', value = diversity(g)) # Shannon entropy of incident edges 
   }
+  symbol_ids <- ppi_data %>% 
+    select(from_symbol, from) %>% 
+    rename(symbol = from_symbol, ids = from) %>% 
+    bind_rows(ppi_data %>% 
+      select(to_symbol, to) %>% rename(symbol = to_symbol, ids = to)) %>% 
+    distinct()
+  g <- set_vertex_attr(g, "id", value = symbol_ids$ids) # node PPI IDs
   ## set graph reportable metrics
   g <- set_graph_attr(g, 'central gene', V(g)[graph_center(g)]$name) # most central node(s)
   g <- set_graph_attr(g, 'modularity', modularity(g, membership = membership(cl))) # cluster modularity 
