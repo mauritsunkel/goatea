@@ -21,8 +21,8 @@ plot_termtree <- function(enrichment, Nterms = NA, Nwords = 5, Nclusters = 1) {
   df <- df[order(df$pvalue_adjust), ]
   ## formatting
   df <- df %>%
-    mutate(core_enrichment = purrr::map_chr(genes, ~ paste(.x, collapse = "/"))) %>%
-    rename(ID = id, Description = name, p.adjust = pvalue_adjust)
+    mutate(core_enrichment = purrr::map_chr(.data$genes, ~ paste(.x, collapse = "/"))) %>%
+    rename(ID = .data$id, Description = .data$name, p.adjust = .data$pvalue_adjust)
   goatsea <- new("gseaResult", result = as.data.frame(df), geneSets = as.list(setNames(lapply(df$genes, as.character), df$ID)))
   rownames(goatsea@result) <- goatsea@result$ID
   ## calculate pairwise term similarity

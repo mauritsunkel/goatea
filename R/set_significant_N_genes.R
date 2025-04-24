@@ -22,9 +22,9 @@ set_significant_N_genes <- function(
   ## keep max N genes by ordered genelist 
   max_n_genes <- ifelse(keep_max_n_genes, max(goat::goat_nulldistributions$N), nrow(genelist))
   if (keep_max_n_genes_by == 'pvalue') {
-    genelist <- genelist %>% arrange(pvalue)
+    genelist <- genelist %>% arrange(.data$pvalue)
   } else if (keep_max_n_genes_by == 'effectsize') {
-    genelist <- genelist %>% arrange(abs(effectsize))
+    genelist <- genelist %>% arrange(abs(.data$effectsize))
   }
   genelist <- genelist %>% slice_head(n = max_n_genes)
   ## warn to potentially filter down to max n genes

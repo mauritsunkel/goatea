@@ -25,14 +25,14 @@ plot_gene_effectsize_ComplexHeatmap <- function (
   if (length(genes_ind) < 1) stop("no genes matching the gene overview")
   ## subset 
   go <- genes_overview[genes_ind, ]
-  go_efsi <- go %>% select(symbol, ends_with("_efsi")) %>% rename_with(~ gsub("_efsi", "", .x))
+  go_efsi <- go %>% select(.data$symbol, ends_with("_efsi")) %>% rename_with(~ gsub("_efsi", "", .x))
   ## create heatmap matrix - keep max n genes based on highest abs(effectsize)
   mat <- go_efsi %>%
     mutate(max_abs_val = do.call(pmax, c(across(where(is.numeric), ~ abs(.x)), na.rm = TRUE))) %>%
-    arrange(desc(abs(max_abs_val))) %>%
+    arrange(desc(abs(.data$max_abs_val))) %>%
     slice_head(n = ifelse(is.null(plot_n_genes), nrow(go_efsi), plot_n_genes)) %>%
     tibble::column_to_rownames("symbol") %>%
-    select(-max_abs_val) %>%
+    select(-.data$max_abs_val) %>%
     as.matrix()
   ## create row p-value annotation
   go_pval <- go[match(rownames(mat), go$symbol),] %>% select(ends_with("_pval")) %>% rename_with(~ gsub("_pval", "", .x))
