@@ -19,8 +19,3 @@ function with colors and breaks attributes, can be called as function(c(values))
 \description{
 Note that breakpoints and colors will be ordered ascendingly by breakpoints values
 }
-\examples{
-map_f <- colorify_map(colors = c("white", "blue", "red"), breakpoints = c(0, 10, -5))
-colorify(colors=map_f(c(-1,0,2,3)), plot=T)
-, n_breakpoints = 1000
-}

@@ -17,5 +17,7 @@ All ColorBrewer palettes overlap with grDevices palettes
 Viridis palettes, except "Magma", overlap with grDevices palettes
 }
 \examples{
-palette_name_mapping("dark2") # "Dark 2"
+if(interactive()) {
+  palette_name_mapping("dark2") # "Dark 2"
+}
 }

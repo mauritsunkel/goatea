@@ -160,7 +160,8 @@ process_string_input <- function(string_input) {
 #' 
 #' @keywords internal
 process_write_merged_enrichments <- function(merged_enrichment, output_folder, filename, genes_overview, top_n = NULL) {
-  
+  ## counters: no visible binding for global variable '.'
+  . <- NULL
   merged_enrichment_sources <- lapply(unique(merged_enrichment$source), function(source) {
     dir.create(file.path(output_folder, "searches", source), recursive = TRUE)
     
