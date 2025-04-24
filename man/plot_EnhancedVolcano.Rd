@@ -20,6 +20,10 @@ plot_EnhancedVolcano(
 
 \item{pvalue_threshold}{numeric, default: 0.05, threshold for showing significance on pvalue axis}
 
+\item{background_color}{default: 'black', else character hexcolor or colorname}
+
+\item{foreground_color}{default: 'white', else character hexcolor or colorname}
+
 \item{interactive}{default: FALSE, else TRUE}
 }
 \value{

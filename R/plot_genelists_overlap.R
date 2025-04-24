@@ -3,7 +3,9 @@
 #' @param genelists UI value/list of tibbles/dataframes
 #' @param mode string, default: 'intersect', else 'distinct' or 'union' - how to overlap the listed genes
 #' @param interactive default: FALSE, else TRUE
-#'
+#' @param main.color default: 'white' else character hexcolor or colorname
+#' @param highlight.color default: 'green' else character hexcolor or colorname
+#' 
 #' @returns upset plot
 #' 
 #' @export 

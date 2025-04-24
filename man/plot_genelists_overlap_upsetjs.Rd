@@ -18,6 +18,10 @@ plot_genelists_overlap_upsetjs(
 \item{mode}{string, default: 'intersect', else 'distinct' or 'union' - how to overlap the listed genes}
 
 \item{interactive}{default: FALSE, else TRUE}
+
+\item{main.color}{default: 'white' else character hexcolor or colorname}
+
+\item{highlight.color}{default: 'green' else character hexcolor or colorname}
 }
 \value{
 upset plot

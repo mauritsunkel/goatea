@@ -22,9 +22,9 @@ set_significant_N_genes(
 
 \item{effectsize_threshold}{numeric, default: 1, to set gene significance based on effectsize}
 
-\item{keep_max_n_genes_by}{string, default: 'pvalue', else 'effectsize', order genes based on lowest pvalues or highest absolute effect sizes}
+\item{keep_max_n_genes}{boolean, default: TRUE, filter down by pvalue to max n genes allowed by goat (max(goat::goat_nulldistributions$N))}
 
-\item{keep_maxN_genes}{boolean, default: TRUE, filter down by pvalue to max n genes allowed by goat (max(goat::goat_nulldistributions$N))}
+\item{keep_max_n_genes_by}{string, default: 'pvalue', else 'effectsize', order genes based on lowest pvalues or highest absolute effect sizes}
 }
 \value{
 genelist with added 'signif' column with TRUE/FALSE values

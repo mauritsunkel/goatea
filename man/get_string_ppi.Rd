@@ -29,6 +29,8 @@ get_string_ppi(
 \item{folder}{character, default: tempdir(), else given folder path for where to download STRING files, converted to .parquet for compression and query efficiency, if tempdir() the temporary directory with the downloaded files are removed after the R session}
 
 \item{version}{character, default: 'latest', else a version to check availability, e.g. "12.0", if version not available the available versions are printed}
+
+\item{versions}{NULL, else character vector with versions to choose from with version}
 }
 \value{
 dataframe (tibble) with protein-protein interactions (symbols and STRING IDs) and STRING combined score

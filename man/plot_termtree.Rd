@@ -12,6 +12,8 @@ plot_termtree(enrichment, Nterms = NA, Nwords = 5, Nclusters = 1)
 \item{Nterms}{integer, default: NA to plat all terms, integer sets amount of terms to plot}
 
 \item{Nwords}{integer, default: 5, sets N summarized words per cluster}
+
+\item{Nclusters}{integer, default: 1, sets N clusters of terms}
 }
 \value{
 ggtree/gg/ggplot object

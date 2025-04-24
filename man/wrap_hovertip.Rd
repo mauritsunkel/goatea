@@ -7,9 +7,9 @@
 wrap_hovertip(ui_element, hovertip)
 }
 \arguments{
-\item{ui_element}{}
+\item{ui_element}{Shiny UI element to wrap with hovertext}
 
-\item{text}{}
+\item{hovertip}{text that will show as hover popup}
 }
 \description{
 Wrap Shiny UI element with a hoverable tooltip contained in html div tags

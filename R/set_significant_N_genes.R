@@ -4,7 +4,7 @@
 #' @param significance_by string, default: 'pvalue_effectsize', else 'pvalue' or 'effectsize' to set gene significance to TRUE/FALSE in 'signif' column 
 #' @param pvalue_threshold numeric, default: 0.05, to set gene significance based on pvalue
 #' @param effectsize_threshold numeric, default: 1, to set gene significance based on effectsize
-#' @param keep_maxN_genes boolean, default: TRUE, filter down by pvalue to max n genes allowed by goat (max(goat::goat_nulldistributions$N))
+#' @param keep_max_n_genes boolean, default: TRUE, filter down by pvalue to max n genes allowed by goat (max(goat::goat_nulldistributions$N))
 #' @param keep_max_n_genes_by string, default: 'pvalue', else 'effectsize', order genes based on lowest pvalues or highest absolute effect sizes
 
 #' @returns genelist with added 'signif' column with TRUE/FALSE values

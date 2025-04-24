@@ -12,9 +12,6 @@ colorify_map(colors, breakpoints, ...)
 \item{breakpoints}{numeric vector matching colors per value}
 
 \item{...}{to pass arguments to grDevices::colorRamp}
-
-\item{n_breakpoints}{optional, default: 1000, else non-negative numeric value for amount of breakpoints
-, n_breakpoints = 1000}
 }
 \value{
 function with colors and breaks attributes, can be called as function(c(values)) to return hexcolorcodes
@@ -25,4 +22,5 @@ Note that breakpoints and colors will be ordered ascendingly by breakpoints valu
 \examples{
 map_f <- colorify_map(colors = c("white", "blue", "red"), breakpoints = c(0, 10, -5))
 colorify(colors=map_f(c(-1,0,2,3)), plot=T)
+, n_breakpoints = 1000
 }

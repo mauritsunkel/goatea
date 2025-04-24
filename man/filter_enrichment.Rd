@@ -29,6 +29,8 @@ filter_enrichment(
 
 \item{genes_input}{default: UI input/character vector of genes to select df terms for}
 
+\item{genes_any_all}{default: 'any', else 'all', use to define to take only specific terms containing any or all associated genes}
+
 \item{terms_query}{dfeault: UI input/character vector of keywords to match (grepl) term names}
 
 \item{terms_query_all_any}{default: 'any', else 'all', defines if terms should match any or all of the query keywords given}
@@ -39,13 +41,23 @@ filter_enrichment(
 
 \item{min_ngenes}{default: 0, set higher to filter terms with less n genes}
 
+\item{min_ngenes_input}{default: 0, else set higher to filter terms with less n input genes}
+
 \item{min_ngenes_signif}{default: 0, set higher to filter terms with less n significant genes}
 
 \item{min_abs_zscore}{default: 0, set higher to filter terms with less absolute zscore}
 
-\item{max_pvalue_adjust}{default: 1, set lower to filter terms with lower adjusted p-value for multiple correction}
+\item{min_pvalue_adjust}{default: 0, set higher to filter terms with lower multiple testing corrected p-value}
 
-\item{genes_type}{default: 'any', else 'all', use to define to take only specific terms containing any or all associated genes}
+\item{max_ngenes}{default: 0, set lower to filter terms with more n genes}
+
+\item{max_ngenes_input}{default: 0, else set lower to filter terms with more n input genes}
+
+\item{max_ngenes_signif}{default: 0, set lower to filter terms with more n significant genes}
+
+\item{max_abs_zscore}{default: 0, set lower to filter terms with more absolute zscore}
+
+\item{max_pvalue_adjust}{default: 1, set lower to filter terms with higher adjusted p-value for multiple correction}
 }
 \description{
 Search and filter and sort or summarize (compiled) enrichment output.

@@ -42,9 +42,13 @@ Imports:
 	igraph (>= 2.1.4),
 	visNetwork (>= 2.1.2),
 	arrow (>= 18.1.0.1),
-	htmltools (>= 0.5.8.1)
+	htmltools (>= 0.5.8.1),
+	methods (>= 4.5.0)
 Suggests:
     AnnotationDbi,
     org.Hs.eg.db,
-	org.Mm.eg.db,
-	enrichplot
+    org.Mm.eg.db,
+    enrichplot,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

@@ -4,6 +4,7 @@
 #' @param score_threshold integer, default: 0, to get all PPI, ranges between [0-1000], 200 for low, 400 for medium and 700 for high/stringent scoring PPI
 #' @param organism integer, default: 9606 (Homo Sapiens), see `?goat::load_genesets_go_bioconductor` taxid parameter for possible organism taxIDs
 #' @param version character, default: 'latest', else a version to check availability, e.g. "12.0", if version not available the available versions are printed
+#' @param versions NULL, else character vector with versions to choose from with version
 #' @param network_type character, default: 'full', else 'physical' for only STRING documented physical interactions
 #' @param link_data character, default: 'combined_only', else 'full' or 'detailed', see STRING documentation
 #' @param folder character, default: tempdir(), else given folder path for where to download STRING files, converted to .parquet for compression and query efficiency, if tempdir() the temporary directory with the downloaded files are removed after the R session 

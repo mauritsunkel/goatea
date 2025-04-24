@@ -65,6 +65,8 @@
 #' @param n default: NULL, else integer, amount of colors to create, if palette selected and more colors requested they will be generated
 #' @param colors character (vector), combination of selecting palette(s) by name (options: see display_palettes()), and/or vector of R color names and/or color hexcodes
 #' @param colors_lock default: rep(FALSE, length(colors), numerical or logical index of colors (not) to be modified, if logical length != colors it will be cut or filled with TRUE/FALSE, prefix with '!' for logical vectors and '-' for numerical vectors to get inverse, see examples. If gradient_n %% length(colors) == 0, i.e. if gradient_n divisive by amount of colors without rest, set repeat given locking pattern
+#' @param colors_names default: character(0), else character vector of color names
+#' @param colors_breakpoints default: numeric(0), else numeric vector of breakpoints to colorRamp in between
 #'
 #' @param gradient_n default: n, else integer, amount of colors to output as gradient, after completing palette for n colors
 #' @param gradient_space default: "rgb", else "Lab", see ?grDevices::colorRamp()
@@ -89,7 +91,8 @@
 #' @param rev default: FALSE, if TRUE, reverse order of colors
 #' @param plot default: FALSE, if TRUE plot pie chart of color palette
 #' @param export default: FALSE, if TRUE: export = getwd(), if export = "string/", save hexcodes, rgb, and hsl values to export/colorify.csv
-#'
+#' @param verbose default: TRUE, else FALSE - to log status messages 
+#' @param ... additional arguments to pass on 
 #' @returns vector of color hexcodes
 #'
 #' @export
@@ -335,7 +338,7 @@ colorify_map <- function(colors, breakpoints, ...) {
   # breaks <- seq(from = breakpoints[1], to = breakpoints[length(breakpoints)], length.out = n_breakpoints)
   ## get mapped colors by breakpoints
   # colors <- colorify_mapped(breaks)
-  #' @param n_breakpoints optional, default: 1000, else non-negative numeric value for amount of breakpoints
+  # @param n_breakpoints optional, default: 1000, else non-negative numeric value for amount of breakpoints
   #' , n_breakpoints = 1000
   
   ## attach function attributes

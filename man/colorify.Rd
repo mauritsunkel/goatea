@@ -42,6 +42,10 @@ colorify(
 
 \item{colors_lock}{default: rep(FALSE, length(colors), numerical or logical index of colors (not) to be modified, if logical length != colors it will be cut or filled with TRUE/FALSE, prefix with '!' for logical vectors and '-' for numerical vectors to get inverse, see examples. If gradient_n \%\% length(colors) == 0, i.e. if gradient_n divisive by amount of colors without rest, set repeat given locking pattern}
 
+\item{colors_names}{default: character(0), else character vector of color names}
+
+\item{colors_breakpoints}{default: numeric(0), else numeric vector of breakpoints to colorRamp in between}
+
 \item{gradient_n}{default: n, else integer, amount of colors to output as gradient, after completing palette for n colors}
 
 \item{gradient_space}{default: "rgb", else "Lab", see ?grDevices::colorRamp()}
@@ -81,6 +85,10 @@ colorify(
 \item{plot}{default: FALSE, if TRUE plot pie chart of color palette}
 
 \item{export}{default: FALSE, if TRUE: export = getwd(), if export = "string/", save hexcodes, rgb, and hsl values to export/colorify.csv}
+
+\item{verbose}{default: TRUE, else FALSE - to log status messages}
+
+\item{...}{additional arguments to pass on}
 }
 \value{
 vector of color hexcodes

@@ -4,15 +4,21 @@
 #'
 #' @param df enrichment output dataframe
 #' @param genes_input default: UI input/character vector of genes to select df terms for
-#' @param genes_type default: 'any', else 'all', use to define to take only specific terms containing any or all associated genes
+#' @param genes_any_all default: 'any', else 'all', use to define to take only specific terms containing any or all associated genes
 #' @param terms_query dfeault: UI input/character vector of keywords to match (grepl) term names
 #' @param terms_query_all_any default: 'any', else 'all', defines if terms should match any or all of the query keywords given
 #' @param terms_antiquery dfeault: UI input/character vector of keywords to NOT match (grepl) term names
 #' @param terms_antiquery_all_any default: 'any', else 'all', defines if terms should NOT match any or all of the query keywords given
 #' @param min_ngenes default: 0, set higher to filter terms with less n genes
+#' @param min_ngenes_input default: 0, else set higher to filter terms with less n input genes
 #' @param min_ngenes_signif default: 0, set higher to filter terms with less n significant genes
 #' @param min_abs_zscore default: 0, set higher to filter terms with less absolute zscore
-#' @param max_pvalue_adjust default: 1, set lower to filter terms with lower adjusted p-value for multiple correction 
+#' @param min_pvalue_adjust default: 0, set higher to filter terms with lower multiple testing corrected p-value
+#' @param max_ngenes default: 0, set lower to filter terms with more n genes
+#' @param max_ngenes_input default: 0, else set lower to filter terms with more n input genes
+#' @param max_ngenes_signif default: 0, set lower to filter terms with more n significant genes
+#' @param max_abs_zscore default: 0, set lower to filter terms with more absolute zscore
+#' @param max_pvalue_adjust default: 1, set lower to filter terms with higher adjusted p-value for multiple correction 
 #'
 #' @export
 filter_enrichment <- function(

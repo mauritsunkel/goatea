@@ -43,8 +43,8 @@ wrap_loader <- function(id, ui_element) {
 
 #' Wrap Shiny UI element with a hoverable tooltip contained in html div tags
 #'
-#' @param text 
-#' @param ui_element 
+#' @param ui_element Shiny UI element to wrap with hovertext
+#' @param hovertip text that will show as hover popup
 #'
 #' @importFrom htmltools tags
 #'

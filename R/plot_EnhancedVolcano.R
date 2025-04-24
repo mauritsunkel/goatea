@@ -3,6 +3,8 @@
 #' @param genelist UI value/list of tibbles/dataframes
 #' @param effectsize_threshold numeric, default: 1, threshold for showing significance on effectsize axis
 #' @param pvalue_threshold numeric, default: 0.05, threshold for showing significance on pvalue axis
+#' @param background_color default: 'black', else character hexcolor or colorname
+#' @param foreground_color default: 'white', else character hexcolor or colorname
 #' @param interactive default: FALSE, else TRUE
 #'
 #' @returns plotly or ggplot2 object

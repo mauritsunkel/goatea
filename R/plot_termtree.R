@@ -3,6 +3,7 @@
 #' @param enrichment GOAT enrichment result dataframe
 #' @param Nterms integer, default: NA to plat all terms, integer sets amount of terms to plot
 #' @param Nwords integer, default: 5, sets N summarized words per cluster 
+#' @param Nclusters integer, default: 1, sets N clusters of terms 
 #'
 #' @returns ggtree/gg/ggplot object 
 #' @export
