@@ -1,4 +1,4 @@
-library(GOATEA)
+library(goatea)
 
 ## manual coloring
 css_colors <- list(
@@ -18,4 +18,4 @@ shiny::shinyApp(
       input, output, session, 
       css_colors = css_colors)
   }
-)
+) # A_NS_NSM M_NSM NC_NS N_NS_NSM

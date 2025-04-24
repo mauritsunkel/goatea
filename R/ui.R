@@ -14,7 +14,7 @@
 #' @importFrom visNetwork visNetworkOutput
 goatea_ui <- function() {
   ## adds custom css styling and Javascript functionalities
-  shiny::addResourcePath("www", system.file("www", package = "GOATEA"))
+  shiny::addResourcePath("www", system.file("www", package = "goatea"))
   
   dashboardPage(
     dashboardHeader(title = "GOATEA"),
@@ -28,7 +28,7 @@ goatea_ui <- function() {
                  menuSubItem("Volcano", tabName = "menu_run_volcano"),
                  menuSubItem("Overlap", tabName = "menu_run_genelist_overlap")
         ),
-        menuItem("Run enrichment", tabName = "global_enrichment", icon = icon("dashboard"),
+        menuItem("Get enrichment", tabName = "global_enrichment", icon = icon("dashboard"),
                  menuSubItem("Gene set enrichment", tabName = "menu_run_enrichment")
         ),
         menuItem("Post-enrichment plots", tabName = "global_postplot", icon = icon("dashboard"),
@@ -47,7 +47,8 @@ goatea_ui <- function() {
         tags$link(rel = "stylesheet", type = "text/css", href = "www/styles.css"), # load .css stylesheet
         tags$script(src = "www/colors.js"), # load JS initializing .css colors 
         tags$script(src = "www/menu_toggle.js"), # # load JS to keep all menu items visible and disable their toggling-to-close
-        tags$script(src = "www/visnetwork_hover_tooltip_style.js")
+        tags$script(src = "www/visnetwork_hover_tooltip_style.js"),
+        tags$script(src = "www/visnetwork_set_nodes.js") # set nodes when using buttons under visnetwork PPI graphs
       ),
       tabItems(
         tabItem(tabName = "menu_initialize",
@@ -90,9 +91,11 @@ goatea_ui <- function() {
                                                     hovertip = "Remove Riken non-canonical mouse genes")),
                     column(width = 2, wrap_hovertip(checkboxInput("cbi_remove_Gm_genes", "Remove Gm genes", value = TRUE), 
                                                     hovertip = "Remove Gm non-canonical mouse genes")),
+                    column(width = 2, wrap_hovertip(checkboxInput("cbi_genelist_map_symbol_to_gene", "Map symbol to gene", value = FALSE),
+                                                    hovertip = "map genelist$symbol column to genelist$gene column, expecting ALIASES that are mapped to NCBI Entrez IDs via AnnotationDbi::mapIds(), make sure to search and manually download the desired and selected Bioconductor org.Xx.eg.db organism")),
                     column(width = 12, verbatimTextOutput("vto_load_genelists", placeholder = TRUE)),
                     
-                    column(width = 2, shinyjs::disabled(actionButton("ab_set_significant_genes", "Set signif and N genes", value = TRUE, width = 115))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_set_significant_genes", "Set signif and N genes"))),
                     column(width = 2, wrap_hovertip(selectInput("si_set_significant_genes", "Set significant genes", choices = c("pvalue_effectsize", "pvalue", "effectsize")),
                                                     hovertip = 'Set significant and N genes by pvalue and/or effectsize')),
                     column(width = 2, wrap_hovertip(numericInput("ni_set_significant_pvalue", "P-value <=", 0.05, min = 0, step = 0.01),
@@ -105,7 +108,7 @@ goatea_ui <- function() {
                     column(width = 2, wrap_hovertip(selectInput("si_keep_maxN_genes", "Keep max N genes by pvalue/effectsize", choices = c("pvalue", "effectsize")),
                                                     hovertip = 'When keeping max N genes, do so by lowest p-values or by highest absolute effect sizes')),
                     column(width = 12, verbatimTextOutput("vto_set_significant_genes", placeholder = TRUE)),
-                    column(width = 2, shinyjs::disabled(actionButton("ab_set_names", "Set names", value = TRUE, width = 115))),
+                    column(width = 2, shinyjs::disabled(actionButton("ab_set_names", "Set names"))),
                     column(width = 9, textInput("ti_set_names", label = NULL, placeholder = "Enter genelist names separated by a space...")),
                     column(width = 12, verbatimTextOutput("vto_set_names", placeholder = TRUE)),
                     column(width = 4, wrap_hovertip(downloadButton("db_run_genelist_overlap", "Download genelists overlap"), 
@@ -119,20 +122,25 @@ goatea_ui <- function() {
                     width = NULL,
                     wrap_hovertip(column(width = 2, wrap_loader(id = "ab_load_GOB_genesets_loader", actionButton("ab_load_GOB_genesets", "Load GO AnnotationDbi genesets"))), 
                                                     hovertip = "Load Gene Ontology Bioconductor AnnotationDbi genesets using selected organism, NOTE: individual organism packages need to be installed manually, if not, a warning message will be thrown."),
-                    column(width = 2),
-                    column(width = 2, wrap_hovertip(fileInput("fi_load_genesets_GMT", "Load GMT genesets"),
+                    column(width = 1),
+                    column(width = 2, wrap_hovertip(fileInput("fi_load_genesets_GMT", "Load .gmt genesets"),
                                                     hovertip = "Load genesets from .gmt format, for instance downloaded from the Molecular Signatures Database")),
                     column(width = 2, wrap_hovertip(textInput('ti_load_genesets_GMT', 'GMT genesets source label', value = 'GMT'),
                                                     hovertip = 'Set genesets source column label, default: "GMT"')),
+                    column(width = 1),
+                    column(width = 2, wrap_hovertip(actionButton("ab_save_genesets_Rdata", "Save loaded genesets to .Rdata"),
+                                                    hovertip = "")),
+                    column(width = 2, wrap_hovertip(fileInput("fi_load_genesets_Rdata", "Load genesets .Rdata"),
+                                                    hovertip = "")),
                     column(width = 12, verbatimTextOutput("vto_load_genesets", placeholder = TRUE)),
                     column(width = 12, tags$hr()),
                     column(width = 2, wrap_hovertip(shinyjs::disabled(wrap_loader(id = "ab_filter_genesets_loader", actionButton("ab_filter_genesets", "Filter genesets"))), 
                                                     hovertip = "Filter loaded genesets for enrichment analysis")),
-                    column(width = 2, wrap_hovertip(numericInput("ni_genesets_min_overlap", "Min overlap", 10L, min = 1), 
+                    column(width = 2, wrap_hovertip(numericInput("ni_genesets_min_overlap", "Min matches", 10L, min = 1), 
                                                     hovertip = "Minimum number of genes in the genelist table that must match a geneset")),
-                    column(width = 2, wrap_hovertip(numericInput("ni_genesets_max_overlap", "Max overlap", 1500L, min = 1), 
+                    column(width = 2, wrap_hovertip(numericInput("ni_genesets_max_overlap", "Max matches", 1500L, min = 1), 
                                                     hovertip = "Maximum number of genes in the genelist table that must match a geneset")),
-                    column(width = 3, wrap_hovertip(numericInput("ni_genesets_max_overlap_fraction", "Max overlap fraction", 0.5, min = 0, max = 1, step = 0.05), 
+                    column(width = 3, wrap_hovertip(numericInput("ni_genesets_max_overlap_fraction", "Max matches fraction", 0.5, min = 0, max = 1, step = 0.05), 
                                                     hovertip = "Analogous to max_overlap, maximum number of genes as a fraction in the genelist table that must match a geneset")),
                     column(width = 3, wrap_hovertip(checkboxInput("cbi_genesets_dedupe", "Remove duplicate genesets", value = TRUE), 
                                                     hovertip = "Remove duplicate genesets")),
@@ -438,9 +446,9 @@ goatea_ui <- function() {
                                                     hovertip = "Plot selected genes vs effect sizes of all loaded genelists")),
                     column(width = 2, wrap_hovertip(numericInput("ni_genefsi_icheatmap_ngenes", "Plot N genes", 50, min = 1, step = 1), 
                                                     hovertip = "Maximally plot N genes from selection")),
-                    column(width = 2, wrap_hovertip(checkboxInput("ci_genefsi_icheatmap_dendrogram_cols", "Cluster dendrogram columns"),
+                    column(width = 2, wrap_hovertip(checkboxInput("ci_genefsi_icheatmap_dendrogram_cols", "Cluster dendrogram columns", value = TRUE),
                                                     hovertip = "Check to cluster and show dendrogram on heatmap columns")),
-                    column(width = 2, wrap_hovertip(checkboxInput("ci_genefsi_icheatmap_dendrogram_rows", "Cluster dendrogram rows"),
+                    column(width = 2, wrap_hovertip(checkboxInput("ci_genefsi_icheatmap_dendrogram_rows", "Cluster dendrogram rows", value = TRUE),
                                                     hovertip = "Check to cluster and show dendrogram on heatmap rows")),
                     column(width = 2, wrap_hovertip(textAreaInput("tai_genefsi_add_genes", label = "Additional genes", placeholder = "Add genes (to selection)..."),
                                                     hovertip = "Add gene symbols separated by enter (\n) to take into account additionally next to earlier selected genes.")),
@@ -520,7 +528,7 @@ goatea_ui <- function() {
                       
                       column(width = 2, wrap_hovertip(selectInput("si_ppi_color_nodes_type", "Nodes visual feature to color", choices = c('Background', 'Border'), selected = 'Background'),
                                                       hovertip = "Select to color nodes background or border by selected a node feature next")),
-                      column(width = 2, wrap_hovertip(selectInput("si_ppi_layout", "Select ppigraph layout", choices = NULL),
+                      column(width = 2, wrap_hovertip(selectInput("si_ppi_layout", "ppigraph layout", choices = NULL),
                                                       hovertip = "Select igraph layout")),
                     ),
                     column(width = 12, verbatimTextOutput("vto_ppi_metrics")),
@@ -565,7 +573,7 @@ goatea_ui <- function() {
                       column(width = 2),
                       column(width = 2, wrap_hovertip(selectInput("si_ppi_color_nodes_type_subgraph", "Nodes visual feature to color", choices = c('Background', 'Border'), selected = 'Background'),
                                                       hovertip = "Select to color nodes background or border by selecting a node feature")),
-                      column(width = 2, wrap_hovertip(selectInput("si_ppi_layout_subgraph", "Select subgraph layout", choices = NULL),
+                      column(width = 2, wrap_hovertip(selectInput("si_ppi_layout_subgraph", "subppigraph layout", choices = NULL),
                                                       hovertip = "Select igraph layout")),
                     ),
                     column(width = 12, verbatimTextOutput("vto_ppi_metrics_subgraph")),

@@ -6,17 +6,15 @@
 \usage{
 read_validate_genelist(
   file,
-  map_organism = NULL,
   remove_non_numerical_ids = TRUE,
   remove_duplicated = TRUE,
   remove_Rik_genes = TRUE,
-  remove_Gm_genes = TRUE
+  remove_Gm_genes = TRUE,
+  map_organism = NULL
 )
 }
 \arguments{
 \item{file}{full filepath to gene tibble in .csvs/.xlsx/.tsv}
-
-\item{map_organism}{default: NULL, if "Hs" or "Mm", used for selecting org.Xx.eg.db to map gene symbols to gene column via AnnotationDbi::mapIds(keytype = 'ALIAS') - if mapped to NA the genes are removed`}
 
 \item{remove_non_numerical_ids}{boolean, default TRUE, if non-numerical in gene column, remove}
 
@@ -25,6 +23,16 @@ read_validate_genelist(
 \item{remove_Rik_genes}{boolean, default TRUE, grepl("Rik$") search and remove Riken non-canonical mouse genes}
 
 \item{remove_Gm_genes}{boolean, default TRUE, grepl("^Gm") search and remove Gm non-canonical mouse genes}
+
+\item{map_organism}{default: NULL, if numeric taxid, used for selecting org.Xx.eg.db to map gene symbols to gene column via AnnotationDbi::mapIds(keytype = 'ALIAS') - if mapped to NA the genes are removed - need to download org.Xx.eg.db manually! Symbols are set toupper() to match formatting. Protein symbols could be used too.
+\itemize{
+\item 9606 = Human (Homo sapiens) (org.Hs.eg.db)
+\item 9544 = Rhesus monkey (Macaca mulatta) (org.Mmu.eg.db)
+\item 10090 = Mouse (Mus musculus) (org.Mm.eg.db)
+\item 10116 = Rat (Rattus norvegicus) (org.Rn.eg.db)
+\item 7227 = Fruit fly (Drosophila melanogaster) (org.Dm.eg.db)
+\item 6239 = Worm (Caenorhabditis elegans) (org.Ce.eg.db)
+}}
 }
 \description{
 if 'pvalue' is not in the genelist columns, it is set and defaulted to 1 for visualization purposes

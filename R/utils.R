@@ -209,9 +209,6 @@ scale_values_between <- function(values, old_min = min(values), old_max = max(va
   ((values - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min
 }
 
-
-
-
 #' Hex code colors to rgba format
 #'
 #' @param hexcolors character (vector), hexcode colors (e.g. #FFFFFF)
@@ -251,7 +248,7 @@ hexcolor2rgba <- function(hexcolors, alpha = NULL) {
 #' @param folder_path character, default NULL, else existing directory
 #'
 #' @description
-#' sets given folder path if provided
+#' sets/gets given folder path if provided
 #' else checks in order: 
 #' - path.expand("~") (tilde (~) expands to HOME folder path)
 #' - Sys.getenv("R_USER") (set on R session start)
@@ -262,8 +259,8 @@ hexcolor2rgba <- function(hexcolors, alpha = NULL) {
 #' @export
 #'
 #' @examples
-#' set_base_folder()
-set_base_folder <- function(folder_path = NULL) {
+#' get_base_folder()
+get_base_folder <- function(folder_path = NULL) {
   if ( ! is.null(folder_path)) {
     if ( ! is.character(folder_path)) stop("if providing path, it must be a character")
     if (dir.exists(folder_path)) return(folder_path)

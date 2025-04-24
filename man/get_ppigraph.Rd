@@ -8,6 +8,8 @@ get_ppigraph(ppi_data, vertex_clustering = NULL)
 }
 \arguments{
 \item{ppi_data}{dataframe, PPI by aliases/ids in columns 'from' and 'to'}
+
+\item{vertex_clustering}{NULL, else numerical vector of cluster IDs}
 }
 \value{
 igraph object of PPI data
