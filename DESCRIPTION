@@ -1,22 +1,23 @@
 Package: goatea
 Type: Package
-Title: A Shiny interface for Gene Set Enrichment Analysis with GOAT
-Version: 0.2.5.9000
+Title: Interactive Exploration of GSEA by the GOAT Method
+Version: 0.2.5.9001
 Authors@R: 
     person(given = "Maurits",
 	       family = "Unkel",
-		   role = c("aut", "cre"),
+		   role = c("aut", "cre", "cph"),
 		   email = "m.unkel@erasmusmc.nl")
 Author: Maurits Unkel [aut, cre]
 Maintainer: Maurits Unkel <m.unkel@erasmusmc.nl>
-Description: GOATEA provides a Shiny interface with interactive visualizations and utility functions for performing and analysing gene set enrichment analysis using the GOAT package. 
-    GOATEA is designed to support large-scale and user-friendly enrichment workflows across multiple gene lists and comparisons, with flexible plotting and output options.
-    Visualizations pre-enrichment include interactive Volcano and UpSet (overlap) plots. Visualizations pre-enrichment include interactive geneset dotplot, geneset treeplot, gene-effectsize heatmap, gene-geneset heatmap and STRING databas protein-protein-interactions network plot. 
+Description: Geneset Ordinal Association Test Enrichment Analysis (GOATEA) provides a 'Shiny' interface with interactive visualizations and utility functions for performing and exploring gene set enrichment analysis using the 'GOAT' package. 
+    'GOATEA' is designed to support large-scale and user-friendly enrichment workflows across multiple gene lists and comparisons, with flexible plotting and output options.
+    Visualizations pre-enrichment include interactive 'Volcano' and 'UpSet' (overlap) plots. Visualizations post-enrichment include interactive geneset dotplot, geneset treeplot, gene-effectsize heatmap, gene-geneset heatmap and 'STRING' database of protein-protein-interactions network graph. 
+	'GOAT' reference: Frank Koopmans (2024) <doi: https://doi.org/10.1038/s42003-024-06454-5>
 URL: https://github.com/mauritsunkel/goatea
 BugReports: https://github.com/mauritsunkel/goatea/issues
-License: GPL (>= 3) + file LICENSE
+License: Apache License (>= 2)
 Encoding: UTF-8
-LazyData: false
+LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Config/testthat/edition: 3
@@ -51,11 +52,13 @@ Imports:
     plyr (>= 1.8.9),
     tibble (>= 3.2.1)
 Suggests:
-	annotables,
     org.Hs.eg.db,
     org.Mm.eg.db,
 	org.Dm.eg.db,
 	org.Mmu.eg.db,
 	org.Rn.eg.db,
-	org.Ce.eg.db
+	org.Ce.eg.db,
+	annotables,
+	knitr,
+	rmarkdown
 VignetteBuilder: knitr
