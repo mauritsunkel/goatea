@@ -1,7 +1,7 @@
 Package: goatea
 Type: Package
 Title: Interactive Exploration of GSEA by the GOAT Method
-Version: 0.2.5.9001
+Version: 0.2.5.9002
 Authors@R: 
     person(given = "Maurits",
 	       family = "Unkel",

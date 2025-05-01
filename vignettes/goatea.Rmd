@@ -1,5 +1,6 @@
 ---
 title: "goatea"
+author: Maurits Unkel
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{goatea}
@@ -8,13 +9,10 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-```{r library}
+```{r library, echo = FALSE}
 library(goatea)
 ```
 
