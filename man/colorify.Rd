@@ -26,7 +26,6 @@ colorify(
   gv = 0L,
   bv = 0L,
   alpha = 1,
-  seed = 42L,
   rev = FALSE,
   plot = FALSE,
   export = FALSE,
@@ -77,8 +76,6 @@ colorify(
 
 \item{alpha}{numeric, sets color alpha values}
 
-\item{seed}{integer, default: 42, set seed for generation of colors}
-
 \item{rev}{default: FALSE, if TRUE, reverse order of colors}
 
 \item{plot}{default: FALSE, if TRUE plot pie chart of color palette}
@@ -121,25 +118,25 @@ if(interactive()) {
   colorify(colors = "viridis", n = 10, plot = TRUE, l = .9)
   
   ## palette selected by name in colors[1], can add colors to selected palette, if n < length, remove colors , if greater generate 
-  colorify(colors = c("Okabe-Ito", "red", "blue", "yellow"), plot = T, n = 10)
+  colorify(colors = c("Okabe-Ito", "red", "blue", "yellow"), plot = TRUE, n = 10)
   
   ## no adjustments to locked indices 
-  colorify(colors = "Okabe-Ito", colors_lock = c(F,F,T,T), plot = T, rv = -300)
-  colorify(colors = "Okabe-Ito", colors_lock = c(F,F,T,T), plot = T, rv = 300)
+  colorify(colors = "Okabe-Ito", colors_lock = c(FALSE,FALSE,TRUE,TRUE), plot = TRUE, rv = -300)
+  colorify(colors = "Okabe-Ito", colors_lock = c(FALSE,FALSE,TRUE,TRUE), plot = TRUE, rv = 300)
   
   ## colors_lock and inversing
   colors <- colorify(5)
-  colorify(colors_lock = c(T,T), colors=colors)
-  colorify(colors_lock = ! c(T,F,T), colors=colors)
+  colorify(colors_lock = c(TRUE,TRUE), colors=colors)
+  colorify(colors_lock = ! c(TRUE,FALSE,TRUE), colors=colors)
   colorify(colors_lock = c(3,4), colors=colors)
   colorify(colors_lock = - c(3,4), colors=colors)
   
   ## rainbow
-  colorify(colors=grDevices::rainbow(100, s = .5), plot = T)
-  colorify(colors="rainbow", n = 100, sf = .5, plot = T)
-  colorify(colors=grDevices::rainbow(100, v = .5), plot = T)
-  colorify(colors="rainbow", n = 100, lf = .5, plot = T,)
-  colorify(colors=grDevices::rainbow(100, start = .25, end = .75), plot = T)
-  colorify(colors=grDevices::rainbow(100)[25:75], plot = T)
+  colorify(colors=grDevices::rainbow(100, s = .5), plot = TRUE)
+  colorify(colors="rainbow", n = 100, sf = .5, plot = TRUE)
+  colorify(colors=grDevices::rainbow(100, v = .5), plot = TRUE)
+  colorify(colors="rainbow", n = 100, lf = .5, plot = TRUE,)
+  colorify(colors=grDevices::rainbow(100, start = .25, end = .75), plot = TRUE)
+  colorify(colors=grDevices::rainbow(100)[25:75], plot = TRUE)
 }
 }

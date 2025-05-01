@@ -27,7 +27,6 @@
 #' @param bv blue value, default: 0, add value to values, linear from base value of 0
 #' 
 #' @param alpha numeric, sets color alpha values
-#' @param seed integer, default: 42, set seed for generation of colors
 #' @param rev default: FALSE, if TRUE, reverse order of colors
 #' @param plot default: FALSE, if TRUE plot pie chart of color palette
 #' @param export default: FALSE, if TRUE: export = getwd(), if export = "string/", save hexcodes, rgb, and hsl values to export/colorify.csv
@@ -63,33 +62,33 @@
 #'   colorify(colors = "viridis", n = 10, plot = TRUE, l = .9)
 #'   
 #'   ## palette selected by name in colors[1], can add colors to selected palette, if n < length, remove colors , if greater generate 
-#'   colorify(colors = c("Okabe-Ito", "red", "blue", "yellow"), plot = T, n = 10)
+#'   colorify(colors = c("Okabe-Ito", "red", "blue", "yellow"), plot = TRUE, n = 10)
 #'   
 #'   ## no adjustments to locked indices 
-#'   colorify(colors = "Okabe-Ito", colors_lock = c(F,F,T,T), plot = T, rv = -300)
-#'   colorify(colors = "Okabe-Ito", colors_lock = c(F,F,T,T), plot = T, rv = 300)
+#'   colorify(colors = "Okabe-Ito", colors_lock = c(FALSE,FALSE,TRUE,TRUE), plot = TRUE, rv = -300)
+#'   colorify(colors = "Okabe-Ito", colors_lock = c(FALSE,FALSE,TRUE,TRUE), plot = TRUE, rv = 300)
 #'   
 #'   ## colors_lock and inversing
 #'   colors <- colorify(5)
-#'   colorify(colors_lock = c(T,T), colors=colors)
-#'   colorify(colors_lock = ! c(T,F,T), colors=colors)
+#'   colorify(colors_lock = c(TRUE,TRUE), colors=colors)
+#'   colorify(colors_lock = ! c(TRUE,FALSE,TRUE), colors=colors)
 #'   colorify(colors_lock = c(3,4), colors=colors)
 #'   colorify(colors_lock = - c(3,4), colors=colors)
 #'   
 #'   ## rainbow
-#'   colorify(colors=grDevices::rainbow(100, s = .5), plot = T)
-#'   colorify(colors="rainbow", n = 100, sf = .5, plot = T)
-#'   colorify(colors=grDevices::rainbow(100, v = .5), plot = T)
-#'   colorify(colors="rainbow", n = 100, lf = .5, plot = T,)
-#'   colorify(colors=grDevices::rainbow(100, start = .25, end = .75), plot = T)
-#'   colorify(colors=grDevices::rainbow(100)[25:75], plot = T)
+#'   colorify(colors=grDevices::rainbow(100, s = .5), plot = TRUE)
+#'   colorify(colors="rainbow", n = 100, sf = .5, plot = TRUE)
+#'   colorify(colors=grDevices::rainbow(100, v = .5), plot = TRUE)
+#'   colorify(colors="rainbow", n = 100, lf = .5, plot = TRUE,)
+#'   colorify(colors=grDevices::rainbow(100, start = .25, end = .75), plot = TRUE)
+#'   colorify(colors=grDevices::rainbow(100)[25:75], plot = TRUE)
 #' }
 colorify <- function(
     n = NULL, colors = character(0), colors_lock = NULL, colors_names = character(0), colors_breakpoints = numeric(0),
     gradient_n = n, gradient_space = c("rgb", "Lab"), gradient_interpolate = c("linear", "spline"),
     hf = 1, sf = 1, lf = 1, rf = 1, gf = 1, bf = 1,
     hv = 0, sv = 0, lv = 0, rv = 0L, gv = 0L, bv = 0L,
-    alpha = 1, seed = 42L, rev = FALSE, plot = FALSE, export = FALSE, verbose = TRUE, ...) {
+    alpha = 1, rev = FALSE, plot = FALSE, export = FALSE, verbose = TRUE, ...) {
   
   stopifnot(
     is.character(c(colors, colors_names)),
@@ -102,9 +101,6 @@ colorify <- function(
   )
   gradient_space <- match.arg(gradient_space, choices = c("rgb", "Lab"))
   gradient_interpolate <- match.arg(gradient_interpolate, choices = c("linear", "spline"))
-  
-  ## set generation seed
-  set.seed(round(seed))
   
   alpha <- max(0, min(1, alpha))
   gradient_n <- ifelse(is.null(gradient_n), length(colors), max(0, round(gradient_n)))
@@ -133,7 +129,7 @@ colorify <- function(
   })))
   
   n <- ifelse(is.null(n), length(colors), max(0, round(n)))
-  if (length(colors) > n) colors <- colors[1:n]
+  if (length(colors) > n) colors <- colors[seq_len(n)]
   if (length(colors) < n) {
     if (verbose) message(n-length(colors), " colors generated")
     ## generate theoretically distinct RGB values and convert to hexcodes
@@ -156,14 +152,14 @@ colorify <- function(
   }
   colors_lock_bool <- identical(substitute(colors_lock)[[1]], as.symbol("!")) | identical(substitute(colors_lock)[[1]], as.symbol("-"))
   if (is.numeric(colors_lock)) {
-    colors_i <- 1:length(colors)
+    colors_i <- seq_len(length(colors))
     colors_lock_i <- replace(rep(FALSE, length(colors)), colors_i[colors_lock], TRUE)
   } else { ## if logical
     if (gradient_n > n & gradient_n %% length(colors_lock) == 0) {
       colors_lock_i <- rep(colors_lock, gradient_n / length(colors_lock))
     }
     else if (length(colors_lock) >= length(colors)) {
-      colors_lock_i <- colors_lock[1:length(colors)]
+      colors_lock_i <- colors_lock[seq_len(length(colors))]
     } else {
       colors_lock_i <- c(colors_lock, rep(colors_lock_bool, length(colors) - length(colors_lock)))
     }
@@ -297,10 +293,10 @@ colorify_map <- function(colors, breakpoints, ...) {
 #'   display_palettes(i_palettes = c("rainbow", "viridis"))
 #'  
 #'   display_palettes(i_palettes = c(1,5,10,20,40,100,119))
-#'   display_palettes(n = 100, i_palettes = 1:10)
-#'   display_palettes(n = 10, i_palettes = 1:10, border = TRUE)
+#'   display_palettes(n = 100, i_palettes = seq_len(10))
+#'   display_palettes(n = 10, i_palettes = seq_len(10), border = TRUE)
 #' }
-display_palettes <- function(n = 10, i_palettes = 1:1000, border = FALSE) {
+display_palettes <- function(n = 10, i_palettes = seq_len(1000), border = FALSE) {
   stopifnot(
     is.numeric(n),
     is.numeric(i_palettes) | is.character(i_palettes),
@@ -332,7 +328,7 @@ display_palettes <- function(n = 10, i_palettes = 1:1000, border = FALSE) {
       } else if (tolower(pal) %in% tolower(grd_palettes)) {
         match(grd_palettes, all_palettes)
       } else {
-        message("pass i_palettes = 'rcolorbrewer', 'viridis'(-palettes), see grDevices Palettes or numeric index/range e.g. = 1:30")
+        message("pass i_palettes = 'rcolorbrewer', 'viridis'(-palettes), see grDevices Palettes or numeric index/range e.g. = seq_len(30)")
       }
     }))
     
@@ -370,7 +366,7 @@ display_palettes <- function(n = 10, i_palettes = 1:1000, border = FALSE) {
     ## draw rectangular palettes
     y_bottom <- i - 1
     y_top <- i - 0.1
-    rect(xleft = 0:(n - 1), ybottom = y_bottom, xright = 1:n, ytop = y_top, col = colors, border = ifelse(border, TRUE, NA))
+    rect(xleft = 0:(n - 1), ybottom = y_bottom, xright = seq_len(n), ytop = y_top, col = colors, border = ifelse(border, TRUE, NA))
     
     ## center text in palette, no falling off side of plot
     text_x <- n / 2

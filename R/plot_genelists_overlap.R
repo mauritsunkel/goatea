@@ -66,7 +66,7 @@ plot_genelists_overlap_venn <- function(genelists) {
   
   df <- data.frame(
     name = d$regionData$name[order(d$regionData$name)],
-    col = col[c(1:length(d$regionData$name))]
+    col = col[c(seq_len(length(d$regionData$name)))]
   )
   
   # DEVNOTE: for coloring edges: 1) where geom_polygon(aes(fill = id)) --> geom_polygon(aes(fill = I(col)), where col = metadata column
@@ -150,6 +150,6 @@ plot_genelists_overlap_venn <- function(genelists) {
 #                      queries = queries, empty.intersections = empty_intersections, query.legend = "none",
 #                      mb.ratio = c(0.7, 0.3), text.scale = 1,
 #                      sets.x.label = "Significant genes",
-#                      set_size.show = T, set_size.scale_max = 1000)
+#                      set_size.show = TRUE, set_size.scale_max = 1000)
 #   return(p)
 # }

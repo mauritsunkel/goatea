@@ -4,7 +4,7 @@
 \alias{display_palettes}
 \title{Display R grDevices palettes}
 \usage{
-display_palettes(n = 10, i_palettes = 1:1000, border = FALSE)
+display_palettes(n = 10, i_palettes = seq_len(1000), border = FALSE)
 }
 \arguments{
 \item{n}{integer, amount of colors to display}
@@ -34,7 +34,7 @@ if (interactive()) {
   display_palettes(i_palettes = c("rainbow", "viridis"))
  
   display_palettes(i_palettes = c(1,5,10,20,40,100,119))
-  display_palettes(n = 100, i_palettes = 1:10)
-  display_palettes(n = 10, i_palettes = 1:10, border = TRUE)
+  display_palettes(n = 100, i_palettes = seq_len(10))
+  display_palettes(n = 10, i_palettes = seq_len(10), border = TRUE)
 }
 }

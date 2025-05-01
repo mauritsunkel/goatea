@@ -52,7 +52,6 @@ potentially clustered based on their binary associations. The heatmap includes:
 Plot ComplexHeatmap from enrichment analysis results and corresponding genelist
 }
 \examples{
-\dontrun{
 enrichment_result <- tibble::tibble(
 name = c("Pathway1", "Pathway2", "Pathway3", "Pathway4"),
 symbol = list(c("GeneA", "GeneB"), c("GeneC", "GeneD"),c("GeneA", "GeneB"), c("GeneC", "GeneD")),
@@ -67,5 +66,4 @@ genelist <- data.frame(
   signif = c(TRUE, FALSE, FALSE, FALSE)
 )
 plot_ComplexHeatmap(enrichment_result, genelist, n_cluster = 2)
-}
 }

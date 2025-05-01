@@ -13,6 +13,8 @@ The goal of goatea is to …
 You can install the development version of goatea from
 [GitHub](https://github.com/) with:
 
+TODO install instructions in eval = FALSE chunk
+
 TODO refer and link to examples vignette TODO add GOATEA logo
 
 ``` r

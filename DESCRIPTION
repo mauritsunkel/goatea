@@ -1,12 +1,12 @@
 Package: goatea
 Type: Package
 Title: Interactive Exploration of GSEA by the GOAT Method
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: 
-    person(given = "Maurits",
-	       family = "Unkel",
+    person("Maurits", "Unkel",
 		   role = c("aut", "cre"),
-		   email = "mauritsunkel@gmail.com")
+		   email = "mauritsunkel@gmail.com",
+		   comment = c(ORCID = "0000-0003-1920-6001"))
 Description: Geneset Ordinal Association Test Enrichment Analysis (GOATEA) provides a 'Shiny' interface with interactive visualizations and utility functions for performing and exploring gene set enrichment analysis using the 'GOAT' package. 
     'GOATEA' is designed to support large-scale and user-friendly enrichment workflows across multiple gene lists and comparisons, with flexible plotting and output options.
     Visualizations pre-enrichment include interactive 'Volcano' and 'UpSet' (overlap) plots. Visualizations post-enrichment include interactive geneset dotplot, geneset treeplot, gene-effectsize heatmap, gene-geneset heatmap and 'STRING' database of protein-protein-interactions network graph. 
@@ -15,13 +15,13 @@ URL: https://github.com/mauritsunkel/goatea
 BugReports: https://github.com/mauritsunkel/goatea/issues
 License: Apache License (>= 2)
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Config/testthat/edition: 3
-biocViews: GeneSetEnrichment, Visualization, ShinyApps, GUI, Transcriptomics, Genomics, FunctionalGenomics, DifferentialExpression
+biocViews: GeneSetEnrichment, NetworkEnrichment, Visualization, ShinyApps, GUI, Transcriptomics, Genetics, FunctionalGenomics, DifferentialExpression
 Depends: 
-    R (>= 4.4.2),
+    R (>= 4.5.0),
 	dplyr (>= 1.1.4)
 Imports:
     goat (>= 1.0),

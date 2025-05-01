@@ -29,7 +29,6 @@
 #' @importFrom grid gpar
 #'
 #' @examples
-#' \dontrun{
 #' enrichment_result <- tibble::tibble(
 #' name = c("Pathway1", "Pathway2", "Pathway3", "Pathway4"),
 #' symbol = list(c("GeneA", "GeneB"), c("GeneC", "GeneD"),c("GeneA", "GeneB"), c("GeneC", "GeneD")),
@@ -44,7 +43,6 @@
 #'   signif = c(TRUE, FALSE, FALSE, FALSE)
 #' )
 #' plot_ComplexHeatmap(enrichment_result, genelist, n_cluster = 2)
-#' }
 plot_ComplexHeatmap <- function(
     enrichment_result,
     genelist,
@@ -74,7 +72,7 @@ plot_ComplexHeatmap <- function(
   if ( ! is.na(n_top_terms)) {
     if (n_top_terms > nrow(df)) n_top_terms <- nrow(df)
     df <- df[order(abs(df$zscore), decreasing = TRUE), ]
-    df <- df[1:n_top_terms, ]
+    df <- df[seq_len(n_top_terms), ]
   }
   
   ## initialize matrix data
@@ -96,10 +94,10 @@ plot_ComplexHeatmap <- function(
       if (length(genes) >= n_top_genes) {
         unique_genes <- genes
       } else {
-        unique_genes <- c(genes, matched_genelist$symbol[1:(n_top_genes-length(genes))])
+        unique_genes <- c(genes, matched_genelist$symbol[seq_len((n_top_genes-length(genes)))])
       }
     } else {
-      unique_genes <- matched_genelist$symbol[1:n_top_genes]
+      unique_genes <- matched_genelist$symbol[seq_len(n_top_genes)]
     }
     
     m_data <- m_data[m_data$symbol %in% unique_genes, ]
@@ -112,7 +110,7 @@ plot_ComplexHeatmap <- function(
     ncol = length(unique_genes),
     dimnames = list(unique_names, unique_genes)
   )
-  for(i in 1:nrow(m_data)) {
+  for(i in seq_len(nrow(m_data))) {
     row_name <- m_data$name[i]
     col_gene <- m_data$symbol[i]
     m[row_name, as.character(col_gene)] <- 1

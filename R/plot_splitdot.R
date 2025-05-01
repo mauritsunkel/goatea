@@ -15,7 +15,7 @@ plot_splitdot <- function(enrichment, topN = NA) {
   enrichment$geneRatio <- enrichment$ngenes / enrichment$ngenes_input
   enrichment$zscore_sign <- ifelse(enrichment$zscore >= 0, "Upregulation", "Downregulation")
   
-  p <- ggplot(enrichment[1:topN,], aes(x = .data$geneRatio, y = reorder(.data$name, .data$geneRatio), size = .data$ngenes, color = .data$pvalue_adjust)) +
+  p <- ggplot(enrichment[seq_len(topN),], aes(x = .data$geneRatio, y = reorder(.data$name, .data$geneRatio), size = .data$ngenes, color = .data$pvalue_adjust)) +
     geom_point() +
     scale_x_continuous(limits = c(0, 1)) +
     scale_color_gradient(low = "#4B0055FF", high = "#FDE333FF", labels = function(x) format(x, scientific = TRUE, digits = 3)) + # viridis start-end colors
