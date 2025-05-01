@@ -77,7 +77,7 @@ plot_genelists_overlap_venn <- function(genelists) {
     ggplot2::geom_text(ggplot2::aes(.data$X, .data$Y, label = .data$name), fontface = "bold", data = ggVennDiagram::venn_setlabel(d)) +
     ggplot2::geom_label(ggplot2::aes(.data$X, .data$Y, label = .data$count), data = ggVennDiagram::venn_regionlabel(d)) +
     ggplot2::coord_equal() +
-    ggplot2::scale_fill_manual(values = .data$col) +
+    ggplot2::scale_fill_manual(values = col) +
     ggplot2::theme_void() + ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = .2))
   return(p)
 }
