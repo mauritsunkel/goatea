@@ -10,6 +10,9 @@
 #' @returns genelist with added 'signif' column with TRUE/FALSE values
 #' 
 #' @export
+#' 
+#' @examples
+#' set_significant_N_genes(goatea::example_genelist)
 set_significant_N_genes <- function(
   genelist, 
   significance_by = 'pvalue_effectsize',
@@ -29,7 +32,9 @@ set_significant_N_genes <- function(
   genelist <- genelist %>% slice_head(n = max_n_genes)
   ## warn to potentially filter down to max n genes
   if (nrow(genelist) > max(goat::goat_nulldistributions$N)) {
-    warning(paste0("genelist table exceeding ", max(goat::goat_nulldistributions$N), " genes (", length(genelist$gene), "). Limited for method = 'goat', yet might work for other methods."))
+    msg <- paste0("genelist table exceeding ", max(goat::goat_nulldistributions$N), " genes (", length(genelist$gene), "). Limited for method = 'goat', yet might work for other methods.")
+    warning(msg)
+    if ( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
   }
   
   ## set significane by both or either pvalue/effectsize
