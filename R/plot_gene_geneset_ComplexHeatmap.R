@@ -15,7 +15,7 @@
 #'   `symbol` and `genelist_overlap`, see run_genelists_overlap()
 #' @param plot default: FALSE, if TRUE, display drawn ComplexHeatmap
 #'
-#' @return A **ComplexHeatmap** object displaying genesets (rows) and genes (columns),
+#' @returns A **ComplexHeatmap** object displaying genesets (rows) and genes (columns),
 #'   potentially clustered based on their binary associations. The heatmap includes:
 #'   - Row annotations: Gene set size, p-value, and average effect size.
 #'   - Column annotations: Gene p-values, effect sizes, and optional overlap categories.
@@ -29,20 +29,10 @@
 #' @importFrom grid gpar
 #'
 #' @examples
-#' enrichment_result <- tibble::tibble(
-#' name = c("Pathway1", "Pathway2", "Pathway3", "Pathway4"),
-#' symbol = list(c("GeneA", "GeneB"), c("GeneC", "GeneD"),c("GeneA", "GeneB"), c("GeneC", "GeneD")),
-#' pvalue_adjust = c(0.01, 0.05, 0.5, 0.8),
-#' ngenes = c(10, 20, 30, 100),
-#' signif = c(T,T,F,F)
+#' plot_ComplexHeatmap(
+#'   goatea::example_enrichment[seq.int(1, 3), ], 
+#'   goatea::example_genelist, n_cluster = 3, n_top_genes = 10
 #' )
-#' genelist <- data.frame(
-#'   symbol = c("GeneA", "GeneB", "GeneC", "GeneD"),
-#'   pvalue = c(0.01, 0.05, 0.5, 0.8),
-#'   effectsize = c(1.2, -0.5, 0.8, -1.1),
-#'   signif = c(TRUE, FALSE, FALSE, FALSE)
-#' )
-#' plot_ComplexHeatmap(enrichment_result, genelist, n_cluster = 2)
 plot_ComplexHeatmap <- function(
     enrichment_result,
     genelist,
@@ -165,8 +155,8 @@ plot_ComplexHeatmap <- function(
     pvalue = df$pvalue_adjust,
     signif = as.numeric(df$signif),
     col = list(
-      zscore = colorify(colors = c(neg_color, neutral_color, pos_color), colors_breakpoints = c(min(df$zscore, na.rm = T), 0, max(df$zscore, na.rm = T))),
-      GeneSetSize = colorify(colors = c(neutral_color, effect_color), colors_breakpoints = c(0, max(df$ngenes, na.rm = T))),
+      zscore = colorify(colors = c(neg_color, neutral_color, pos_color), colors_breakpoints = c(min(df$zscore, na.rm = TRUE), 0, max(df$zscore, na.rm = TRUE))),
+      GeneSetSize = colorify(colors = c(neutral_color, effect_color), colors_breakpoints = c(0, max(df$ngenes, na.rm = TRUE))),
       pvalue = colorify(colors = c("black", "white"), colors_breakpoints = c(0, 1)),
       signif = colorify(colors = c(effect_color, neutral_color), colors_breakpoints = c(1, 0))
     ),
@@ -180,7 +170,7 @@ plot_ComplexHeatmap <- function(
     col = list(
       signif = colorify(colors = c(effect_color, neutral_color), colors_breakpoints = c(1, 0)),
       pvalue = colorify(colors = c(effect_color, neutral_color), colors_breakpoints = c(0, 1)),
-      effectsize = colorify(colors = c(neg_color, neutral_color, pos_color), colors_breakpoints = c(min(genelist$effectsize[unique_genes_i], na.rm = T), 0, max(genelist$effectsize[unique_genes_i], na.rm = T)))
+      effectsize = colorify(colors = c(neg_color, neutral_color, pos_color), colors_breakpoints = c(min(genelist$effectsize[unique_genes_i], na.rm = TRUE), 0, max(genelist$effectsize[unique_genes_i], na.rm = TRUE)))
     ),
     na_col = neutral_color
   )
