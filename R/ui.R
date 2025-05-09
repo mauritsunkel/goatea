@@ -1,7 +1,5 @@
 #' UI for GOATEA package
 #'
-#' @export
-#' 
 #' @importFrom shiny icon addResourcePath fluidRow column selectInput textInput actionButton textOutput checkboxInput radioButtons fileInput verbatimTextOutput numericInput downloadButton textAreaInput plotOutput
 #' @importFrom shinyjs useShinyjs disabled hidden
 #' @importFrom shinydashboard box tabItem tabItems dashboardPage dashboardHeader dashboardSidebar sidebarMenu menuItem menuSubItem dashboardBody
@@ -12,6 +10,8 @@
 #' @importFrom shinyjqui jqui_resizable
 #' @importFrom InteractiveComplexHeatmap InteractiveComplexHeatmapOutput
 #' @importFrom visNetwork visNetworkOutput
+#' 
+#' @returns Shiny UI function
 goatea_ui <- function() {
   ## adds custom css styling and Javascript functionalities
   shiny::addResourcePath("www", system.file("www", package = "goatea"))
@@ -69,9 +69,7 @@ goatea_ui <- function() {
                                                                  selected = ".csv",
                                                                  inline = FALSE), 
                                                     hovertip = "Select CSV or Excel for output type when writing tables")),
-                    column(width = 2, wrap_hovertip(checkboxInput("cbi_annotate_genes", "Annotate genes", value = TRUE), 
-                                                    hovertip = "Requires 'annotables' package, annotate genes with a small description for available organisms, see '?goatea::get_gene_annotation()'")),
-                    column(width = 2),
+                    column(width = 4),
                     column(width = 2, wrap_hovertip(actionButton("ab_global_modal", label = icon("question"), style = "font-size: 24px;"),
                                                     hovertip = "Click to show tab help overview")),
                   )
