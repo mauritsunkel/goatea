@@ -32,8 +32,9 @@
 #' @param export default: FALSE, if TRUE: export = getwd(), if export = "string/", save hexcodes, rgb, and hsl values to export/colorify.csv
 #' @param verbose default: TRUE, else FALSE - to log status messages 
 #' @param ... additional arguments to pass on 
+#' 
 #' @returns vector of color hexcodes
-#'
+#' 
 #' @export
 #'
 #' @description
@@ -47,42 +48,7 @@
 #' All grDevices plotting functions are provided as palettes, simply use colors = "rainbow", "heat", "terrain", "topo" or "cm".
 #'
 #' @examples
-#' if(interactive()) {
-#'   ## if parameters identical, change seed to change generation
-#'   colorify(10, plot = TRUE, seed = 1)
-#'   colorify(10, plot = TRUE, seed = 42)
-#'   ## set colors, generate additional up to n
-#'   colorify(colors = c("red", "white", "blue"), n = 5, plot = TRUE)
-#'   ## create gradients
-#'   colorify(colors = c("orange", "red", "white", "blue", "orange"), gradient_n = 100, plot = TRUE)
-#'   
-#'   ## viridis gradient, lighten and saturate, darken
-#'   colorify(colors = "viridis", n = 100, plot = TRUE)
-#'   colorify(colors = "viridis", n = 10, plot = TRUE, l = 1.2, s = 10)
-#'   colorify(colors = "viridis", n = 10, plot = TRUE, l = .9)
-#'   
-#'   ## palette selected by name in colors[1], can add colors to selected palette, if n < length, remove colors , if greater generate 
-#'   colorify(colors = c("Okabe-Ito", "red", "blue", "yellow"), plot = TRUE, n = 10)
-#'   
-#'   ## no adjustments to locked indices 
-#'   colorify(colors = "Okabe-Ito", colors_lock = c(FALSE,FALSE,TRUE,TRUE), plot = TRUE, rv = -300)
-#'   colorify(colors = "Okabe-Ito", colors_lock = c(FALSE,FALSE,TRUE,TRUE), plot = TRUE, rv = 300)
-#'   
-#'   ## colors_lock and inversing
-#'   colors <- colorify(5)
-#'   colorify(colors_lock = c(TRUE,TRUE), colors=colors)
-#'   colorify(colors_lock = ! c(TRUE,FALSE,TRUE), colors=colors)
-#'   colorify(colors_lock = c(3,4), colors=colors)
-#'   colorify(colors_lock = - c(3,4), colors=colors)
-#'   
-#'   ## rainbow
-#'   colorify(colors=grDevices::rainbow(100, s = .5), plot = TRUE)
-#'   colorify(colors="rainbow", n = 100, sf = .5, plot = TRUE)
-#'   colorify(colors=grDevices::rainbow(100, v = .5), plot = TRUE)
-#'   colorify(colors="rainbow", n = 100, lf = .5, plot = TRUE,)
-#'   colorify(colors=grDevices::rainbow(100, start = .25, end = .75), plot = TRUE)
-#'   colorify(colors=grDevices::rainbow(100)[25:75], plot = TRUE)
-#' }
+#' colorify(10, plot = TRUE)
 colorify <- function(
     n = NULL, colors = character(0), colors_lock = NULL, colors_names = character(0), colors_breakpoints = numeric(0),
     gradient_n = n, gradient_space = c("rgb", "Lab"), gradient_interpolate = c("linear", "spline"),
@@ -92,7 +58,7 @@ colorify <- function(
   
   stopifnot(
     is.character(c(colors, colors_names)),
-    is.numeric(c(colors_breakpoints, hf, sf, lf, rf, gf, bf, hv, sv, lv, rv, gv, bv, alpha, seed)),
+    is.numeric(c(colors_breakpoints, hf, sf, lf, rf, gf, bf, hv, sv, lv, rv, gv, bv, alpha)),
     is.null(n) | is.numeric(n),
     is.null(gradient_n) | is.numeric(gradient_n),
     is.logical(plot),
@@ -148,7 +114,7 @@ colorify <- function(
   rgb_values <- col2rgb(colors)
   ## set colors to be modified
   if (is.null(colors_lock)) {
-    colors_lock = rep(FALSE, length(colors))
+    colors_lock <- rep(FALSE, length(colors))
   }
   colors_lock_bool <- identical(substitute(colors_lock)[[1]], as.symbol("!")) | identical(substitute(colors_lock)[[1]], as.symbol("-"))
   if (is.numeric(colors_lock)) {
@@ -271,9 +237,7 @@ colorify_map <- function(colors, breakpoints, ...) {
 #' @param i_palettes default: numeric vector as index/range for choosing palettes, or a combination of 'rcolorbrewer', 'viridis', 'rainbow' (grDevices Palettes) to show specific palettes
 #' @param border default: FALSE, if TRUE show color rectangle borders
 #'
-#' @export
-#'
-#' @return named vector with source and name of palettes, 'hcl' for grDevices::hcl.pals() and 'pal' for grDevices::palette.pals()
+#' @returns named vector with source and name of palettes, 'hcl' for grDevices::hcl.pals() and 'pal' for grDevices::palette.pals()
 #'
 #' @description
 #' Use colorify() to select and modify the palettes, see its documentation.
@@ -282,20 +246,6 @@ colorify_map <- function(colors, breakpoints, ...) {
 #' Any numeric i_palettes over maximum amount of palettes are not displayed.
 #'
 #' Contains all Viridis palettes, excluding Turbo.
-#'
-#' @examples
-#' if (interactive()) {
-#'   display_palettes()
-#'   display_palettes(i_palettes = 50:75)
-#'  
-#'   display_palettes(i_palettes = 'RColorBrewer')
-#'   display_palettes(i_palettes = 'Viridis')
-#'   display_palettes(i_palettes = c("rainbow", "viridis"))
-#'  
-#'   display_palettes(i_palettes = c(1,5,10,20,40,100,119))
-#'   display_palettes(n = 100, i_palettes = seq_len(10))
-#'   display_palettes(n = 10, i_palettes = seq_len(10), border = TRUE)
-#' }
 display_palettes <- function(n = 10, i_palettes = seq_len(1000), border = FALSE) {
   stopifnot(
     is.numeric(n),
@@ -384,16 +334,11 @@ display_palettes <- function(n = 10, i_palettes = seq_len(1000), border = FALSE)
 #'
 #' @param palette string: name of palette, will be lower()ed and stripped of whitespace
 #'
-#' @return original palette name
+#' @returns original palette name
 #'
 #' @description
 #' All ColorBrewer palettes overlap with grDevices palettes
 #' Viridis palettes, except "Magma", overlap with grDevices palettes
-#'
-#' @examples
-#' if(interactive()) {
-#'   palette_name_mapping("dark2") # "Dark 2"
-#' }
 palette_name_mapping <- function(palette) {
   palette_mapping <- list(
     ## custom palettes
