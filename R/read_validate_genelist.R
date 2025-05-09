@@ -21,6 +21,12 @@
 #' @importFrom openxlsx read.xlsx 
 #' @importFrom tibble as_tibble
 #' @importFrom AnnotationDbi mapIds
+#' 
+#' @returns tibble dataframe with columns: symbol (string), gene (string as integer ID), pvalue (numeric), effestsize (numeric)
+#' 
+#' @examples
+#' file_path <- system.file("extdata", "example_genelist.csv", package = "goatea")
+#' read_validate_genelist(file = file_path)
 read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove_duplicated = TRUE,
                           remove_Rik_genes = TRUE, remove_Gm_genes = TRUE, map_organism = NULL) {
   message("Checking file format...")
@@ -50,36 +56,44 @@ read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove
       NULL
     )
     if (is.null(org_pkg)) return("organism package for specified taxid is not available")
-    if ( ! requireNamespace(org_pkg, quietly = TRUE)) stop(paste0('install organism package with: BiocManager::install("', org_pkg, '")'))
+    if ( ! requireNamespace(org_pkg, quietly = TRUE)) stop('install organism package with: BiocManager::install("', org_pkg, '")')
     org.xx.eg.db <- getExportedValue(org_pkg, org_pkg)
   
     message("mapping gene symbols via AnnotationDbi::mapIds ALIAS to NCBI Entrez IDs")
     genelist$gene <- AnnotationDbi::mapIds(org.xx.eg.db, keys = toupper(genelist$symbol), column = "ENTREZID", keytype = "ALIAS", multiVals = "first")
-    warning(round(sum(is.na(genelist$gene)) / nrow(genelist), digits = 2), '% of symbols were not converted to ENTREZID')
+    msg <- paste0(round(sum(is.na(genelist$gene)) / nrow(genelist), digits = 2), '% of symbols were not converted to ENTREZID')
+    warning(msg)
+    if ( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
     genelist <- genelist[ ! is.na(genelist$gene), ]
   }
 
   # 1) data.frame with all required columns
-  ok = is.data.frame(genelist) && 
+  ok <- is.data.frame(genelist) && 
     nrow(genelist) > 0 &&
     'gene' %in% colnames(genelist)
   if ( ! 'pvalue' %in% colnames(genelist)) {
-    warning("no 'pvalue' column in genelist: initializing with all 'pvalue' = 1")
+    msg <- "no 'pvalue' column in genelist: initializing with all 'pvalue' = 1"
+    warning(msg)
+    if ( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
     genelist$pvalue <- 1
   }
   if ( ! 'effectsize' %in% colnames(genelist)) {
-    warning("no 'effectsize' column in genelist: initializing with all 'effectsize' = 0")
+    msg <- "no 'effectsize' column in genelist: initializing with all 'effectsize' = 0"
+    warning(msg)
+    if ( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
     genelist$effectsize <- 0
   }
   if ( ! 'symbol' %in% colnames(genelist)) {
-    warning("no 'symbol' column in genelist, initializing with: genelist$symbol = genelist$gene")
+    msg <- "no 'symbol' column in genelist, initializing with: genelist$symbol = genelist$gene"
+    warning(msg)
+    if ( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
     genelist$symbol <- genelist$gene
   }
   
   # 2) check column types
   if(ok) {
-    types = sapply(genelist, typeof)
-    ok = all(c("gene", "pvalue", "effectsize") %in% names(types)) &&
+    types <- sapply(genelist, typeof)
+    ok <- all(c("gene", "pvalue", "effectsize") %in% names(types)) &&
       types["gene"] %in% c("character", "integer", "numeric", "double") &&
       types["pvalue"] %in% c("integer", "numeric", "double") &&
       types["effectsize"] %in% c("integer", "numeric", "double")
@@ -89,12 +103,12 @@ read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove
   }
   
   # 3) check for NA or empty-string values  (note that the 'signif' column can be NA)
-  ok = FALSE
+  ok <- FALSE
   if(is.character(genelist$gene)) {
-    ok = !anyNA(genelist$gene) && all(genelist$gene != "")
+    ok <- !anyNA(genelist$gene) && all(genelist$gene != "")
   }
   if(is.integer(genelist$gene) || is.numeric(genelist$gene)) { # also allow 'numeric' to relax compatability a bit
-    ok = all(is.finite(genelist$gene)) # disallow NA and Inf
+    ok <- all(is.finite(genelist$gene)) # disallow NA and Inf
   }
   if(!ok) {
     return("genelist table should not contain empty/missing/NA/Inf values in the 'gene' column")
@@ -109,7 +123,7 @@ read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove
     # before conversion to int, we should round() because integer conversion drops all decimals (rounds down)
     # see also the help/documentation @ ?as.integer
     # testcase;  tmp = 1/(1-0.99); sprintf("%.14f", tmp); as.integer(tmp); all.equal(as.integer(tmp), tmp)
-    gene_as_int = as.integer(round(genelist$gene, digits = 0))
+    gene_as_int <- as.integer(round(genelist$gene, digits = 0))
     if(any(abs(genelist$gene - gene_as_int) > 10^-6)) { # test with some minor tolerance for imprecision
       return("genelist table should contain whole numbers (integers) in the 'gene' column, if numeric identifiers are provided")
     }
@@ -117,7 +131,7 @@ read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove
     # stopifnot(genelist$gene %% 1 == 0); genelist$gene = as.integer(genelist$gene)
     
     # type conversion
-    genelist$gene = gene_as_int
+    genelist$gene <- gene_as_int
   }
   
   # 5) genes cannot be duplicated
