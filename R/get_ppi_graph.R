@@ -43,8 +43,7 @@
 #' @importFrom igraph empty_graph
 #' 
 #' @examples
-#' ppi <- get_string_ppi(c("TP53", "EGFR", "BRCA1", "MTOR", "MYC"))
-#' get_ppigraph(ppi)
+#' get_ppigraph(goatea::example_ppi_data)
 get_ppigraph <- function(ppi_data, vertex_clustering = NULL) {
   ## input validation
   stopifnot(

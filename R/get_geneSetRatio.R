@@ -6,6 +6,16 @@
 #' @param gene_overview_df dataframe with gene-wise information
 #'
 #' @export
+#' 
+#' @returns numerical vector of gene set ratios
+#' 
+#' @examples
+#' calculate_geneSetRatio(
+#' list(
+#'   A = goatea::example_enrichment, 
+#'   B = goatea::example_enrichment
+#' ), 
+#' goatea::example_genes_overview)
 calculate_geneSetRatio <- function (enrichment_results, gene_overview_df) {
   for (name in names(enrichment_results)) {
     df <- enrichment_results[[name]]

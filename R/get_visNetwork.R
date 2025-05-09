@@ -20,11 +20,10 @@
 #' @importFrom dplyr mutate
 #'
 #' @examples
-#' ppi <- get_string_ppi(c("TP53", "EGFR", "BRCA1", "MTOR", "MYC"))
-#' g <- get_ppigraph(ppi)
-#' vis <- get_visNetwork(g)
+#' ppi_graph <- get_ppigraph(goatea::example_ppi_data)
+#' get_visNetwork(ppi_graph)
 get_visNetwork <- function(ppigraph, genes_overview = NULL, sample_name = NULL) {
-  if (class(ppigraph) == "igraph_constructor_spec") return(list(nodes = data.frame(), edges = data.frame(), ppigraph = ppigraph))
+  if (is(ppigraph, "igraph_constructor_spec")) return(list(nodes = data.frame(), edges = data.frame(), ppigraph = ppigraph))
   stopifnot(
     is_igraph(ppigraph),
     is.null(genes_overview) | is.data.frame(genes_overview),

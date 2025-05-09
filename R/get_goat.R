@@ -12,10 +12,14 @@
 #' @param padj_min_signifgenes if a value larger than zero is provided, this will perform additional post-hoc filtering; after p-value adjustment, set the pvalue_adjust to NA and signif to FALSE for all genesets with fewer than padj_min_signifgenes 'input genes that were significant' (ngenes_signif column in genesets table). So this does not affect the accuracy of estimated p-values, in contrast to prefiltering genesets prior to p-value computation or adjusting p-values
 #' @param ... further parameters are passed to the respective stats method
 #'
-#' @returns the input genesets, with results stored in columns 'pvalue', 'pvalue_adjust' and 'signif'
+#' @returns the input genesets, with results stored in columns 'pvalue', 'pvalue_adjust', 'signif' and 'zscore'
+#' 
 #' @export
 #' 
 #' @importFrom goat test_genesets
+#' 
+#' @examples
+#' run_geneset_enrichment(goatea::example_genesets, goatea::example_genelist)
 run_geneset_enrichment <- function(
     genesets, 
     genelist, 

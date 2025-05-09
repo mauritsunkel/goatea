@@ -20,8 +20,8 @@
 #' @import dplyr
 #' @importFrom arrow read_delim_arrow write_parquet open_dataset
 #'
-#' @examples
-#' get_string_ppi(c("TP53", "EGFR", "BRCA1", "MTOR", "MYC"))
+#' @examplesIf FALSE
+#' get_string_ppi(c("TP53", "EGFR", "BRCA1", "MTOR", "MYC", "SOX2"))
 get_string_ppi <- function(aliases, score_threshold = 0L, organism = 9606L, network_type = 'full', link_data = 'combined_only', folder = tempdir(),
                            version = 'latest', versions = NULL) {
   ## validate input

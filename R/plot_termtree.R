@@ -6,10 +6,14 @@
 #' @param Nclusters integer, default: 1, sets N clusters of terms 
 #'
 #' @returns ggtree/gg/ggplot object 
+#' 
 #' @export
 #' 
 #' @importFrom purrr map_chr 
 #' @importFrom enrichplot pairwise_termsim treeplot
+#' 
+#' @examples
+#' plot_termtree(goatea::example_enrichment, Nclusters = 3)
 plot_termtree <- function(enrichment, Nterms = NA, Nwords = 5, Nclusters = 1) {
   if ( ! requireNamespace("enrichplot")) stop("Need 'enrichplot' package installed via: BiocManager::install('enrichplot')")
   if ("source" %in% colnames(enrichment)) if (length(unique(enrichment$source)) > 1) stop("pass a single source for plotting termtree") 

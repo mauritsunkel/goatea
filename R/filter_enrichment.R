@@ -21,6 +21,11 @@
 #' @param max_pvalue_adjust default: 1, set lower to filter terms with higher adjusted p-value for multiple correction 
 #'
 #' @export
+#' 
+#' @returns filtered dataframe
+#' 
+#' @examples
+#' filter_enrichment(goatea::example_enrichment, min_ngenes = 15)
 filter_enrichment <- function(
     df,
     genes_input = "",
@@ -53,9 +58,9 @@ filter_enrichment <- function(
   ## keep terms matching by genes
   if ( ! isEmptyCharacter(genes_input)) {
     match_terms_by_genes <- if (genes_any_all == "any") {
-      sapply(df$symbol, function(symbols) any(tolower(genes_input) %in% tolower(symbols)))
+      sapply(df$symbol, function(symbols) {any(tolower(genes_input) %in% tolower(symbols))})
     } else if (genes_any_all == "all") {
-      sapply(df$symbol, function(symbols) all(tolower(genes_input) %in% tolower(symbols)))
+      sapply(df$symbol, function(symbols) {all(tolower(genes_input) %in% tolower(symbols))})
     }
     df <- df[match_terms_by_genes, ]
   }

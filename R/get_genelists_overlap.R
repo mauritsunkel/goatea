@@ -6,7 +6,10 @@
 #' 
 #' @importFrom tibble tibble
 #'
-#' @return tibble/dataframe with (annotated) genes and p-value/effectsize info for each genelist, concluding with overlapping genelists by significant genes
+#' @returns tibble/dataframe with (annotated) genes and p-value/effectsize info for each genelist, concluding with overlapping genelists by significant genes
+#'
+#' @examples
+#' run_genelists_overlap(list(A = goatea::example_genelist, B = goatea::example_genelist))
 run_genelists_overlap <- function(genelists) {
   ## initiate df with unique gene symbols (and annotations)
   long_df <- do.call(rbind, genelists)
@@ -33,7 +36,7 @@ run_genelists_overlap <- function(genelists) {
   ## get genelist names of overlapping significant genes
   df$genelist_overlap <- sapply(df$symbol, function(symbol) {
     hits <- names(genelists_signif_genes)[
-      sapply(genelists_signif_genes, function(lst) symbol %in% lst)
+      sapply(genelists_signif_genes, function(lst) {symbol %in% lst})
     ]
     if (length(hits) == 0) "" else paste(hits, collapse = "+")
   })
