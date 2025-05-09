@@ -20,9 +20,9 @@
 #' @importFrom igraph graph.attributes vertex_attr graph.attributes
 #' @importFrom ggplot2 ggsave ggplot_build  
 #' @importFrom visNetwork renderVisNetwork visNetwork visOptions visEdges visNodes visPhysics visInteraction visIgraphLayout visExport visEvents
-#' @importFrom shinydashboard updateTabItems        
-
-#' @export
+#' @importFrom shinydashboard updateTabItems
+#'
+#' @returns Shiny server function
 goatea_server <- function(input, output, session, css_colors) {
   colors <- shiny::reactiveValues(
     main_bg = css_colors$main_bg,
@@ -109,7 +109,11 @@ goatea_server <- function(input, output, session, css_colors) {
     stringdb_versions = 
       tryCatch(
         stringdb_versions <- read.table(url("https://string-db.org/api/tsv-no-header/available_api_versions"))$V1,
-        error = function(e) warning("Failed to retrieve STRINGdb versions: ", conditionMessage(e)), 
+        error = function(e) {
+          msg <- paste0("Failed to retrieve STRINGdb versions: ", conditionMessage(e))
+          warning(msg)
+          if( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
+        }, 
         finally = stringdb_versions <- '12.0'
       )
   )
@@ -215,16 +219,16 @@ goatea_server <- function(input, output, session, css_colors) {
     updateSelectInput(session, "si_ppi_color_nodes_subgraph", choices = c(nodes_equal, nodes_sample))
     updateSelectInput(session, "si_ppi_color_edges_subgraph", choices = setdiff(names(rv_ppi$edges), c('id', "from", "to", "width", "title")))
     rv_ppi_subgraph$nodes <- rv_ppi$nodes
-    rv_ppi_subgraph$edges = rv_ppi$edges
-    rv_ppi_subgraph$g = rv_ppi$g
-    rv_ppi_subgraph$p = rv_ppi$p
+    rv_ppi_subgraph$edges <- rv_ppi$edges
+    rv_ppi_subgraph$g <- rv_ppi$g
+    rv_ppi_subgraph$p <- rv_ppi$p
     
     shinyjs::hide('ab_ppi_graph_loader')
   })
   observeEvent(input$si_ppi_color_edges, {
     req(input$si_ppi_color_edges)
-    values = rv_ppi$edges[[input$si_ppi_color_edges]]
-    colors = colorify(colors = c('white', 'red'), colors_breakpoints = c(min(values), max(values)))(values)
+    values <- rv_ppi$edges[[input$si_ppi_color_edges]]
+    colors <- colorify(colors = c('white', 'red'), colors_breakpoints = c(min(values), max(values)))(values)
     visNetwork::visNetworkProxy("vno_ppi_visnetwork") %>%
       visNetwork::visUpdateEdges(data.frame(
         from = rv_ppi$edges$from,
@@ -247,7 +251,7 @@ goatea_server <- function(input, output, session, css_colors) {
   observeEvent(input$si_ppi_color_nodes, {
     req(c(input$si_ppi_color_nodes, input$si_ppi_color_nodes_type))
     
-    values = rv_ppi$nodes[[input$si_ppi_color_nodes]]
+    values <- rv_ppi$nodes[[input$si_ppi_color_nodes]]
     values[is.na(values)] <- 0
   
     colors <- if (input$si_ppi_color_nodes %in% c('updown')) {
@@ -259,7 +263,7 @@ goatea_server <- function(input, output, session, css_colors) {
       colors[is.na(colors)] <- 'black'
       colors
     } else {
-      colorify(colors = c('black', 'red'), colors_breakpoints = c(min(values, na.rm = T), max(values, na.rm = T)))(values)
+      colorify(colors = c('black', 'red'), colors_breakpoints = c(min(values, na.rm = TRUE), max(values, na.rm = TRUE)))(values)
     }
     
     if (input$si_ppi_color_nodes_type == 'Background') {
@@ -280,7 +284,7 @@ goatea_server <- function(input, output, session, css_colors) {
   observeEvent(input$si_ppi_color_nodes_subgraph, {
     req(c(input$si_ppi_color_nodes_subgraph, input$si_ppi_color_nodes_type_subgraph))
     
-    values = rv_ppi_subgraph$nodes[[input$si_ppi_color_nodes_subgraph]]
+    values <- rv_ppi_subgraph$nodes[[input$si_ppi_color_nodes_subgraph]]
     values[is.na(values)] <- 0
     
     colors <- if (input$si_ppi_color_nodes_subgraph %in% c('updown')) {
@@ -292,7 +296,7 @@ goatea_server <- function(input, output, session, css_colors) {
       colors[is.na(colors)] <- 'black'
       colors
     } else {
-      colorify(colors = c('black', 'red'), colors_breakpoints = c(min(values, na.rm = T), max(values, na.rm = T)))(values)
+      colorify(colors = c('black', 'red'), colors_breakpoints = c(min(values, na.rm = TRUE), max(values, na.rm = TRUE)))(values)
     }
     
     if (input$si_ppi_color_nodes_type_subgraph == 'Background') {
@@ -461,9 +465,9 @@ goatea_server <- function(input, output, session, css_colors) {
   observeEvent(input$ab_ppi_reset_subgraph, {
     req(rv_ppi$g)
     rv_ppi_subgraph$nodes <- rv_ppi$nodes
-    rv_ppi_subgraph$edges = rv_ppi$edges
-    rv_ppi_subgraph$g = rv_ppi$g
-    rv_ppi_subgraph$p = rv_ppi$p
+    rv_ppi_subgraph$edges <- rv_ppi$edges
+    rv_ppi_subgraph$g <- rv_ppi$g
+    rv_ppi_subgraph$p <- rv_ppi$p
   })
   observeEvent(input$visNetwork_selected_edges, {
     node_ids <- unlist(strsplit(input$visNetwork_selected_edges[length(input$visNetwork_selected_edges)], split = "_"))
@@ -472,7 +476,11 @@ goatea_server <- function(input, output, session, css_colors) {
     latest_version <- versions$V1[length(versions$V1)]
     version_major <- strsplit(input$si_ppi_version, '\\.')[[1]][1]
     version_minor <- as.numeric(gsub("([0-9]+).*$", "\\1", strsplit(input$si_ppi_version, '\\.')[[1]][2]))
-    if (latest_version != paste0(version_major, ".", version_minor)) warning("Returning interaction of latest STRINGdb version as earlier versions are archived, may be that interaction is not found, recommend is to use latest STRINGdb version.")
+    if (latest_version != paste0(version_major, ".", version_minor)) {
+      msg <- "Returning interaction of latest STRINGdb version as earlier versions are archived, may be that interaction is not found, recommend is to use latest STRINGdb version."
+      warning(msg)
+      if ( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
+    } 
     version_major <- strsplit(latest_version, '\\.')[[1]][1]
     version_minor <- as.numeric(gsub("([0-9]+).*$", "\\1", strsplit(latest_version, '\\.')[[1]][2]))
     
@@ -724,7 +732,6 @@ goatea_server <- function(input, output, session, css_colors) {
       foreground_color = colors$text,
       interactive = TRUE
     )
-    print(class(rv_volcano$plot))
     shinyjs::hide("ab_run_volcano_loader")
     shinyjs::show("db_volcano_plot")
   })
@@ -928,9 +935,8 @@ goatea_server <- function(input, output, session, css_colors) {
         rv_load_genelists$success <- FALSE
         break
       } else {
-        ## annotate genes with small description
-        if (input$cbi_annotate_genes & ! requireNamespace("annotables")) shiny::showNotification("'annotables' package not installed", type = 'warning')
-        if (input$cbi_annotate_genes) genelist$gene_annotation <- get_gene_annotation(gene_symbols = genelist$symbol, organism = input$si_organism)
+        ## annotate genes with small description - if stephenturner/annotables package is installed
+        genelist$gene_annotation <- get_gene_annotation(gene_symbols = genelist$symbol, organism = input$si_organism)
         data[[file[['name']]]] <- genelist
         shinyjs::runjs("$('#vto_load_genelists').css('color', '#32CD32');")
         ## bytes to megabytes conversion
@@ -1180,9 +1186,9 @@ goatea_server <- function(input, output, session, css_colors) {
   output$db_overlap_plot <- downloadHandler(
     filename = "overlap_plot.png",
     content = function(file) {
-      if (class(rv_genelists_overlap$plot)[1] == "upset") {
+      if (is(rv_genelists_overlap$plot[1], "upset")) {
         png(file)
-        print(rv_genelists_overlap$plot)
+        plot(rv_genelists_overlap$plot)
         dev.off()
       } else {
         ggplot2::ggsave(file, rv_genelists_overlap$plot)
@@ -1269,21 +1275,21 @@ goatea_server <- function(input, output, session, css_colors) {
   output$vto_ppi_selection <- renderText({
     if (is.null(input$visNetwork_selected_nodes) || length(input$visNetwork_selected_nodes) == 0) {
       if (is.null(rv_ppi$g)) return("Initialize graph: graph creation won't work without selecting any proteins/genes!")
-      if (class(rv_ppi$g) == "igraph_constructor_spec") return("Empty graph, try adjusting parameters...")
+      if (is(rv_ppi$g, "igraph_constructor_spec")) return("Empty graph, try adjusting parameters...")
       return("ppigraph: hover for info, click edge to browse STRINGdb interaction, (shift+clickdrag or cntrl+)click to (multi)select node(s)")
     } else paste("Selected Node IDs:", paste(vertex_attr(rv_ppi$g)$name[match(input$visNetwork_selected_nodes, vertex_attr(rv_ppi$g)$id)], collapse = ", "))
   })
   output$vto_ppi_selection_subgraph <- renderText({
     if (is.null(input$visNetwork_selected_nodes_subgraph) || length(input$visNetwork_selected_nodes_subgraph) == 0) {
       if (is.null(rv_ppi_subgraph$g)) return("Initialize graph")
-      if (class(rv_ppi_subgraph$g) == "igraph_constructor_spec") return("Empty graph, initialize main graph.")
+      if (is(rv_ppi_subgraph$g, "igraph_constructor_spec")) return("Empty graph, initialize main graph.")
       return("subgraph: hover for info, click edge to browse STRINGdb interaction, (shift+clickdrag or cntrl+)click to (multi)select node(s)")
     } else paste("Selected Node IDs:", paste(vertex_attr(rv_ppi_subgraph$g)$name[match(input$visNetwork_selected_nodes_subgraph, vertex_attr(rv_ppi_subgraph$g)$id)], collapse = ", "))
   })
   output$vto_ppi_metrics <- renderText({
     if ( ! is.null(rv_ppi$g)) {
       shinyjs::runjs("$('#vto_ppi_metrics').css('color', '#ff0000');")
-      if (class(rv_ppi$g) == "igraph_constructor_spec") return("Empty graph, try adjusting parameters...")
+      if (is(rv_ppi$g, "igraph_constructor_spec")) return("Empty graph, try adjusting parameters...")
       attribute_names <- names(igraph::graph.attributes(rv_ppi$g))
       max_name_width <- max(nchar(attribute_names))
       shinyjs::runjs("$('#vto_ppi_metrics').css('color', '#32CD32');")
@@ -1302,7 +1308,7 @@ goatea_server <- function(input, output, session, css_colors) {
     shinyjs::runjs("$('#vto_ppi_metrics_subgraph').css('color', '#ff0000');")
     output$vto_ppi_metrics_subgraph <- renderText({
       "No graph attributes available"
-      if (class(rv_ppi_subgraph$g) == "igraph_constructor_spec") return("Empty graph, try adjusting parameters...")
+      if (is(rv_ppi_subgraph$g, "igraph_constructor_spec")) return("Empty graph, try adjusting parameters...")
       attribute_names <- names(igraph::graph.attributes(rv_ppi_subgraph$g))
       max_name_width <- max(nchar(attribute_names))
       shinyjs::runjs("$('#vto_ppi_metrics_subgraph').css('color', '#32CD32');")
@@ -1327,17 +1333,17 @@ goatea_server <- function(input, output, session, css_colors) {
     rv_genelists_overlap$plot
   })
   output$po_splitdot <- shiny::renderPlot({
-    if ( ! is.null(rv_splitdot$plot)) print(ggplot2::ggplot_build(rv_splitdot$plot))
+    if ( ! is.null(rv_splitdot$plot)) plot(ggplot2::ggplot_build(rv_splitdot$plot))
     shiny::showNotification("NOTE: plot size is draggable from edges")
   })
   output$po_termtree <- shiny::renderPlot({
-    if ( ! is.null(rv_termtree$plot)) print(ggplot2::ggplot_build(rv_termtree$plot))
+    if ( ! is.null(rv_termtree$plot)) plot(ggplot2::ggplot_build(rv_termtree$plot))
     shiny::showNotification("NOTE: plot size is draggable from edges")
   })
   
   #### render ppigraphs as visnetwork ----
   output$vno_ppi_visnetwork <- visNetwork::renderVisNetwork({
-    if ( ! is.null(rv_ppi$g) && class(rv_ppi$g) != "igraph_constructor_spec") {
+    if ( ! is.null(rv_ppi$g) && ! is(rv_ppi$g, "igraph_constructor_spec")) {
       visNetwork::visNetwork(rv_ppi$nodes, rv_ppi$edges, width = "100%", height = "100%") %>%
         visNetwork::visOptions(highlightNearest = TRUE) %>%
         visNetwork::visEdges(smooth = FALSE,
@@ -1393,7 +1399,7 @@ goatea_server <- function(input, output, session, css_colors) {
     }
   })
   output$vno_ppi_visnetwork_subgraph <- visNetwork::renderVisNetwork({
-    if ( ! is.null(rv_ppi_subgraph$g) && class(rv_ppi_subgraph$g) != "igraph_constructor_spec") {
+    if ( ! is.null(rv_ppi_subgraph$g) && ! is(rv_ppi_subgraph$g, "igraph_constructor_spec")) {
       visNetwork::visNetwork(rv_ppi_subgraph$nodes, rv_ppi_subgraph$edges, width = "100%", height = "100%") %>%
         visNetwork::visOptions(highlightNearest = TRUE) %>%
         visNetwork::visEdges(smooth = FALSE,
