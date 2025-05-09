@@ -1,30 +1,17 @@
 #' Get file extension
+#' 
+#' @export
 #'
 #' @param x string filepath
 #'
 #' @returns string file extension
+#' 
+#' @examples
+#' file_extension(file.path(getwd(), 'filename.txt'))
 file_extension <- function (x) {
   pos <- regexpr("\\.([[:alnum:]]+)$", x)
   ifelse(pos > -1L, substring(x, pos + 1L), "")
 }
-
-#' throw error if R package is unavailable
-#'
-#' @param pkg R package name
-#' @param msg function name / reference for user
-#' @noRd
-check_dependency = function(pkg, msg) {
-  if(!requireNamespace(pkg, quietly = TRUE)) {
-    stop(paste0(
-      "An optional dependency for ",
-      msg,
-      " is not installed; R package '",
-      pkg,
-      "' is not available. For convenience, you may use the following command to install all dependencies (including optional) for the 'goat' R package; pak::pkg_install('ftwkoopmans/goat', dependencies = TRUE)"
-    ), call. = FALSE)
-  }
-}
-
 
 #' Wrap Shiny UI element with a loading spinner contained in html div tags
 #'
@@ -35,6 +22,11 @@ check_dependency = function(pkg, msg) {
 #'
 #' @importFrom htmltools div
 #' @importFrom shiny icon
+#' 
+#' @returns html div element wrapped around given Shiny UI element 
+#' 
+#' @examples
+#' wrap_loader('id_example', shiny::actionButton('id_example', 'example'))
 wrap_loader <- function(id, ui_element) {
   div(ui_element,
       div(
@@ -51,6 +43,11 @@ wrap_loader <- function(id, ui_element) {
 #' @importFrom htmltools tags
 #'
 #' @export
+#' 
+#' @returns tags$div element around given Shiny UI element 
+#' 
+#' @examples
+#' wrap_hovertip(shiny::actionButton('id_example', 'example'), 'example')
 wrap_hovertip <- function(ui_element, hovertip) {
   tags$div(title = hovertip, ui_element)
 }
@@ -68,31 +65,45 @@ wrap_hovertip <- function(ui_element, hovertip) {
 #' * 7227 = Fruit fly (Drosophila melanogaster)
 #' * 6239 = Worm (Caenorhabditis elegans)
 #'
+#' @description 
+#' need stephenturner/annotables package installed 
+#' install with: remotes::install_github('stephenturner/annotables')
+#'
 #' @importFrom plyr mapvalues
 #'
 #' @export
+#' 
+#' @returns character vector with gene descriptions for given gene_symbols by matching organism
+#' 
+#' @examples 
+#' get_gene_annotation(c('Tox2', 'Abca5', 'Lor'), '9606')
 get_gene_annotation <- function(gene_symbols, organism = '9606') {
-  if (requireNamespace("annotables", quietly = TRUE)) {
-    annodata <- switch(
-      as.character(organism),
-      '9606' = annotables::grch38,
-      '7227' = annotables::bdgp6,
-      '9544' = annotables::mmul801,
-      '10116' = annotables::rnor6,
-      '6239' = annotables::wbcel235,
-      '10090' = annotables::grcm38,
-      NULL
-    )
-    if (is.null(annodata)) return(NULL)
-    return(plyr::mapvalues(
-      x = gene_symbols,
-      from = annodata$symbol,
-      to = annodata$description,
-      warn_missing = FALSE))
-  } else {
-    warning("Package 'annotables' is required, install it with: remotes::install_github('stephenturner/annotables')")
+  ## if stephenturner/annotables package is installed
+  tryCatch({
+    if (requireNamespace("annotables", quietly = TRUE)) {
+      annodata <- switch(
+        as.character(organism),
+        '9606' = annotables::grch38,
+        '7227' = annotables::bdgp6,
+        '9544' = annotables::mmul801,
+        '10116' = annotables::rnor6,
+        '6239' = annotables::wbcel235,
+        '10090' = annotables::grcm38,
+        NULL
+      )
+      if (is.null(annodata)) return(NULL)
+      return(plyr::mapvalues(
+        x = gene_symbols,
+        from = annodata$symbol,
+        to = annodata$description,
+        warn_missing = FALSE))
+    }
+  }, error = function(e) {
+    msg <- "Package 'annotables' is required, install it with: remotes::install_github('stephenturner/annotables')"
+    warning(msg)
+    if ( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
     return(NULL)
-  }
+  })
 }
 
 #' Get term names by searching with (partial) keywords
@@ -103,6 +114,11 @@ get_gene_annotation <- function(gene_symbols, organism = '9606') {
 #' @param all_any need all or any patterns to match search terms
 #'
 #' @export
+#' 
+#' @returns character vector with matching terms by patterns
+#' 
+#' @examples
+#' get_terms_by_keywords('circa', c('circadian rhythm', 'no match', 'circadian clock'))
 get_terms_by_keywords <- function(
     patterns, terms, pos_neg = 'pos', all_any = 'all') {
   patterns <- tolower(patterns)
@@ -132,8 +148,8 @@ get_terms_by_keywords <- function(
 #' Process Shiny areaInput string
 #'
 #' @param string_input string
-#'
-#' @returns string
+#' 
+#' @return processed string
 process_string_input <- function(string_input) {
   if (length(string_input) == 1 && grepl('\n', string_input)) string_input <- strsplit(string_input, "\n")[[1]]
   string_input <- trimws(string_input)
@@ -208,7 +224,11 @@ process_write_merged_enrichments <- function(merged_enrichment, output_folder, f
 #' @param new_max numeric, default: 100, else set to wanted new maximum value
 #'
 #' @returns scaled numeric values
+#' 
 #' @export
+#' 
+#' @examples
+#' scale_values_between(c(1,3,1,4,1,6,1,6,5,7))
 scale_values_between <- function(values, old_min = min(values), old_max = max(values), new_min = 0, new_max = 100) {
   stopifnot(is.numeric(c(values, old_min, old_max, new_min, new_max)))
   if (old_min == old_max) return(rep(new_max, length(values)))
@@ -281,7 +301,9 @@ get_base_folder <- function(folder_path = NULL) {
     if (p != "" & dir.exists(p)) return(p)
   }
   
-  warning("no existing folder path given, and all base folder path options returned '' or do not exist, please supply an existing base folder path...")
+  msg <- "no existing folder path given, and all base folder path options returned '' or do not exist, please supply an existing base folder path..."
+  warning(msg)
+  if ( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
 }
 
 #' Rename the gene overview
