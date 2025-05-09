@@ -12,9 +12,9 @@ css_colors <- list(
 
 ## run the application
 shiny::shinyApp(
-  ui = goatea_ui,
+  ui = goatea:::goatea_ui,
   server = function(input, output, session) {
-    goatea_server(
+    goatea:::goatea_server(
       input, output, session, 
       css_colors = css_colors)
   }
