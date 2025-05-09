@@ -15,3 +15,6 @@ plot to render
 \description{
 Visualize genelists gene overlap in a Venn diagram
 }
+\examples{
+plot_genelists_overlap_venn(list(A = goatea::example_genelist, B = goatea::example_genelist))
+}

@@ -15,6 +15,12 @@ get_terms_by_keywords(patterns, terms, pos_neg = "pos", all_any = "all")
 
 \item{all_any}{need all or any patterns to match search terms}
 }
+\value{
+character vector with matching terms by patterns
+}
 \description{
 Get term names by searching with (partial) keywords
+}
+\examples{
+get_terms_by_keywords('circa', c('circadian rhythm', 'no match', 'circadian clock'))
 }

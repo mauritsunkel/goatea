@@ -29,3 +29,6 @@ scaled numeric values
 \description{
 Scale values between given min/max
 }
+\examples{
+scale_values_between(c(1,3,1,4,1,6,1,6,5,7))
+}

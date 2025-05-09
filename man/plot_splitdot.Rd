@@ -17,3 +17,6 @@ ggplot2 object
 \description{
 Plot splitdot plot
 }
+\examples{
+plot_splitdot(goatea::example_enrichment)
+}

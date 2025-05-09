@@ -11,6 +11,12 @@ wrap_hovertip(ui_element, hovertip)
 
 \item{hovertip}{text that will show as hover popup}
 }
+\value{
+tags$div element around given Shiny UI element
+}
 \description{
 Wrap Shiny UI element with a hoverable tooltip contained in html div tags
+}
+\examples{
+wrap_hovertip(shiny::actionButton('id_example', 'example'), 'example')
 }

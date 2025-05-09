@@ -6,6 +6,9 @@
 \usage{
 goatea_ui()
 }
+\value{
+Shiny UI function
+}
 \description{
 UI for GOATEA package
 }

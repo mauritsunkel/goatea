@@ -32,3 +32,6 @@ plotly or ggplot2 object
 \description{
 Plot EnhancedVolcano
 }
+\examples{
+plot_EnhancedVolcano(goatea::example_genelist)
+}

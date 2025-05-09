@@ -8,7 +8,7 @@ plot_genelists_overlap_upsetjs(
   genelists,
   mode = "distinct",
   interactive = FALSE,
-  main.color = "white",
+  main.color = "black",
   highlight.color = "green"
 )
 }
@@ -27,8 +27,8 @@ plot_genelists_overlap_upsetjs(
 upset plot
 }
 \description{
-Visualize genelists gene overlap in an interactive UpSet plot
+UpSetJS examples: https://upset.js.org/integrations/r/articles/combinationModes.html#distinct-intersection-mode
 }
 \examples{
-# https://upset.js.org/integrations/r/articles/combinationModes.html#distinct-intersection-mode
+plot_genelists_overlap_upsetjs(list(A = goatea::example_genelist, B = goatea::example_genelist))
 }

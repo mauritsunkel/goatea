@@ -6,7 +6,7 @@
 \alias{goatea-package}
 \title{goatea: Interactive Exploration of GSEA by the GOAT Method}
 \description{
-Geneset Ordinal Association Test Enrichment Analysis (GOATEA) provides a 'Shiny' interface with interactive visualizations and utility functions for performing and exploring gene set enrichment analysis using the 'GOAT' package. 'GOATEA' is designed to support large-scale and user-friendly enrichment workflows across multiple gene lists and comparisons, with flexible plotting and output options. Visualizations pre-enrichment include interactive 'Volcano' and 'UpSet' (overlap) plots. Visualizations post-enrichment include interactive geneset dotplot, geneset treeplot, gene-effectsize heatmap, gene-geneset heatmap and 'STRING' database of protein-protein-interactions network graph. 'GOAT' reference: Frank Koopmans (2024) \doi{ https://doi.org/10.1038/s42003-024-06454-5}
+Geneset Ordinal Association Test Enrichment Analysis (GOATEA) provides a 'Shiny' interface with interactive visualizations and utility functions for performing and exploring gene set enrichment analysis using the 'GOAT' package. 'GOATEA' is designed to support large-scale and user-friendly enrichment workflows across multiple gene lists and comparisons, with flexible plotting and output options. Visualizations pre-enrichment include interactive 'Volcano' and 'UpSet' (overlap) plots. Visualizations post-enrichment include interactive geneset dotplot, geneset treeplot, gene-effectsize heatmap, gene-geneset heatmap and 'STRING' database of protein-protein-interactions network graph. 'GOAT' reference: Frank Koopmans (2024) \doi{10.1038/s42003-024-06454-5}.
 }
 \seealso{
 Useful links:
@@ -17,7 +17,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Maurits Unkel \email{mauritsunkel@gmail.com} (\href{https://orcid.org/0000-0003-1920-6001}{ORCID})
+\strong{Maintainer}: Maurits Unkel \email{mauritsunkel@gmail.com} (\href{https://orcid.org/0000-0003-1920-6001}{ORCID}) [funder, copyright holder]
 
 }
 \keyword{internal}

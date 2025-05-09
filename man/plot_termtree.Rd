@@ -21,3 +21,6 @@ ggtree/gg/ggplot object
 \description{
 Plot semantic similarity termtree
 }
+\examples{
+plot_termtree(goatea::example_enrichment, Nclusters = 3)
+}

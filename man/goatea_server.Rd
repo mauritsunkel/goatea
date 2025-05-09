@@ -15,6 +15,9 @@ goatea_server(input, output, session, css_colors)
 
 \item{css_colors}{see app.R, user set manual colors for the GOATEA UI}
 }
+\value{
+Shiny server function
+}
 \description{
 Server for goatea package
 }

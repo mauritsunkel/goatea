@@ -19,6 +19,16 @@ get_gene_annotation(gene_symbols, organism = "9606")
 \item 6239 = Worm (Caenorhabditis elegans)
 }}
 }
+\value{
+character vector with gene descriptions for given gene_symbols by matching organism
+}
 \description{
+need stephenturner/annotables package installed
+install with: remotes::install_github('stephenturner/annotables')
+}
+\details{
 Can extend functino to get gene annotations for other organisms within annotables package.
+}
+\examples{
+get_gene_annotation(c('Tox2', 'Abca5', 'Lor'), '9606')
 }

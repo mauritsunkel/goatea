@@ -11,6 +11,12 @@ wrap_loader(id, ui_element)
 
 \item{ui_element}{wrapped Shiny UI element}
 }
+\value{
+html div element wrapped around given Shiny UI element
+}
 \description{
 Wrap Shiny UI element with a loading spinner contained in html div tags
+}
+\examples{
+wrap_loader('id_example', shiny::actionButton('id_example', 'example'))
 }

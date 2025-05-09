@@ -103,40 +103,5 @@ All grDevices plotting functions are provided as palettes, simply use colors = "
 Either generate theoretically maximally different colors, select an available R grDevices palette and/or modify the colors of the given gradient/palette
 }
 \examples{
-if(interactive()) {
-  ## if parameters identical, change seed to change generation
-  colorify(10, plot = TRUE, seed = 1)
-  colorify(10, plot = TRUE, seed = 42)
-  ## set colors, generate additional up to n
-  colorify(colors = c("red", "white", "blue"), n = 5, plot = TRUE)
-  ## create gradients
-  colorify(colors = c("orange", "red", "white", "blue", "orange"), gradient_n = 100, plot = TRUE)
-  
-  ## viridis gradient, lighten and saturate, darken
-  colorify(colors = "viridis", n = 100, plot = TRUE)
-  colorify(colors = "viridis", n = 10, plot = TRUE, l = 1.2, s = 10)
-  colorify(colors = "viridis", n = 10, plot = TRUE, l = .9)
-  
-  ## palette selected by name in colors[1], can add colors to selected palette, if n < length, remove colors , if greater generate 
-  colorify(colors = c("Okabe-Ito", "red", "blue", "yellow"), plot = TRUE, n = 10)
-  
-  ## no adjustments to locked indices 
-  colorify(colors = "Okabe-Ito", colors_lock = c(FALSE,FALSE,TRUE,TRUE), plot = TRUE, rv = -300)
-  colorify(colors = "Okabe-Ito", colors_lock = c(FALSE,FALSE,TRUE,TRUE), plot = TRUE, rv = 300)
-  
-  ## colors_lock and inversing
-  colors <- colorify(5)
-  colorify(colors_lock = c(TRUE,TRUE), colors=colors)
-  colorify(colors_lock = ! c(TRUE,FALSE,TRUE), colors=colors)
-  colorify(colors_lock = c(3,4), colors=colors)
-  colorify(colors_lock = - c(3,4), colors=colors)
-  
-  ## rainbow
-  colorify(colors=grDevices::rainbow(100, s = .5), plot = TRUE)
-  colorify(colors="rainbow", n = 100, sf = .5, plot = TRUE)
-  colorify(colors=grDevices::rainbow(100, v = .5), plot = TRUE)
-  colorify(colors="rainbow", n = 100, lf = .5, plot = TRUE,)
-  colorify(colors=grDevices::rainbow(100, start = .25, end = .75), plot = TRUE)
-  colorify(colors=grDevices::rainbow(100)[25:75], plot = TRUE)
-}
+colorify(10, plot = TRUE)
 }

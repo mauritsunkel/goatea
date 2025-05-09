@@ -15,3 +15,6 @@ tibble/dataframe with (annotated) genes and p-value/effectsize info for each gen
 \description{
 Create gene overview through overlapping genelists information by overlapping significant genes
 }
+\examples{
+run_genelists_overlap(list(A = goatea::example_genelist, B = goatea::example_genelist))
+}

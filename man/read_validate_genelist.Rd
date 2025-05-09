@@ -34,7 +34,14 @@ read_validate_genelist(
 \item 6239 = Worm (Caenorhabditis elegans) (org.Ce.eg.db)
 }}
 }
+\value{
+tibble dataframe with columns: symbol (string), gene (string as integer ID), pvalue (numeric), effestsize (numeric)
+}
 \description{
 if 'pvalue' is not in the genelist columns, it is set and defaulted to 1 for visualization purposes
 if 'effectsize' is not in the genelist columns, it is set and defaulted to 0 for visualization purposes
+}
+\examples{
+file_path <- system.file("extdata", "example_genelist.csv", package = "goatea")
+read_validate_genelist(file = file_path)
 }

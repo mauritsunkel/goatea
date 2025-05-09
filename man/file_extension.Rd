@@ -15,3 +15,6 @@ string file extension
 \description{
 Get file extension
 }
+\examples{
+file_extension(file.path(getwd(), 'filename.txt'))
+}

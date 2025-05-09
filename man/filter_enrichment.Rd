@@ -59,6 +59,12 @@ filter_enrichment(
 
 \item{max_pvalue_adjust}{default: 1, set lower to filter terms with higher adjusted p-value for multiple correction}
 }
+\value{
+filtered dataframe
+}
 \description{
 Search and filter and sort or summarize (compiled) enrichment output.
+}
+\examples{
+filter_enrichment(goatea::example_enrichment, min_ngenes = 15)
 }

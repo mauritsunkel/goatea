@@ -11,6 +11,17 @@ calculate_geneSetRatio(enrichment_results, gene_overview_df)
 
 \item{gene_overview_df}{dataframe with gene-wise information}
 }
+\value{
+numerical vector of gene set ratios
+}
 \description{
 Get a percentage of genesets the specific gene is included
+}
+\examples{
+calculate_geneSetRatio(
+list(
+  A = goatea::example_enrichment, 
+  B = goatea::example_enrichment
+), 
+goatea::example_genes_overview)
 }

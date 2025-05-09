@@ -36,8 +36,11 @@ run_geneset_enrichment(
 \item{...}{further parameters are passed to the respective stats method}
 }
 \value{
-the input genesets, with results stored in columns 'pvalue', 'pvalue_adjust' and 'signif'
+the input genesets, with results stored in columns 'pvalue', 'pvalue_adjust', 'signif' and 'zscore'
 }
 \description{
 See original documentation at \link[goat]{test_genesets}
+}
+\examples{
+run_geneset_enrichment(goatea::example_genesets, goatea::example_genelist)
 }

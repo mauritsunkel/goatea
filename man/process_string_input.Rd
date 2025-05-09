@@ -10,7 +10,7 @@ process_string_input(string_input)
 \item{string_input}{string}
 }
 \value{
-string
+processed string
 }
 \description{
 Process Shiny areaInput string
