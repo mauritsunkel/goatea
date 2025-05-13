@@ -981,6 +981,7 @@ goatea_server <- function(input, output, session, css_colors) {
     shinyjs::hide("ab_load_GOB_genesets_loader")
   })
   shiny::observeEvent(input$ab_save_genesets_Rdata, {
+    req(rv_genesets$genesets)
     filepath <- file.path(get_base_folder(input$ti_global_base_folder), paste0(as.character(input$si_organism), "_genesets.Rdata"))
     genesets <- rv_genesets$genesets
     save(genesets, file = filepath)
@@ -1333,11 +1334,11 @@ goatea_server <- function(input, output, session, css_colors) {
     rv_genelists_overlap$plot
   })
   output$po_splitdot <- shiny::renderPlot({
-    if ( ! is.null(rv_splitdot$plot)) plot(ggplot2::ggplot_build(rv_splitdot$plot))
+    if ( ! is.null(rv_splitdot$plot)) plot(rv_splitdot$plot)
     shiny::showNotification("NOTE: plot size is draggable from edges")
   })
   output$po_termtree <- shiny::renderPlot({
-    if ( ! is.null(rv_termtree$plot)) plot(ggplot2::ggplot_build(rv_termtree$plot))
+    if ( ! is.null(rv_termtree$plot)) plot(rv_termtree$plot)
     shiny::showNotification("NOTE: plot size is draggable from edges")
   })
   
