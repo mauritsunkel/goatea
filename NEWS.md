@@ -72,6 +72,22 @@
 	* checked that genesets cannot be loaded without setting 'source' column, for downstream processing
 * fixed run_geneset_enrichment to actually use the given parameters
 * added set_significant_N_genes() function
-# pre-v0.1.15
 
-* creation
+# Future steps
+* sort heatmap by zscore (up/down regulation)
+* genefsi_icheatmap_action functionalize for selecting/removing/resetting genes (selection)
+* plot: similarity_heatmap(genesets/termsets) (see R/testing/_plot_similarity_heatmap.R)
+* volcano user label axes
+* interactive termtree
+* interactive splitdot
+* selected genes tab
+* selected terms tab (if used for plotting)
+* select genes by frequency of them popping up in terms 
+* add genes to selection via input file (& custom genes selection tab?)
+* ppigraph: add terms as different node shape, edges to those could be dashes to differentiate
+* network graph
+	* terms overlap by ngenes graph (connection shows overlap size, node size = ngenes)
+		* may be able to add genes to this graph? 
+* make menu_tab for colourpicker::colourInput to have user defined colors for plots
+* heatmap: significant genes, saturated (alpha) hue, otherwise less saturated
+* check heatmap y axis label lengths (going out of plot ?)
