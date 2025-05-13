@@ -73,7 +73,7 @@
 * fixed run_geneset_enrichment to actually use the given parameters
 * added set_significant_N_genes() function
 
-# Future steps
+## Future steps
 * sort heatmap by zscore (up/down regulation)
 * genefsi_icheatmap_action functionalize for selecting/removing/resetting genes (selection)
 * plot: similarity_heatmap(genesets/termsets) (see R/testing/_plot_similarity_heatmap.R)
