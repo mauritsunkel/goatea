@@ -103,5 +103,6 @@ enrichment. Commun Biol 7, 744 (2024).
 A thank you for your time and effort in using goatea, I hope it may aid
 you in exploring your data!
 
-For issues: <https://github.com/mauritsunkel/goatea/issues> To
-collaborate, pull request or email me: <mauritsunkel@gmail.com>
+For issues: <https://github.com/mauritsunkel/goatea/issues>
+
+To collaborate, pull request or email me: <mauritsunkel@gmail.com>
