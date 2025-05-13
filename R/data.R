@@ -1,5 +1,7 @@
 #' An example genelist
 #'
+#' A simulated example of a genelist for testing or demonstration purposes.
+#' 
 #' @format ## `genelist`
 #' A data frame with 100 rows and 4 columns:
 #' \describe{
@@ -9,10 +11,14 @@
 #'   \item{effectsize}{2.5, 0}
 #'   ...
 #' }
-#' @source generated with data-raw/example_data.R
-"example_genelist"
+#' @source generated with `data-raw/example_data.R`
+#' @name example_genelist
+#' @docType data
+NULL
 
 #' Example genesets
+#' 
+#' A simulated example of a geneset for testing or demonstration purposes.
 #'
 #' @format ## `genesets`
 #' A data frame with 100 rows and 4 columns:
@@ -26,10 +32,14 @@
 #'   \item{ngenes}{10, 30}
 #'   ...
 #' }
-#' @source generated with data-raw/example_data.R
-"example_genesets"
+#' @source generated with `data-raw/example_data.R`
+#' @name example_genesets
+#' @docType data
+NULL 
 
 #' An example enrichment
+#' 
+#' A simulated example of an enrichemnt for testing or demonstration purposes.
 #'
 #' @format ## `enrichment`
 #' A data frame with 10 rows and 17 columns:
@@ -48,10 +58,14 @@
 #'   \item{zscore}{-Inf, 0, Inf}
 #'   ...
 #' }
-#' @source generated with data-raw/example_data.R
-"example_enrichment"
+#' @source generated with `data-raw/example_data.R`
+#' @name example_enrichment
+#' @docType data
+NULL 
 
 #' An example genes overview
+#' 
+#' A simulated example of a gene overview for testing or demonstration purposes.
 #'
 #' @format ## `genes overview`
 #' A data frame with 100 rows and ~11 columns:
@@ -65,10 +79,14 @@
 #'   \item{sample_geneSetRatio}{0, 50, 100}
 #'   ...
 #' }
-#' @source generated with data-raw/example_data.R
-"example_genes_overview"
+#' @source generated with `data-raw/example_data.R`
+#' @name example_genes_overview
+#' @docType data
+NULL 
 
 #' An example ppi data
+#' 
+#' A simulated example of a ppi dataframe for testing or demonstration purposes.
 #'
 #' @format ## `ppi data`
 #' A data frame with 15 rows and 5 columns:
@@ -80,5 +98,7 @@
 #'   \item{to}{gene_A_ID, gene_B_ID}
 #'   ...
 #' }
-#' @source generated with data-raw/example_data.R
-"example_ppi_data"
+#' @source generated with `data-raw/example_data.R`
+#' @name example_ppi_data
+#' @docType data
+NULL 
