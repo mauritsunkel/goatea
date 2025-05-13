@@ -1,0 +1,430 @@
+---
+title: "goatea vignette"
+author: "Maurits Unkel"
+package: goatea
+date: "`r Sys.Date()`"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{goatea}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r options, include = FALSE, echo = FALSE, results = 'asis',}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+BiocStyle::markdown()
+```
+
+# Introduction
+
+Geneset Ordinal Association Test Enrichment Analysis (GOATEA) provides a Shiny interface with interactive visualizations and utility functions for performing and exploring automated gene set enrichment analysis using the 'goat' package. 
+
+GOATEA is designed to support large-scale and user-friendly enrichment workflows across multiple gene lists and comparisons, with flexible plotting and output options. Visualizations pre-enrichment include interactive Volcano and UpSet (overlap) plots. Visualizations post-enrichment include interactive geneset split term dotplot, geneset hierarchical clustering treeplot, multi-genelist gene-effectsize heatmap, enrichment overview gene-geneset heatmap and bottom-up pathway-like STRING database of protein-protein-interactions network graph.
+
+## Why use goatea? 
+
+Some enrichment visualization packages are included in Bioconductor, for instance: enrichplot, vissE, CBNplot. 
+goatea additionally provides interactive visualizations through an intuitive and customizable Shiny user interface and allows for multi-genelist comparisons. No bioinformatic expertise is needed. goatea includes commonly used visualizations and adds a novel enrichment overview heatmap and offers a bottom-up pathway-like protein-protein interaction graph with network statistics.
+
+A number of enrichment analysis packages are already on Bioconductor: clusterProfiler, fgsea, DOSE and many more. 
+In goatea, goat is implemented. goat is a novel method for efficient geneset enrichment analysis. It performs within seconds and results in more identified significant terms compared to other methods, see the reference. For researchers with coding expertise, goatea provides an automated analysis workflow for performing enrichment analysis with goat and obtaining overview tables and output figures to explore your data. 
+
+## How goatea works 
+
+Genelists are often obtained from transcriptomic and/or proteomic experiments. These genelist tables have to contain a 'gene' column with NCBI Entrez gene identifiers, a 'symbol' column with gene aliases (optional: can be mapped from their gene IDs), and 'effectsize' and 'pvalue' columns with measurement outcomes for a performed comparison. User defined thresholds for effect size and p-values are used to define gene significance. To get a first look and understanding of your genelist data, a volcano plot is provided. For multi-genelist data a UpSet (overlap) plot can additionally be generated to visualize significant genes between comparisons. 
+
+Genesets can be obtained by downloading Gene Ontology organism specific genesets within goatea or from .gmt files, downloaded for instance from the Molecular Signatures Database. Genelist genes and genesets will be filtered and matched, then goat or an older version of gene set enrichment analysis can be performed. Extensive filtering options help you to explore only the terms and genes within your vision.
+
+Post-enrichment visualizations help to identify genes and terms of interest or relevance for your experimental design. Identified and selected genes of interest are then used to specifically visualize your data by zooming in on specific biological or technical aspects. 
+
+The steps above can be automated, an example workflow is described in the rest of this vignette.  
+
+As intended for interactive and intuitive usage, run the goatea Shiny interface.
+
+# Running goatea: Shiny application
+
+Simply install the package and its dependencies, then run the script below.
+
+```{r goatea Shiny, eval=FALSE, message=FALSE, warning=FALSE}
+library(goatea)
+
+## customizable coloring
+css_colors <- list(
+  main_bg = "#222222",
+  darker_bg = "#111111",
+  focus = "#32CD32", 
+  hover = "#228B22",
+  border = "#555555",
+  text = "#FFFFFF"
+)
+
+## run the goatea Shiny application
+shiny::shinyApp(
+  ui = goatea:::goatea_ui,
+  server = function(input, output, session) {
+    goatea:::goatea_server(
+      input, output, session, 
+      css_colors = css_colors)
+  }
+)
+```
+
+# Running goatea: automated analyses
+
+## Installation
+
+goatea is available through Github, I intend for goatea to become available through Bioconductor. 
+
+```{r installation, eval = FALSE}
+## GOATEA installation requires the latest version of R and Rtools 
+## Rtools is needed for package compilation, to download and install visit: 
+# R: https://cran.r-project.org/mirrors.html
+# Rtools: https://cran.r-project.org/bin/windows/Rtools/
+
+# For the GOATEA development version use: 
+if ( ! require("pak", quietly = TRUE)) install.packages('pak')
+pak::pkg_install('mauritsunkel/goatea', dependencies = TRUE, upgrade = TRUE)
+
+## When GOATEA is on Bioconductor use: 
+# pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
+
+## goatea organism (taxid) genome wide annotation packages (org.Xx.eg.dg)
+## goatea requires at least one of the following available organism packages:
+# Human (9606)--------: org.Hs.eg.db
+# Mouse (10090)-------: org.Mm.eg.db
+# Fruit Fly (7227)----: org.Dm.eg.db
+# Rhesus monkey (9544): org.Mmu.eg.db
+# Rat (10116)---------: org.Rn.eg.db
+# Worm (6239)---------: org.Ce.eg.db
+# Chimpanzee (9598)---: org.Pt.eg.db
+# Zebrafish (7955)----: org.Dr.eg.db
+if ( ! require("pak", quietly = TRUE)) install.packages('pak')
+pak::pkg_install(c(
+  "org.Hs.eg.db", 
+  "org.Mm.eg.db", 
+  "org.Dm.eg.db", 
+  "org.Mmu.eg.db", 
+  "org.Rn.eg.db", 
+  "org.Ce.eg.db", 
+  "org.Pt.eg.db", 
+  "org.Dr.eg.db"
+))
+
+## Optional: add gene descriptions to exported tables, install annotables:
+# available only for: human, mouse, rat, worm, fruit fly, Rhesus Monkey
+if ( ! require("pak", quietly = TRUE)) install.packages('pak')
+pak::pkg_install('stephenturner/remotes')
+```
+
+## Initialization
+
+```{r library, message=FALSE, warning=FALSE}
+# load goatea package library
+library(goatea)
+```
+
+Set parameter values used throughout goatea. 
+
+```{r initialization}
+# set chosen organism taxid (for genome wide annotation package: org.Hs.eg.db)
+taxid <- 9606 # Human (Homo Sapiens)
+
+# set and create output folder
+outdir <- tempdir()
+dir.create(outdir, recursive = TRUE)
+
+# set significance thresholds
+p_value_threshold <- 0.05
+absolute_effectsize_threshold <- 1
+```
+
+## Loading genelists
+
+Transcriptomic and/or proteomic experiments often end up in comparing groups through differential gene expression or something similar. There, lists of genes with measurement weights and statistical probability values are obtained. Genelists have to be in .csv/.tsv/.xlsx format. Genelist tables contain a 'gene' column with NCBI Entrez gene identifiers, a 'symbol' column with gene aliases (optional: can be mapped from their gene IDs), and 'effectsize' and 'pvalue' columns with measurement outcomes for a performed comparison. Here, goat manuscript example data will be used, and expected use through uploading your own file is shown. 
+
+```{r loading genelists}
+# GOAT paper data: download to a specific folder, tempdir() by default
+data <- goat::download_goat_manuscript_data(output_dir = outdir)
+# We select datasets from Colameo 2021 for our automated workflow.
+# Thi is RNA-seq with matched mass-spectrometry data. 
+# Rat data is mapped to HUman NCBI Entrez gene identifies with the goat package.
+genelists <- list(
+  rna = data$`Colameo 2021:RNA-seq:PMID34396684`,
+  ms = data$`Colameo 2021:mass-spec:PMID34396684`
+)
+head(genelists[['rna']])
+```
+
+To load your own data follow this alternative example.
+
+```{r loading genelists: user data}
+# set the filepath to your own data files 
+file <- system.file('extdata','example_genelist.csv', package = 'goatea')
+# Check file formatting, see function documentation for additional parameters 
+genelist <- goatea::read_validate_genelist(file = file)
+# genelists <- list(
+  # csv = genelist
+# )
+head(genelist)
+```
+
+## Loading genesets
+
+Genesets are terms of biological aspects associated with a set of genes. The Gene Ontology (GO) and Molecular Signatures databases (MSigDB) are commonly used repositories containing organism specific genesets. goat provides GO genesets for download, also to supply a .gmt file containing genesets downloaded from MSigDB for instance. 
+
+```{r loading genesets}
+genesets <- goat::load_genesets_go_bioconductor(taxid = taxid)
+
+## optionally: save and load from .rda to speed up after downloading
+# save(genesets, file = file.path(outdir, 'genesets.rda'))
+# load(file.path(outdir, 'genesets.rda')) # loading .rda to variable: genesets
+
+## alternatively: load via .gmt file (downloaded from e.g.: MSigDB)
+# then use: goat::load_genesets_gmtfile()
+
+head(genesets)
+```
+
+## GOAT Enrichment Analysis 
+
+Gene significance is set per genelist by the user-defined thresholds. The genelist is then ordered by effect size. For this example, if there are more genes than the amount of precomputed nulldistributions goat uses for its enrichment testing the amount of genes is limited to that amount. If you do want to use all genes, set the method to 'goat_bootstrap'. 
+
+Genelist genes and genesets will be filtered and matched, then goat or an older version of gene set enrichment analysis can be performed. Too small or too large genesets can be irrelevant or mess up testing statistics, leaving parameter values to defaults is a good starting point. 
+
+Geneset enrichment with goat is by default performed on 'effectsize'. The user can also go for 'pvalue' or a specific direction by gene effectsize sign or absolute values. Besides the goat method, older methods are also implemented to enable easy comparison.
+
+```{r enrichment analysis}
+filtered_genesets_list <- list()
+enrichment_results <- list()
+for (name in names(genelists)) {
+  genelist <- genelists[[name]]
+  ## set signif column by given p-value- and effectsize significance thresholds
+  genelist$signif <- genelist$pvalue <= p_value_threshold & 
+                     abs(genelist$effectsize) >= absolute_effectsize_threshold
+  # order genelist by effectsize 
+  genelist <- genelist[order(abs(genelist$effectsize), decreasing = TRUE),]
+  ## keep max n genes for regular goat method
+  # optionally: remove this line and use goat_bootstrap method 
+  if (nrow(genelist) > max(goat::goat_nulldistributions$N)) {
+    genelist <- genelist[1:max(goat::goat_nulldistributions$N),]
+  }
+  # update genelist
+  genelists[[name]] <- genelist
+  
+  ## filter genesets 
+  filtered_genesets <- goat::filter_genesets(
+    genesets = genesets,
+    genelist = genelist,
+    min_overlap = 10L,
+    max_overlap = NA,
+    max_overlap_fraction = 0.5,
+    min_signif = NA,
+    max_size = NA,
+    dedupe = FALSE
+  )
+  filtered_genesets_list[[name]] <- filtered_genesets
+
+  ## run enrichment 
+  enrichment_results[[name]] <- goatea::run_geneset_enrichment(
+    genesets = filtered_genesets,
+    genelist = genelist,
+    method = "goat",
+    score_type = "effectsize",
+    padj_method = "BH",
+    padj_sources = TRUE,
+    padj_cutoff = p_value_threshold,
+    padj_min_signifgenes = 0L
+  )
+}
+head(enrichment_results[[1]])
+```
+
+## Genes overview table
+
+Here, the genelists are formatted into a gene-based overview table. If there are multiple genelists, for all genelists, each gene and their p-values, effect sizes, effect size percentages, gene set ratios and overlapping significant genes will be shown. 
+
+```{r genes overview}
+genes_overview <- goatea::run_genelists_overlap(genelists)
+genes_overview <- goatea::calculate_geneSetRatio(
+  enrichment_results, 
+  genes_overview
+)
+head(genes_overview)
+```
+
+## Enrichment searching and filtering
+
+You can filter enrichment by querying the term names and by thresholding the numerical features. In this way you can explore relevant biological aspects and/or filter out technicalities. After filtering, use the filtered enrichment as input with the visualizations for zooming in on specific terms and their genes and interactions. 
+
+```{r searching and filtering}
+filtered_enrichment <- goatea::filter_enrichment(
+  df = enrichment_results[[1]],
+  terms_query = c("synapse", "synaptic"), 
+  terms_antiquery = c("asymmetric"),
+  min_ngenes = 100, 
+  min_ngenes_signif = 10
+)
+head(filtered_enrichment$name)
+```
+
+## Gene selection
+
+In the goatea app, the visualizations are used to select specific genes to pass to next visualizations in order to zoom in on specific terms or groups of genes. Here we simply take the significant genes of the first filtered enrichment to show some visualizations that use gene selections. 
+
+```{r selecing genes}
+selected_genes <- filtered_enrichment$genes_signif[[1]]
+```
+
+# Plotting
+
+## Genelist plotting
+
+### Volcano plot
+
+A Volcano plot is commonly used to have a visual representation of the genelist. It shows an overview of genes as points with effectsize vs p-value and significance thresholds.  
+```{r genelist volcano}
+goatea::plot_EnhancedVolcano(
+  genelist = genelists[[1]],
+  effectsize_threshold = absolute_effectsize_threshold,
+  pvalue_threshold = p_value_threshold,
+  background_color = 'white',
+  foreground_color = 'black'
+)
+```
+
+### UpSet overlap plot
+
+If multiple genelists are loaded, their overlap of significant genes is shown through an UpSet plot. These show the total number of genes in a genelist and the number of overlapping significant genes for each intersection.
+
+```{r genelist overlap}
+if (length(genelists) > 2) {
+  goatea::plot_genelists_overlap_upsetjs(
+    genelists = genelists, 
+    mode = 'distinct'
+  )
+}
+``` 
+
+##  Post-enrichment plotting
+
+### Tree plot 
+The tree plot shows a clustered hierarchical split between terms based on their term similarity. Similarity is based on semantics of the term. Terms are clustered together by semantics, meaning words that look or mean alike. A summary of the clustered semantics is given to the right of the vertical lines for each cluster. 
+
+```{r tree plot}
+# filter to keep a single geneset source
+single_source_enrichment <- enrichment_results[[1]] %>% 
+  dplyr::filter(source == enrichment_results[[1]]$source[1])
+goatea::plot_termtree(
+  single_source_enrichment, 
+  Nterms = 20, 
+  Nwords = 5, 
+  Nclusters = 3
+)
+```
+
+### Term-split dotplot
+
+The dotplot shows terms split by up- and down regulation. The regulation is defined by the sign of the effect sizes of the genes in the genelists. The gene ratio shows the percentage of genes of the term that were matched with the genes of the genelist. 
+
+```{r term-split dotplot}
+# filter to keep a single geneset source
+single_source_enrichment <- enrichment_results[[1]] %>% 
+  dplyr::filter(source == enrichment_results[[1]]$source[1])
+goatea::plot_splitdot(single_source_enrichment, topN = 20)
+```
+
+### Gene-genelist heatmap
+
+This heatmap shows the selected genes for each genelist to compare their effect sizes and p-values as a simple overview. 
+
+```{r gene-genelist heatmap}
+selected_symbols <- filtered_enrichment$symbol[[1]][
+  filtered_enrichment$genes[[1]] %in% filtered_enrichment$genes_signif[[1]]
+][1:15]
+p <- goatea::plot_gene_effectsize_ComplexHeatmap(
+  genes = selected_symbols, 
+  genes_overview = genes_overview
+)
+```
+
+### Gene-term heatmap
+
+This heatmap serves as an overview of the enrichment result, combined with all genelists information. Use the search functionality and pass the resulting filtered enrichment to zoom in on relevant biological aspects and focus on filtered aspects of the enrichment for exploration. In the goatea app this heatmap is also used to select genes/terms from identified aspects of interest. 
+
+```{r gene-term heatmap}
+p <- goatea::plot_ComplexHeatmap(
+  enrichment_result = enrichment_results[[1]],
+  genelist = genelists[[1]],
+  n_cluster = 5,
+  n_top_terms = 20,
+  n_top_genes = 50,
+  genelist_overlap = genes_overview
+)
+```
+
+### Protein-protein interaction network
+
+Gene sets miss information of gene-gene interactions, this visualization can offer bottom-up relationships between genes to gain insight. The STRING database is used to obtain protein-protein interaction data by efficient streaming. For the selected genes of interest, an igraph network is built in the background in order to obtain network statistics. The igraph is passed to visNetwork for (in Shiny app) interactive visualization and exploration of the network. 
+
+I advise to regard this output as a basic and toy visualization, the goatea in Shiny app version contains node and edge hover information of all network statistics. Edges can be clicked to view their interaction scores and information on the STRING website. Nodes are clustered by STRING interaction scores. The nodes and edges can be colored by each statistical feature. Nodes can be filtered by each feature and made into a subnetwork for more detailed exploration. 
+
+```{r ppi network}
+# selecting 10 symbols of the searchad and significant first enriched term
+selected_symbols <- filtered_enrichment$symbol[[1]][
+  filtered_enrichment$genes[[1]] %in% filtered_enrichment$genes_signif[[1]]
+][1:10]
+
+## this will download the STRING database protein-protein interaction data 
+## to your selected folder 
+# downloading should only take a couple of seconds
+# downlaod happens only if the files are not found in the specified folder
+# if the download does not work, double check if the STRING database is online
+ppi_data <- goatea::get_string_ppi(
+  aliases = selected_symbols, 
+  organism = taxid, 
+  folder = file.path(outdir)
+)
+# creating igraph in order to do network statistics
+ppi_graph <- goatea::get_ppigraph(ppi_data = ppi_data)
+# converting igraph to visnetwork for (Shiny app) interactive visualization
+vis_network <- goatea::get_visNetwork(
+  ppigraph = ppi_graph, 
+  genes_overview = genes_overview
+)
+## showing a basic version of the visNetwork
+## the goatea Shiny app version has full interactive capability 
+visNetwork::visNetwork(
+  vis_network$nodes, 
+  vis_network$edges, 
+  width = "100%", 
+  height = "100%") %>% 
+  visNetwork::visPhysics(stabilization = FALSE)
+```
+
+# Information
+
+A thank you for your time and effort in using goatea, I hope it may aid you in exploring your data! 
+
+## Contact 
+
+goatea was developed by Maurits Unkel at the Erasmus Medical Center in the department of Psychiatry.
+Source code is available through GitHub: https://github.com/mauritsunkel/goatea
+Questions regarding goatea can be sent to: mauritsunkel@gmail.com
+
+## License
+
+goatea is licensed under Apache 2.0.
+
+## Issues and contributions
+
+For issues and contributions, please find the goatea Github page: https://github.com/mauritsunkel/goatea/issues
+
+## GOAT reference
+
+Koopmans, F. GOAT: efficient and robust identification of gene set enrichment. Commun Biol 7, 744 (2024). https://doi.org/10.1038/s42003-024-06454-5
+
+## Session info
+
+```{r session info}
+sessionInfo()
+```
