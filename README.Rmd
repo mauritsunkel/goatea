@@ -18,26 +18,85 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of goatea is to ...
+Geneset Ordinal Association Test Enrichment Analysis (GOATEA) provides a Shiny interface with interactive visualizations and utility functions for performing and exploring automated gene set enrichment analysis using the ‘GOAT’ package.
 
-## Installation
-You can install the development version of goatea from [GitHub](https://github.com/) with:
+GOATEA is designed to support large-scale and user-friendly enrichment workflows across multiple gene lists and comparisons, with flexible plotting and output options. Visualizations pre-enrichment include interactive Volcano and UpSet (overlap) plots. Visualizations post-enrichment include interactive geneset split term dotplot, geneset hierarchical clustering treeplot, multi-genelist gene-effectsize heatmap, enrichment overview gene-geneset heatmap and bottom-up pathway-like STRING database of protein-protein-interactions network graph.
 
-TODO install instructions in eval = FALSE chunk
 
-TODO refer and link to examples vignette
-TODO add GOATEA logo
+# Running goatea: automated analysis 
 
-``` r
-# install.packages("pak")
-pak::pak("mauritsunkel/goatea")
+TODO test: refer and link to vignette for automated scripted analyses 
+See the [vignette](vignettes/goatea.Rmd) for more details.
+See the [vignette](inst/doc/goatea.html) for more information.
+
+
+# Installation
+
+The development version of goatea is available through Github, I intend for goatea to become available through Bioconductor. 
+
+```{r installation, eval = FALSE}
+## GOATEA installation requires the latest version of R and Rtools for package compilation, to download and install visit: 
+# R: https://cran.r-project.org/mirrors.html
+# Rtools: https://cran.r-project.org/bin/windows/Rtools/
+
+# For the GOATEA development version use: 
+if ( ! require("pak", quietly = TRUE)) install.packages('pak')
+pak::pkg_install('mauritsunkel/goatea', dependencies = TRUE, upgrade = TRUE)
+
+## When GOATEA is on Bioconductor use: 
+# pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
+
+## GOATEA requires at least one of the following available organism (taxid) genome wide annotation packages (org.Xx.eg.dg):
+# Human (9606)--------: org.Hs.eg.db
+# Mouse (10090)-------: org.Mm.eg.db
+# Fruit Fly (7227)----: org.Dm.eg.db
+# Rhesus monkey (9544): org.Mmu.eg.db
+# Rat (10116)---------: org.Rn.eg.db
+# Worm (6239)---------: org.Ce.eg.db
+# Chimpanzee (9598)---: org.Pt.eg.db
+# Zebrafish (7955)----: org.Dr.eg.db
+if ( ! require("pak", quietly = TRUE)) install.packages('pak')
+pak::pkg_install(c("org.Hs.eg.db", "org.Mm.eg.db", "org.Dm.eg.db", "org.Mmu.eg.db", "org.Rn.eg.db", "org.Ce.eg.db", " org.Pt.eg.db", "org.Dr.eg.db"))
+
+## Optional: for small gene descriptions to be added to exported tables, install annotables:
+# available only for the following organisms: human, mouse, rat, worm, fruit fly, Rhesus Monkey
+if ( ! require("pak", quietly = TRUE)) install.packages('pak')
+pak::pkg_install('stephenturner/remotes')
 ```
 
-## Example
-This is a basic example which shows you how to solve a common problem:
+TODO TEST GOATEA logo
+# goatea <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
-```{r example}
+# Running goatea: Shiny application
+
+Simply install the package and its dependencies, then run the code below in R. 
+
+```{r goatea Shiny, eval=FALSE, message=FALSE, warning=FALSE}
 library(goatea)
-## basic example code
+
+## customizable coloring
+css_colors <- list(
+  main_bg = "#222222",
+  darker_bg = "#111111",
+  focus = "#32CD32", 
+  hover = "#228B22",
+  border = "#555555",
+  text = "#FFFFFF"
+)
+
+## run the goatea Shiny application
+shiny::shinyApp(
+  ui = goatea:::goatea_ui,
+  server = function(input, output, session) {
+    goatea:::goatea_server(
+      input, output, session, 
+      css_colors = css_colors)
+  }
+)
 ```
 
+A thank you for your time and effort in using goatea, I hope it may aid you in exploring your data! 
+
+## GOAT reference
+
+Koopmans, F. GOAT: efficient and robust identification of gene set enrichment. Commun Biol 7, 744 (2024). https://doi.org/10.1038/s42003-024-06454-5
