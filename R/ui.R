@@ -21,14 +21,14 @@ goatea_ui <- function() {
     dashboardSidebar(
       sidebarMenu(
         id = "menu_tabs",
-        menuItem("Initialize", tabName = "global_initialize", icon = icon("dashboard"),
+        menuItem("Initialization", tabName = "global_initialize", icon = icon("dashboard"),
                  menuSubItem("Load data", tabName = "menu_initialize", selected = TRUE)
         ),
         menuItem("Pre-enrichment plots", tabName = "global_preplot", icon = icon("dashboard"),
                  menuSubItem("Volcano", tabName = "menu_run_volcano"),
                  menuSubItem("Overlap", tabName = "menu_run_genelist_overlap")
         ),
-        menuItem("Get enrichment", tabName = "global_enrichment", icon = icon("dashboard"),
+        menuItem("Enrichment", tabName = "global_enrichment", icon = icon("dashboard"),
                  menuSubItem("Gene set enrichment", tabName = "menu_run_enrichment")
         ),
         menuItem("Post-enrichment plots", tabName = "global_postplot", icon = icon("dashboard"),
