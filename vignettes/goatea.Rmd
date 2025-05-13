@@ -10,18 +10,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r style, echo = FALSE, results = 'asis', include=FALSE}
-BiocStyle::markdown()
-```
-
-```{r options, include = FALSE}
+```{r options, include = FALSE, echo = FALSE, results = 'asis',}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
-
-# TODO test and remove 
-# output: 
-#   rmarkdown::html_vignette:
-#     toc: true
-#     toc_depth: 2
+BiocStyle::markdown()
 ```
 
 # Introduction
