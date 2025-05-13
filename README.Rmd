@@ -96,7 +96,7 @@ shiny::shinyApp(
 
 # Running goatea: automated analyses 
 
-See the [vignette](vignettes/goatea.Rmd) for more details on automated scripted analyses.
+See the [vignette](inst/doc/goatea.html) for more details on automated scripted analyses.
 
 # GOAT reference
 
