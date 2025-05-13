@@ -19,12 +19,8 @@ A data frame with 15 rows and 5 columns:
 }
 }
 \source{
-generated with data-raw/example_data.R
-}
-\usage{
-example_ppi_data
+generated with \code{data-raw/example_data.R}
 }
 \description{
-An example ppi data
+A simulated example of a ppi dataframe for testing or demonstration purposes.
 }
-\keyword{datasets}

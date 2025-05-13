@@ -18,12 +18,8 @@ A data frame with 100 rows and 4 columns:
 }
 }
 \source{
-generated with data-raw/example_data.R
-}
-\usage{
-example_genelist
+generated with \code{data-raw/example_data.R}
 }
 \description{
-An example genelist
+A simulated example of a genelist for testing or demonstration purposes.
 }
-\keyword{datasets}

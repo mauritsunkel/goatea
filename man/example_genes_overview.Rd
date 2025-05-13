@@ -21,12 +21,8 @@ A data frame with 100 rows and ~11 columns:
 }
 }
 \source{
-generated with data-raw/example_data.R
-}
-\usage{
-example_genes_overview
+generated with \code{data-raw/example_data.R}
 }
 \description{
-An example genes overview
+A simulated example of a gene overview for testing or demonstration purposes.
 }
-\keyword{datasets}

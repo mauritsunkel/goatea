@@ -26,12 +26,8 @@ A data frame with 10 rows and 17 columns:
 }
 }
 \source{
-generated with data-raw/example_data.R
-}
-\usage{
-example_enrichment
+generated with \code{data-raw/example_data.R}
 }
 \description{
-An example enrichment
+A simulated example of an enrichemnt for testing or demonstration purposes.
 }
-\keyword{datasets}
