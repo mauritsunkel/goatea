@@ -10,15 +10,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-<!--
-%% \VignetteEngine{knitr::knitr}
--->
-
 ```{r style, echo = FALSE, results = 'asis', include=FALSE}
 BiocStyle::markdown()
 ```
 
-```{r, include = FALSE}
+```{r options, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 # TODO test and remove 
@@ -206,7 +202,7 @@ Genelist genes and genesets will be filtered and matched, then goat or an older 
 
 Geneset enrichment with goat is by default performed on 'effectsize'. The user can also go for 'pvalue' or a specific direction by gene effectsize sign or absolute values. Besides the goat method, older methods are also implemented to enable easy comparison.
 
-```{r }
+```{r enrichment analysis}
 filtered_genesets_list <- list()
 enrichment_results <- list()
 for (name in names(genelists)) {
@@ -269,7 +265,7 @@ head(genes_overview)
 
 You can filter enrichment by querying the term names and by thresholding the numerical features. In this way you can explore relevant biological aspects and/or filter out technicalities. After filtering, use the filtered enrichment as input with the visualizations for zooming in on specific terms and their genes and interactions. 
 
-```{r}
+```{r searching and filtering}
 filtered_enrichment <- goatea::filter_enrichment(
   df = enrichment_results[[1]],
   terms_query = c("synapse", "synaptic"), 
