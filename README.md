@@ -3,6 +3,8 @@
 
 # goatea
 
+# goatea <img src="man/figures/logo.png" align="right" height="139" alt="" />
+
 <!-- badges: start -->
 <!-- badges: end -->
 
@@ -20,12 +22,6 @@ hierarchical clustering treeplot, multi-genelist gene-effectsize
 heatmap, enrichment overview gene-geneset heatmap and bottom-up
 pathway-like STRING database of protein-protein-interactions network
 graph.
-
-# Running goatea: automated analysis
-
-TODO test: refer and link to vignette for automated scripted analyses
-See the [vignette](vignettes/goatea.Rmd) for more details. See the
-[vignette](inst/doc/goatea.html) for more information.
 
 # Installation
 
@@ -62,9 +58,6 @@ if ( ! require("pak", quietly = TRUE)) install.packages('pak')
 pak::pkg_install('stephenturner/remotes')
 ```
 
-TODO TEST GOATEA logo \# goatea
-<img src="man/figures/logo.png" align="right" height="139" alt="" />
-
 # Running goatea: Shiny application
 
 Simply install the package and its dependencies, then run the code below
@@ -94,11 +87,21 @@ shiny::shinyApp(
 )
 ```
 
-A thank you for your time and effort in using goatea, I hope it may aid
-you in exploring your data!
+# Running goatea: automated analysis
 
-## GOAT reference
+See the [vignette](vignettes/goatea.Rmd) for more details on automated
+scripted analyses.
+
+# GOAT reference
 
 Koopmans, F. GOAT: efficient and robust identification of gene set
 enrichment. Commun Biol 7, 744 (2024).
 <https://doi.org/10.1038/s42003-024-06454-5>
+
+# Contact
+
+A thank you for your time and effort in using goatea, I hope it may aid
+you in exploring your data!
+
+For issues: <https://github.com/mauritsunkel/goatea/issues> To
+collaborate, pull request or email me: <mauritsunkel@gmail.com>
