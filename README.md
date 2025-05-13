@@ -27,7 +27,8 @@ The development version of goatea is available through Github, I intend
 for goatea to become available through Bioconductor.
 
 ``` r
-## GOATEA installation requires the latest version of R and Rtools for package compilation, to download and install visit: 
+## GOATEA installation requires the latest version of R and Rtools 
+## Rtools is needed for package compilation, to download and install visit: 
 # R: https://cran.r-project.org/mirrors.html
 # Rtools: https://cran.r-project.org/bin/windows/Rtools/
 
@@ -38,7 +39,8 @@ pak::pkg_install('mauritsunkel/goatea', dependencies = TRUE, upgrade = TRUE)
 ## When GOATEA is on Bioconductor use: 
 # pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
 
-## GOATEA requires at least one of the following available organism (taxid) genome wide annotation packages (org.Xx.eg.dg):
+## goatea organism (taxid) genome wide annotation packages (org.Xx.eg.dg)
+## goatea requires at least one of the following available organism packages:
 # Human (9606)--------: org.Hs.eg.db
 # Mouse (10090)-------: org.Mm.eg.db
 # Fruit Fly (7227)----: org.Dm.eg.db
@@ -48,10 +50,19 @@ pak::pkg_install('mauritsunkel/goatea', dependencies = TRUE, upgrade = TRUE)
 # Chimpanzee (9598)---: org.Pt.eg.db
 # Zebrafish (7955)----: org.Dr.eg.db
 if ( ! require("pak", quietly = TRUE)) install.packages('pak')
-pak::pkg_install(c("org.Hs.eg.db", "org.Mm.eg.db", "org.Dm.eg.db", "org.Mmu.eg.db", "org.Rn.eg.db", "org.Ce.eg.db", " org.Pt.eg.db", "org.Dr.eg.db"))
+pak::pkg_install(c(
+  "org.Hs.eg.db", 
+  "org.Mm.eg.db", 
+  "org.Dm.eg.db", 
+  "org.Mmu.eg.db", 
+  "org.Rn.eg.db", 
+  "org.Ce.eg.db", 
+  "org.Pt.eg.db", 
+  "org.Dr.eg.db"
+))
 
-## Optional: for small gene descriptions to be added to exported tables, install annotables:
-# available only for the following organisms: human, mouse, rat, worm, fruit fly, Rhesus Monkey
+## Optional: add gene descriptions to exported tables, install annotables:
+# available only for: human, mouse, rat, worm, fruit fly, Rhesus Monkey
 if ( ! require("pak", quietly = TRUE)) install.packages('pak')
 pak::pkg_install('stephenturner/remotes')
 ```
@@ -85,7 +96,7 @@ shiny::shinyApp(
 )
 ```
 
-# Running goatea: automated analysis
+# Running goatea: automated analyses
 
 See the [vignette](vignettes/goatea.Rmd) for more details on automated
 scripted analyses.
