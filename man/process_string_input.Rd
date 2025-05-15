@@ -10,7 +10,7 @@ process_string_input(string_input)
 \item{string_input}{string}
 }
 \value{
-processed string
+processed string without enters, whitespace and only containing letters and numbers
 }
 \description{
 Process Shiny areaInput string

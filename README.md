@@ -1,10 +1,21 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# goatea <img src="man/figures/logo.png" align="right" height="139" alt="" />
-
 <!-- badges: start -->
+
+[![BioC
+status](http://www.bioconductor.org/shields/build/release/bioc/goatea.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/goatea)
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![license](https://img.shields.io/github/license/mauritsunkel/goatea)](https://opensource.org/license/apache-2-0)
+![repo
+size](https://img.shields.io/github/repo-size/mauritsunkel/goatea)
+![version](https://img.shields.io/github/r-package/v/mauritsunkel/goatea)
 <!-- badges: end -->
+
+# goatea <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 Geneset Ordinal Association Test Enrichment Analysis (GOATEA) provides a
 Shiny interface with interactive visualizations and utility functions

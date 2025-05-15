@@ -149,7 +149,7 @@ get_terms_by_keywords <- function(
 #'
 #' @param string_input string
 #' 
-#' @return processed string
+#' @return processed string without enters, whitespace and only containing letters and numbers 
 process_string_input <- function(string_input) {
   if (length(string_input) == 1 && grepl('\n', string_input)) string_input <- strsplit(string_input, "\n")[[1]]
   string_input <- trimws(string_input)
