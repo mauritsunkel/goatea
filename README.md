@@ -45,7 +45,7 @@ for goatea to become available through Bioconductor.
 
 # For the GOATEA development version use: 
 if ( ! require("pak", quietly = TRUE)) install.packages('pak')
-pak::pkg_install('mauritsunkel/goatea', dependencies = TRUE, upgrade = TRUE)
+pak::pkg_install('mauritsunkel/goatea')
 
 ## When GOATEA is on Bioconductor use: 
 # pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
