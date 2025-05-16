@@ -58,7 +58,6 @@ Suggests:
 	org.Ce.eg.db,
 	org.Pt.eg.db,
 	org.Dr.eg.db,
-	annotables,
 	knitr,
 	rmarkdown,
 	BiocStyle
