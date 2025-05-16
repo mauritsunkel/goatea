@@ -52,60 +52,6 @@ wrap_hovertip <- function(ui_element, hovertip) {
   tags$div(title = hovertip, ui_element)
 }
 
-#' Get gene annotation for mouse
-#'
-#' Can extend functino to get gene annotations for other organisms within annotables package.
-#'
-#' @param gene_symbols character vector of ensembl genes 109 symbols
-#' @param organism integer, indicates taxonomy ID, default 9606 (Homo Sapiens). options:
-#' * 9606 = Human (Homo sapiens)
-#' * 9544 = Rhesus monkey (Macaca mulatta)
-#' * 10090 = Mouse (Mus musculus)
-#' * 10116 = Rat (Rattus norvegicus)
-#' * 7227 = Fruit fly (Drosophila melanogaster)
-#' * 6239 = Worm (Caenorhabditis elegans)
-#'
-#' @description 
-#' need stephenturner/annotables package installed 
-#' install with: remotes::install_github('stephenturner/annotables')
-#'
-#' @importFrom plyr mapvalues
-#'
-#' @export
-#' 
-#' @returns character vector with gene descriptions for given gene_symbols by matching organism
-#' 
-#' @examples 
-#' get_gene_annotation(c('Tox2', 'Abca5', 'Lor'), '9606')
-get_gene_annotation <- function(gene_symbols, organism = '9606') {
-  ## if stephenturner/annotables package is installed
-  tryCatch({
-    if (requireNamespace("annotables", quietly = TRUE)) {
-      annodata <- switch(
-        as.character(organism),
-        '9606' = annotables::grch38,
-        '7227' = annotables::bdgp6,
-        '9544' = annotables::mmul801,
-        '10116' = annotables::rnor6,
-        '6239' = annotables::wbcel235,
-        '10090' = annotables::grcm38,
-        NULL
-      )
-      if (is.null(annodata)) return(NULL)
-      return(plyr::mapvalues(
-        x = gene_symbols,
-        from = annodata$symbol,
-        to = annodata$description,
-        warn_missing = FALSE))
-    }
-  }, error = function(e) {
-    msg <- "Package 'annotables' is required, install it with: remotes::install_github('stephenturner/annotables')"
-    warning(msg)
-    if ( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
-    return(NULL)
-  })
-}
-
 #' Get term names by searching with (partial) keywords
 #'
 #' @param patterns keywords to match (grepl) term names

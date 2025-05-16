@@ -935,8 +935,6 @@ goatea_server <- function(input, output, session, css_colors) {
         rv_load_genelists$success <- FALSE
         break
       } else {
-        ## annotate genes with small description - if stephenturner/annotables package is installed
-        genelist$gene_annotation <- get_gene_annotation(gene_symbols = genelist$symbol, organism = input$si_organism)
         data[[file[['name']]]] <- genelist
         shinyjs::runjs("$('#vto_load_genelists').css('color', '#32CD32');")
         ## bytes to megabytes conversion
