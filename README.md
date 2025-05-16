@@ -75,7 +75,7 @@ pak::pkg_install(c(
 ## Optional: add gene descriptions to exported tables, install annotables:
 # available only for: human, mouse, rat, worm, fruit fly, Rhesus Monkey
 if ( ! require("pak", quietly = TRUE)) install.packages('pak')
-pak::pkg_install('stephenturner/remotes')
+pak::pkg_install('stephenturner/annotables')
 ```
 
 # Running goatea: Shiny application
