@@ -4,7 +4,7 @@
 <!-- badges: start -->
 
 [![BioC
-status](http://www.bioconductor.org/shields/build/release/bioc/goatea.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/goatea)
+status](https://github.com/mauritsunkel/goatea/workflows/R-CMD-check-bioc/badge.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/goatea)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -75,7 +75,7 @@ pak::pkg_install(c(
 ## Optional: add gene descriptions to exported tables, install annotables:
 # available only for: human, mouse, rat, worm, fruit fly, Rhesus Monkey
 if ( ! require("pak", quietly = TRUE)) install.packages('pak')
-pak::pkg_install('stephenturner/remotes')
+pak::pkg_install('stephenturner/annotables')
 ```
 
 # Running goatea: Shiny application
