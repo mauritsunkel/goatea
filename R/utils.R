@@ -52,6 +52,21 @@ wrap_hovertip <- function(ui_element, hovertip) {
   tags$div(title = hovertip, ui_element)
 }
 
+#' Process Shiny area input string
+#' 
+#' @param string_input siny string
+#' @return processed string - no whitespace, enters, only letters and numbers
+#' @export
+#' @examples
+#' process_string_input("test string \n")
+process_string_input <- function(string_input) {
+  if (length(string_input) == 1 && grepl('\n', string_input)) string_input <- strsplit(string_input, '\n')[[1]]
+  string_input <- trimws(string_input)
+  string_input <- gsub("[^a-zA-Z0-9]", "", string_input)
+  string_input <- Filter(function(x) x != "", string_input)
+  return(string_input)
+}
+
 #' Get term names by searching with (partial) keywords
 #'
 #' @param patterns keywords to match (grepl) term names
@@ -61,7 +76,7 @@ wrap_hovertip <- function(ui_element, hovertip) {
 #'
 #' @export
 #' 
-#' @returns character vector with matching terms by patterns
+#' @return character vector with matching terms by patterns
 #' 
 #' @examples
 #' get_terms_by_keywords('circa', c('circadian rhythm', 'no match', 'circadian clock'))
@@ -91,23 +106,12 @@ get_terms_by_keywords <- function(
   return(unique(res))
 }
 
-#' Process Shiny areaInput string
-#'
-#' @param string_input string
-#' 
-#' @return processed string without enters, whitespace and only containing letters and numbers 
-process_string_input <- function(string_input) {
-  if (length(string_input) == 1 && grepl('\n', string_input)) string_input <- strsplit(string_input, "\n")[[1]]
-  string_input <- trimws(string_input)
-  string_input <- gsub("[^a-zA-Z0-9]", "", string_input)
-  string_input <- Filter(function(x) x != "", string_input)
-  return(string_input)
-}
-
 #' Helper function to process and write combined genesets overview and genes overview output
 #'
 #' @param merged_enrichment row binded enrichment results dataframe/tibble
 #' @param output_folder base output folder path to write to
+#' @param filename string name of file
+#' @param genes_overview table with row-wise gene info
 #' @param top_n n top results per genelist per source based on genesets adjusted pvalue
 #' 
 #' @importFrom tidyr unnest
@@ -119,6 +123,9 @@ process_string_input <- function(string_input) {
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
 #' @importFrom openxlsx write.xlsx
+#' 
+#' @return \value{None}
+#' @noRd
 #' 
 #' @keywords internal
 process_write_merged_enrichments <- function(merged_enrichment, output_folder, filename, genes_overview, top_n = NULL) {

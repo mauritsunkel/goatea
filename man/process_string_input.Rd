@@ -2,16 +2,19 @@
 % Please edit documentation in R/utils.R
 \name{process_string_input}
 \alias{process_string_input}
-\title{Process Shiny areaInput string}
+\title{Process Shiny area input string}
 \usage{
 process_string_input(string_input)
 }
 \arguments{
-\item{string_input}{string}
+\item{string_input}{siny string}
 }
 \value{
-processed string without enters, whitespace and only containing letters and numbers
+processed string - no whitespace, enters, only letters and numbers
 }
 \description{
-Process Shiny areaInput string
+Process Shiny area input string
+}
+\examples{
+process_string_input("test string \n")
 }
