@@ -79,7 +79,7 @@ get_string_ppi <- function(aliases, score_threshold = 0L, organism = 9606L, netw
   string_ids <- map_df$`#string_protein_id`
   
   ## return dataframe after collecting unique undirected protein-protein interactions
-  return(arrow::open_dataset(paste0(file.path(folder, basename(urls["interactions_url"])), ".parquet")) %>%
+  ppi_df <- arrow::open_dataset(paste0(file.path(folder, basename(urls["interactions_url"])), ".parquet")) %>%
            select(all_of(seq_len(3))) %>%
            rename_with(~ c("protein1", "protein2", "combined_score")[seq_along(.)]) %>%
            filter(.data$protein1 %in% string_ids & .data$protein2 %in% string_ids & .data$combined_score >= score_threshold) %>%
@@ -92,5 +92,5 @@ get_string_ppi <- function(aliases, score_threshold = 0L, organism = 9606L, netw
            rename(to_symbol = .data$alias) %>%
            select(.data$from_symbol, .data$to_symbol, .data$combined_score, .data$protein1, .data$protein2, -.data$protein_min, -.data$protein_max) %>%
            rename(from = .data$protein1, to = .data$protein2)
-  )
+  return(ppi_df)
 }

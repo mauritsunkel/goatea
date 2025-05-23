@@ -71,6 +71,11 @@ pak::pkg_install(c(
   "org.Pt.eg.db", 
   "org.Dr.eg.db"
 ))
+
+## Optional: add gene descriptions to exported tables, install annotables:
+# available only for: human, mouse, rat, worm, fruit fly, Rhesus Monkey
+if ( ! require("pak", quietly = TRUE)) install.packages('pak')
+pak::pkg_install('stephenturner/annotables')
 ```
 
 # Running goatea: Shiny application
@@ -78,11 +83,17 @@ pak::pkg_install(c(
 Simply install the package and its dependencies, then run the code below
 in R.
 
+Note that the goatea color scheme is easily customizable, have fun
+creating your own theme!
+
+Click the ‘?’ buttons and hover over UI elements for explanation in
+tooltips.
+
 ``` r
 library(goatea)
 
 ## customizable coloring
-css_colors <- list(
+colors <- list(
   main_bg = "#222222",
   darker_bg = "#111111",
   focus = "#32CD32", 
@@ -97,7 +108,7 @@ shiny::shinyApp(
   server = function(input, output, session) {
     goatea:::goatea_server(
       input, output, session, 
-      css_colors = css_colors)
+      css_colors = colors)
   }
 )
 ```
@@ -121,3 +132,9 @@ you in exploring your data!
 For issues: <https://github.com/mauritsunkel/goatea/issues>
 
 To collaborate, pull request or email me: <mauritsunkel@gmail.com>
+
+# FAQ
+
+Why does my file not download? \* For PPI: check if the string database
+website is online. \* Generally: make sure you have read/write
+permissions in the set base folder.

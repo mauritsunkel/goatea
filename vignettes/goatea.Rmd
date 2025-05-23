@@ -45,11 +45,15 @@ As intended for interactive and intuitive usage, run the goatea Shiny interface.
 
 Simply install the package and its dependencies, then run the script below.
 
+Note that the goatea color scheme is easily customizable, have fun creating your own theme! 
+
+Click the '?' buttons and hover over UI elements for explanation in tooltips. 
+
 ```{r goatea Shiny, eval=FALSE, message=FALSE, warning=FALSE}
 library(goatea)
 
 ## customizable coloring
-css_colors <- list(
+colors <- list(
   main_bg = "#222222",
   darker_bg = "#111111",
   focus = "#32CD32", 
@@ -64,7 +68,7 @@ shiny::shinyApp(
   server = function(input, output, session) {
     goatea:::goatea_server(
       input, output, session, 
-      css_colors = css_colors)
+      css_colors = colors)
   }
 )
 ```
@@ -83,7 +87,7 @@ goatea is available through Github, I intend for goatea to become available thro
 
 # For the GOATEA development version use: 
 if ( ! require("pak", quietly = TRUE)) install.packages('pak')
-pak::pkg_install('mauritsunkel/goatea', dependencies = TRUE, upgrade = TRUE)
+pak::pkg_install('mauritsunkel/goatea')
 
 ## When GOATEA is on Bioconductor use: 
 # pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
@@ -366,14 +370,23 @@ p <- goatea::plot_ComplexHeatmap(
 
 Gene sets miss information of gene-gene interactions, this visualization can offer bottom-up relationships between genes to gain insight. The STRING database is used to obtain protein-protein interaction data by efficient streaming. For the selected genes of interest, an igraph network is built in the background in order to obtain network statistics. The igraph is passed to visNetwork for (in Shiny app) interactive visualization and exploration of the network. 
 
-I advise to regard this output as a basic and toy visualization, the goatea in Shiny app version contains node and edge hover information of all network statistics. Edges can be clicked to view their interaction scores and information on the STRING website. Nodes are clustered by STRING interaction scores. The nodes and edges can be colored by each statistical feature. Nodes can be filtered by each feature and made into a subnetwork for more detailed exploration. 
+First we select symbols to download ppi data for our chosen organism. 
 
-```{r ppi network}
+```{r ppi network select symbols}
 # selecting 10 symbols of the searchad and significant first enriched term
 selected_symbols <- filtered_enrichment$symbol[[1]][
   filtered_enrichment$genes[[1]] %in% filtered_enrichment$genes_signif[[1]]
 ][1:10]
+```
 
+```{r ppi network example default}
+ppi_data <- goatea::example_ppi_data
+```
+
+Normally, we would download STRING database PPI data, yet for this vignette, we will use example data by default. 
+Try out this code for yourself to explore with downloaded data. 
+
+```{r ppi network example download, eval = FALSE}
 ## this will download the STRING database protein-protein interaction data 
 ## to your selected folder 
 # downloading should only take a couple of seconds
@@ -384,6 +397,11 @@ ppi_data <- goatea::get_string_ppi(
   organism = taxid, 
   folder = file.path(outdir)
 )
+```
+
+I advise to regard this output as a basic and toy visualization, the goatea in Shiny app version contains node and edge hover information with all network statistics. Edges can be clicked to view their interaction scores and information on the STRING website. Nodes are clustered by STRING interaction scores. The nodes and edges can be colored by each statistical feature. Nodes can be filtered by each feature and made into a subnetwork for more detailed exploration. 
+
+```{r ppi network}
 # creating igraph in order to do network statistics
 ppi_graph <- goatea::get_ppigraph(ppi_data = ppi_data)
 # converting igraph to visnetwork for (Shiny app) interactive visualization

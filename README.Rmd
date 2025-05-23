@@ -40,7 +40,7 @@ The development version of goatea is available through Github, I intend for goat
 
 # For the GOATEA development version use: 
 if ( ! require("pak", quietly = TRUE)) install.packages('pak')
-pak::pkg_install('mauritsunkel/goatea', dependencies = TRUE, upgrade = TRUE)
+pak::pkg_install('mauritsunkel/goatea')
 
 ## When GOATEA is on Bioconductor use: 
 # pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
@@ -77,11 +77,15 @@ pak::pkg_install('stephenturner/annotables')
 
 Simply install the package and its dependencies, then run the code below in R. 
 
+Note that the goatea color scheme is easily customizable, have fun creating your own theme! 
+
+Click the '?' buttons and hover over UI elements for explanation in tooltips. 
+
 ```{r goatea Shiny, eval=FALSE, message=FALSE, warning=FALSE}
 library(goatea)
 
 ## customizable coloring
-css_colors <- list(
+colors <- list(
   main_bg = "#222222",
   darker_bg = "#111111",
   focus = "#32CD32", 
@@ -96,7 +100,7 @@ shiny::shinyApp(
   server = function(input, output, session) {
     goatea:::goatea_server(
       input, output, session, 
-      css_colors = css_colors)
+      css_colors = colors)
   }
 )
 ```
@@ -116,3 +120,11 @@ A thank you for your time and effort in using goatea, I hope it may aid you in e
 For issues: https://github.com/mauritsunkel/goatea/issues
 
 To collaborate, pull request or email me: mauritsunkel@gmail.com
+
+# FAQ 
+
+Why does my file not download? 
+* For PPI: check if the string database website is online. 
+* Generally: make sure you have read/write permissions in the set base folder.
+
+
