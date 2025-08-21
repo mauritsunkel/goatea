@@ -3,7 +3,11 @@ title: "goatea vignette"
 author: "Maurits Unkel"
 package: goatea
 date: "`r Sys.Date()`"
-output: BiocStyle::html_document
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
 vignette: >
   %\VignetteIndexEntry{goatea}
   %\VignetteEngine{knitr::rmarkdown}
@@ -380,7 +384,7 @@ selected_symbols <- filtered_enrichment$symbol[[1]][
 ```
 
 ```{r ppi network example default}
-ppi_data <- goatea::example_ppi_data
+assign("ppi_data", get(load(system.file("extdata", "example_ppi_data.rda", package = "goatea"))))
 ```
 
 Normally, we would download STRING database PPI data, yet for this vignette, we will use example data by default. 

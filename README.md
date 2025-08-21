@@ -34,8 +34,8 @@ graph.
 
 # Installation
 
-The development version of goatea is available through Github, I intend
-for goatea to become available through Bioconductor.
+The development version of goatea is available through Github, goatea
+will become available through Bioconductor.
 
 ``` r
 ## GOATEA installation requires the latest version of R and Rtools 
@@ -43,9 +43,12 @@ for goatea to become available through Bioconductor.
 # R: https://cran.r-project.org/mirrors.html
 # Rtools: https://cran.r-project.org/bin/windows/Rtools/
 
-# For the GOATEA development version use: 
-if ( ! require("pak", quietly = TRUE)) install.packages('pak')
-pak::pkg_install('mauritsunkel/goatea')
+## To install GOATEA from Bioconductor use:
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("goatea")
+# or via pak
+pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
 
 ## When GOATEA is on Bioconductor use: 
 # pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
