@@ -32,6 +32,6 @@ Plot gene2effectsize ComplexHeatmap
 \examples{
 plot_gene_effectsize_ComplexHeatmap(
   c('gene_1', 'gene_2', 'gene_3', 'gene_4', 'gene_5'), 
-  goatea::example_genes_overview
+  get(load(system.file("extdata", "example_genes_overview.rda", package = "goatea")))
 )
 }

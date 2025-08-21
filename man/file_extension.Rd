@@ -16,5 +16,5 @@ string file extension
 Get file extension
 }
 \examples{
-file_extension(file.path(getwd(), 'filename.txt'))
+file_extension('filename.ext')
 }

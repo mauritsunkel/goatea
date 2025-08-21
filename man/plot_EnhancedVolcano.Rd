@@ -10,7 +10,17 @@ plot_EnhancedVolcano(
   pvalue_threshold = 0.05,
   background_color = "black",
   foreground_color = "white",
-  interactive = FALSE
+  interactive = FALSE,
+  legend_labels = c("NS", "FC", "P", "FC & P"),
+  x_label = "effectsize (FC)",
+  y_label = "-log10(pvalue) (P)",
+  title = "Volcano plot",
+  subtitle = "EnhancedVolcano",
+  caption = paste0("N genes: ", nrow(genelist)),
+  label_size = 3,
+  legend_label_size = 14,
+  axes_label_size = 18,
+  point_size = 2
 )
 }
 \arguments{
@@ -25,6 +35,26 @@ plot_EnhancedVolcano(
 \item{foreground_color}{default: 'white', else character hexcolor or colorname}
 
 \item{interactive}{default: FALSE, else TRUE}
+
+\item{legend_labels}{character vector, default: c('NS', 'FC', 'P', 'FC & P'), plot legend labels}
+
+\item{x_label}{character, default: 'effectsize (FC)', plot x-axis label}
+
+\item{y_label}{character, default: "'-log10(pvalue) (P)', plot y-axis label}
+
+\item{title}{character, default: 'Volcano plot', plot title}
+
+\item{subtitle}{character, default: 'EnhancedVolcano', plot subtitle}
+
+\item{caption}{character, default: paste0("N genes: ", nrow(genelist)), plot caption}
+
+\item{label_size}{numeric, default: 3, plot variable label size}
+
+\item{legend_label_size}{numeric, default: 14, plot legend label size}
+
+\item{axes_label_size}{numeric, default: 18, plot x- and y-axis lable sizes}
+
+\item{point_size}{numeric, default: 2, plot point size}
 }
 \value{
 plotly or ggplot2 object
@@ -33,5 +63,7 @@ plotly or ggplot2 object
 Plot EnhancedVolcano
 }
 \examples{
-plot_EnhancedVolcano(goatea::example_genelist)
+plot_EnhancedVolcano(
+  get(load(system.file("extdata", "example_genelist.rda", package = "goatea")))
+)
 }

@@ -30,5 +30,8 @@ upset plot
 UpSetJS examples: https://upset.js.org/integrations/r/articles/combinationModes.html#distinct-intersection-mode
 }
 \examples{
-plot_genelists_overlap_upsetjs(list(A = goatea::example_genelist, B = goatea::example_genelist))
+plot_genelists_overlap_upsetjs(list(
+  A = get(load(system.file("extdata", "example_genelist.rda", package = "goatea"))), 
+  B = get(load(system.file("extdata", "example_genelist.rda", package = "goatea")))
+))
 }

@@ -66,5 +66,7 @@ filtered dataframe
 Search and filter and sort or summarize (compiled) enrichment output.
 }
 \examples{
-filter_enrichment(goatea::example_enrichment, min_ngenes = 15)
+filter_enrichment(
+get(load(system.file("extdata", "example_enrichment.rda", package = "goatea"))), 
+min_ngenes = 15)
 }

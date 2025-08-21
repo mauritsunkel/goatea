@@ -43,7 +43,9 @@
 #' @importFrom igraph empty_graph
 #' 
 #' @examples
-#' get_ppigraph(goatea::example_ppi_data)
+#' get_ppigraph(
+#'   get(load(system.file("extdata", "example_ppi_data.rda", package = "goatea")))
+#' )
 get_ppigraph <- function(ppi_data, vertex_clustering = NULL) {
   ## input validation
   stopifnot(

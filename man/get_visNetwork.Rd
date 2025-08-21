@@ -20,6 +20,8 @@ list of visNetwork nodes and edges and given ppigraph
 Gets visNetwork graph with ppigraph, and optionally genes overview, metadata
 }
 \examples{
-ppi_graph <- get_ppigraph(goatea::example_ppi_data)
+ppi_graph <- get_ppigraph(
+  get(load(system.file("extdata", "example_ppi_data.rda", package = "goatea")))
+)
 get_visNetwork(ppi_graph)
 }

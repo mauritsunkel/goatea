@@ -9,7 +9,10 @@
 #' @returns tibble/dataframe with (annotated) genes and p-value/effectsize info for each genelist, concluding with overlapping genelists by significant genes
 #'
 #' @examples
-#' run_genelists_overlap(list(A = goatea::example_genelist, B = goatea::example_genelist))
+#' run_genelists_overlap(list(
+#'   A = get(load(system.file("extdata", "example_genelist.rda", package = "goatea"))), 
+#'   B = get(load(system.file("extdata", "example_genelist.rda", package = "goatea")))
+#' ))
 run_genelists_overlap <- function(genelists) {
   ## initiate df with unique gene symbols (and annotations)
   long_df <- do.call(rbind, genelists)

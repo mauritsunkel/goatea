@@ -12,7 +12,9 @@
 #' @export
 #' 
 #' @examples
-#' set_significant_N_genes(goatea::example_genelist)
+#' set_significant_N_genes(
+#'   get(load(system.file("extdata", "example_genelist.rda", package = "goatea")))
+#' )
 set_significant_N_genes <- function(
   genelist, 
   significance_by = 'pvalue_effectsize',

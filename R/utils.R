@@ -7,7 +7,7 @@
 #' @returns string file extension
 #' 
 #' @examples
-#' file_extension(file.path(getwd(), 'filename.txt'))
+#' file_extension('filename.ext')
 file_extension <- function (x) {
   pos <- regexpr("\\.([[:alnum:]]+)$", x)
   ifelse(pos > -1L, substring(x, pos + 1L), "")
@@ -123,6 +123,11 @@ get_terms_by_keywords <- function(
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
 #' @importFrom openxlsx write.xlsx
+#' 
+#' @importFrom dplyr .data
+#' 
+#' @description
+#' DEVNOTE: the importFrom dplyr .data should resolve needing '. <- NULL'
 #' 
 #' @return \value{None}
 #' @noRd

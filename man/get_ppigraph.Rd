@@ -22,7 +22,9 @@ Using clustering from terms is not possible, as genes can be in multiple terms.
 Leiden also scales well to large graphs, has consistent clustering outcomes and provides some inherent guarantees by its method, e.g. locally optimal assignment.
 }
 \examples{
-get_ppigraph(goatea::example_ppi_data)
+get_ppigraph(
+  get(load(system.file("extdata", "example_ppi_data.rda", package = "goatea")))
+)
 }
 \references{
 Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z

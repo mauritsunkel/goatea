@@ -53,7 +53,9 @@ Plot ComplexHeatmap from enrichment analysis results and corresponding genelist
 }
 \examples{
 plot_ComplexHeatmap(
-  goatea::example_enrichment[seq.int(1, 3), ], 
-  goatea::example_genelist, n_cluster = 3, n_top_genes = 10
+  get(load(system.file("extdata", "example_enrichment.rda", package = "goatea")))[seq.int(1, 3), ], 
+  get(load(system.file("extdata", "example_genelist.rda", package = "goatea"))), 
+  n_cluster = 3, 
+  n_top_genes = 10
 )
 }

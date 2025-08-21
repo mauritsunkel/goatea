@@ -42,5 +42,8 @@ the input genesets, with results stored in columns 'pvalue', 'pvalue_adjust', 's
 See original documentation at \link[goat]{test_genesets}
 }
 \examples{
-run_geneset_enrichment(goatea::example_genesets, goatea::example_genelist)
+run_geneset_enrichment(
+  get(load(system.file("extdata", "example_genesets.rda", package = "goatea"))),
+  get(load(system.file("extdata", "example_genelist.rda", package = "goatea")))
+)
 }

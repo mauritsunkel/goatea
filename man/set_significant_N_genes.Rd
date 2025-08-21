@@ -33,5 +33,7 @@ genelist with added 'signif' column with TRUE/FALSE values
 Set significant and number of genes
 }
 \examples{
-set_significant_N_genes(goatea::example_genelist)
+set_significant_N_genes(
+  get(load(system.file("extdata", "example_genelist.rda", package = "goatea")))
+)
 }

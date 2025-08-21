@@ -20,7 +20,9 @@
 #' @importFrom dplyr mutate
 #'
 #' @examples
-#' ppi_graph <- get_ppigraph(goatea::example_ppi_data)
+#' ppi_graph <- get_ppigraph(
+#'   get(load(system.file("extdata", "example_ppi_data.rda", package = "goatea")))
+#' )
 #' get_visNetwork(ppi_graph)
 get_visNetwork <- function(ppigraph, genes_overview = NULL, sample_name = NULL) {
   if (is(ppigraph, "igraph_constructor_spec")) return(list(nodes = data.frame(), edges = data.frame(), ppigraph = ppigraph))

@@ -9,7 +9,9 @@
 #' @importFrom ggplot2 ggplot aes geom_point scale_x_continuous scale_color_gradient scale_size_continuous theme_minimal labs facet_wrap theme element_rect element_text
 #' 
 #' @examples
-#' plot_splitdot(goatea::example_enrichment)
+#' plot_splitdot(
+#'   get(load(system.file("extdata", "example_enrichment.rda", package = "goatea")))
+#' )
 plot_splitdot <- function(enrichment, topN = NA) {
   if ("source" %in% colnames(enrichment)) if (length(unique(enrichment$source)) > 1) stop("pass a single source for plotting splitdot") 
   if (is.na(topN) || topN > nrow(enrichment)) topN <- nrow(enrichment)
@@ -26,10 +28,18 @@ plot_splitdot <- function(enrichment, topN = NA) {
     theme_minimal() +
     labs(x = "GeneRatio", y = "", size = "Ngenes", color = "Adjusted p-value") +
     facet_wrap(~ .data$zscore_sign, scales = "free_x", drop = FALSE) +
-    theme(axis.text.y = element_text(size = 10),
-                   legend.position = "right",
-                   panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
-                   strip.background = element_rect(fill = "grey90", color = "black", linewidth = 1),
-                   strip.text = element_text(face = "bold"))
+    theme(
+      axis.text.y = element_text(size = 30),
+      axis.text.x = element_text(size = 17),
+      axis.title.x = element_text(size = 18, face = "bold"),
+      legend.title = element_text(size = 25, face = "bold"),
+      legend.text = element_text(size = 20),
+      strip.text = element_text(face = "bold", size = 23),
+      panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+      strip.background = element_rect(fill = "grey90", color = "black", linewidth = 1),
+      panel.grid.major = element_line(color = "grey80"),
+      panel.grid.minor = element_line(color = "grey90"),
+      legend.position = "right"
+    )
   return(p)
 }

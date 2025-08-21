@@ -20,8 +20,8 @@ Get a percentage of genesets the specific gene is included
 \examples{
 calculate_geneSetRatio(
 list(
-  A = goatea::example_enrichment, 
-  B = goatea::example_enrichment
+  A = get(load(system.file("extdata", "example_enrichment.rda", package = "goatea"))), 
+  B = get(load(system.file("extdata", "example_enrichment.rda", package = "goatea")))
 ), 
-goatea::example_genes_overview)
+get(load(system.file("extdata", "example_genes_overview.rda", package = "goatea"))))
 }

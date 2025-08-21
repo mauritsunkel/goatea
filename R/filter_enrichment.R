@@ -25,7 +25,9 @@
 #' @returns filtered dataframe
 #' 
 #' @examples
-#' filter_enrichment(goatea::example_enrichment, min_ngenes = 15)
+#' filter_enrichment(
+#' get(load(system.file("extdata", "example_enrichment.rda", package = "goatea"))), 
+#' min_ngenes = 15)
 filter_enrichment <- function(
     df,
     genes_input = "",

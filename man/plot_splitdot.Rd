@@ -18,5 +18,7 @@ ggplot2 object
 Plot splitdot plot
 }
 \examples{
-plot_splitdot(goatea::example_enrichment)
+plot_splitdot(
+  get(load(system.file("extdata", "example_enrichment.rda", package = "goatea")))
+)
 }
