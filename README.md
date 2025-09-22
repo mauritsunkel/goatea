@@ -34,8 +34,7 @@ graph.
 
 # Installation
 
-The development version of goatea is available through Github, goatea
-will become available through Bioconductor.
+goatea is available on Bioconductor, the development version is available through GitHub.
 
 ``` r
 ## GOATEA installation requires the latest version of R and Rtools 
