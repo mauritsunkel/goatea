@@ -13,6 +13,8 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 ![repo
 size](https://img.shields.io/github/repo-size/mauritsunkel/goatea)
 ![version](https://img.shields.io/github/r-package/v/mauritsunkel/goatea)
+[![pkgdown
+site](https://img.shields.io/badge/docs-pkgdown-brown.svg)](https://mauritsunkel.github.io/goatea/)
 <!-- badges: end -->
 
 # goatea <img src="man/figures/logo.png" align="right" height="139" alt="" />
@@ -115,10 +117,11 @@ shiny::shinyApp(
 )
 ```
 
-# Running goatea: automated analyses
+# Documentation - Running goatea: automated analyses
 
-See the [vignette](https://mauritsunkel.github.io/goatea/goatea.html)
-for more details on automated scripted analyses.
+See the documentation on the [pkgdown site -
+vignette](https://mauritsunkel.github.io/goatea/) for more details on
+automated scripted analyses.
 
 # GOAT reference
 
