@@ -205,9 +205,9 @@ plot_ComplexHeatmap <- function(
   ch <- ComplexHeatmap::Heatmap(
     m,
     col = colorify(n = length(m_unique_values), colors = "viridis", colors_names = sort(m_unique_values)),
-    na_col = "grey20",
+    na_col = "grey95", # TODO grey20
     name = "clusters", # legend name
-    rect_gp = grid::gpar(col = "grey30"),
+    rect_gp = grid::gpar(col = "grey90"), # TODO grey30
     show_row_names = TRUE,
     show_column_names = TRUE,
     # row_names_gp = gpar(fontsize = 12), # grid::gpar(col = row_colors, fontface = row_fontface),
