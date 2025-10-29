@@ -44,7 +44,11 @@ goatea_ui <- function() {
     dashboardBody(
       shinyjs::useShinyjs(), # initialize shinyjs
       tags$head(
-        tags$link(rel = "stylesheet", type = "text/css", href = "www/styles.css"), # load .css stylesheet
+        if (file.exists("inst/www/styles.css")) {
+          includeCSS("inst/www/styles.css")  # dev: live-reload without reinstall
+        } else {
+          tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")  # installed pkg path via addResourcePath
+        }, # load .css stylesheet
         tags$script(src = "www/colors.js"), # load JS initializing .css colors 
         tags$script(src = "www/menu_toggle.js"), # # load JS to keep all menu items visible and disable their toggling-to-close
         tags$script(src = "www/visnetwork_hover_tooltip_style.js"),

@@ -125,19 +125,37 @@ input[type="radio"] {
 }
 
 /* Sidebar Styling */
-.sidebar-menu > li > a {
-  background-color: var(--main-bg-color);
-  color: var(--text-color);
+.skin-blue .main-sidebar .sidebar .sidebar-menu > li > a {
+  background-color: var(--darker-bg-color) !important;
+  color: var(--text-color) !important;
 }
-.sidebar-menu > li > a:hover {
-  background-color: var(--hover-color) !important;
+.skin-blue .main-sidebar .sidebar .sidebar-menu > li > a:hover {
+  background-color: var(--main-bg-color) !important;
+  color: var(--text-color) !important;
   border-left: none !important;
 }
-.sidebar-menu > li.active > a {
+.skin-blue .main-sidebar .sidebar .sidebar-menu > li.active > a {
   background-color: var(--focus-color) !important;
-  color: var(--text-color);
+  color: var(--text-color) !important;
   border-left: none !important;
 }
+
+/* Submenu items */
+.skin-blue .main-sidebar .sidebar .treeview-menu > li > a {
+  background-color: var(--main-bg-color) !important;
+  color: var(--text-color) !important;
+}
+
+.skin-blue .main-sidebar .sidebar .treeview-menu > li > a:hover {
+  background-color: var(--hover-color) !important;
+  color: var(--text-color) !important;
+}
+
+.skin-blue .main-sidebar .sidebar .treeview-menu > li.active > a {
+  background-color: var(--focus-color) !important;
+  color: var(--text-color) !important;
+}
+
 
 /* Header Styling */
 .skin-blue .main-header .logo {
@@ -147,11 +165,11 @@ input[type="radio"] {
   background-color: var(--hover-color);
 }
 .skin-blue .main-header .sidebar-toggle {
-  background-color: var(--hover-color);
+  background-color: var(--hover-color) !important;
 }
 .skin-blue .main-header .sidebar-toggle:hover {
   background-color: var(--hover-color) !important;
 }
 .skin-blue .main-header .navbar {
-  background-color: var(--hover-color);
+  background-color: var(--hover-color) !important;
 }

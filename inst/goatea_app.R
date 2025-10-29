@@ -1,13 +1,23 @@
 library(goatea)
 
-## manual coloring
+## manual coloring: dark mode
+# css_colors <- list(
+#   main_bg = "#222222",
+#   darker_bg = "#111111",
+#   focus = "#32CD32", 
+#   hover = "#228B22",
+#   border = "#555555",
+#   text = "#FFFFFF"
+# )
+
+## manual coloring: light mode
 css_colors <- list(
-  main_bg = "#222222",
-  darker_bg = "#111111",
+  main_bg = "white",
+  darker_bg = "lightgray",
   focus = "#32CD32", 
   hover = "#228B22",
-  border = "#555555",
-  text = "#FFFFFF"
+  border = "#999",
+  text = "black"
 )
 
 ## run the application
@@ -19,3 +29,4 @@ shiny::shinyApp(
       css_colors = css_colors)
   }
 )
+
