@@ -38,9 +38,16 @@ plot_genelists_overlap_upsetjs <- function(genelists, mode = 'distinct', interac
     upset <- upsetjs::upsetjs()
   }
   
-  upset <- upset %>% upsetjs::chartTheme('dark', color = main.color, text.color = main.color, selection.color = highlight.color)
+  theme = ifelse(main.color == 'black', 'dark', 'light')
+  upset <- upset %>% upsetjs::chartTheme(theme = theme, color = main.color, text.color = main.color, selection.color = highlight.color)
 
-  if (interactive) upset <- upset %>% upsetjs::interactiveChart()
+  if (interactive) upset <- upset %>% upsetjs::interactiveChart() %>% upsetjs::chartFontSizes(
+    chart.label = '20', 
+    set.label = '14',
+    axis.tick = '20',
+    bar.label = '14',
+    legend = '14'
+  )
   
   return(upset)
 }
