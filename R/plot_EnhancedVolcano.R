@@ -50,71 +50,75 @@ plot_EnhancedVolcano <- function(
   x_axis_min <- floor(min(genelist$effectsize))
   x_axis_max <- ceiling(max(genelist$effectsize))
   
-  p <- EnhancedVolcano::EnhancedVolcano(
-    genelist,
-    lab = genelist$symbol,
-    x = "effectsize",
-    y = "pvalue",
-    title = title,
-    subtitle = subtitle,
-    caption = caption,
-    pCutoff = pvalue_threshold,
-    FCcutoff = effectsize_threshold,
-    colAlpha = .9,
-    labSize = label_size,
-    axisLabSize = axes_label_size,
-    pointSize = point_size,
-    legendPosition = "right",
-    legendIconSize = 4.5,
-    legendLabSize = legend_label_size,
-    legendLabels = legend_labels,
-    xlab = x_label,
-    ylab = y_label,
-    gridlines.major = ifelse(interactive, TRUE, FALSE),
-    gridlines.minor = ifelse(interactive, TRUE, FALSE),
-    borderWidth = 1.5,
-    boxedLabels = TRUE,
-    labFace = "bold",
-    drawConnectors = TRUE,
-    arrowheads = FALSE,
-    widthConnectors = 0.25
-  ) + ggplot2::coord_cartesian(xlim=c(x_axis_min, x_axis_max)) +
-    ggplot2::scale_x_continuous(
-      breaks=seq(x_axis_min, x_axis_max, 1))
+  if (requireNamespace("EnhancedVolcano", quietly = TRUE)) {
+    p <- EnhancedVolcano::EnhancedVolcano(
+      genelist,
+      lab = genelist$symbol,
+      x = "effectsize",
+      y = "pvalue",
+      title = title,
+      subtitle = subtitle,
+      caption = caption,
+      pCutoff = pvalue_threshold,
+      FCcutoff = effectsize_threshold,
+      colAlpha = .9,
+      labSize = label_size,
+      axisLabSize = axes_label_size,
+      pointSize = point_size,
+      legendPosition = "right",
+      legendIconSize = 4.5,
+      legendLabSize = legend_label_size,
+      legendLabels = legend_labels,
+      xlab = x_label,
+      ylab = y_label,
+      gridlines.major = ifelse(interactive, TRUE, FALSE),
+      gridlines.minor = ifelse(interactive, TRUE, FALSE),
+      borderWidth = 1.5,
+      boxedLabels = TRUE,
+      labFace = "bold",
+      drawConnectors = TRUE,
+      arrowheads = FALSE,
+      widthConnectors = 0.25
+    ) + ggplot2::coord_cartesian(xlim=c(x_axis_min, x_axis_max)) +
+      ggplot2::scale_x_continuous(
+        breaks=seq(x_axis_min, x_axis_max, 1))
   
-  if (interactive) {
-    ## assume Shiny GOATEA environment if interactive
-    for (i in seq_along(p$layers)) {
-      if (inherits(p$layers[[i]]$geom, "GeomHline")) {
-        p$layers[[i]]$aes_params$colour <- foreground_color
+    if (interactive) {
+      ## assume Shiny GOATEA environment if interactive
+      for (i in seq_along(p$layers)) {
+        if (inherits(p$layers[[i]]$geom, "GeomHline")) {
+          p$layers[[i]]$aes_params$colour <- foreground_color
+        }
+        if (inherits(p$layers[[i]]$geom, "GeomText")) {
+          p$layers[[i]]$aes_params$colour <- foreground_color
+        }
       }
-      if (inherits(p$layers[[i]]$geom, "GeomText")) {
-        p$layers[[i]]$aes_params$colour <- foreground_color
-      }
+  
+      p <- plotly::ggplotly(
+        p + ggplot2::aes(key = .data$symbol, x = .data$effectsize, y = -log10(.data$pvalue)) +
+          labs(
+            x = 'effectsize (FC)',
+            y = '-log10(pvalue) (P)',
+            title = paste0('EnhancedVolcano - N genes: ', nrow(genelist)),
+            color = ''
+          ) +
+          theme(
+            plot.background = element_rect(fill = background_color, color = NA),
+            panel.background = element_rect(fill = background_color, color = NA),
+            panel.grid = element_line(color = foreground_color),
+            axis.text = element_text(color = foreground_color),
+            axis.title = element_text(color = foreground_color),
+            plot.title = element_text(color = foreground_color),
+            plot.caption = element_text(color = foreground_color),
+            legend.background = element_rect(fill = background_color),
+            legend.text = element_text(color = foreground_color),
+            legend.title = element_text(color = foreground_color)
+          ),
+        source = 'V'
+      )
     }
-    
-    p <- plotly::ggplotly(
-      p + ggplot2::aes(key = .data$symbol, x = .data$effectsize, y = -log10(.data$pvalue)) +
-        labs(
-          x = 'effectsize (FC)',
-          y = '-log10(pvalue) (P)',
-          title = paste0('EnhancedVolcano - N genes: ', nrow(genelist)),  
-          color = ''
-        ) +
-        theme(
-          plot.background = element_rect(fill = background_color, color = NA),
-          panel.background = element_rect(fill = background_color, color = NA),
-          panel.grid = element_line(color = foreground_color),
-          axis.text = element_text(color = foreground_color),
-          axis.title = element_text(color = foreground_color),
-          plot.title = element_text(color = foreground_color),
-          plot.caption = element_text(color = foreground_color),
-          legend.background = element_rect(fill = background_color),
-          legend.text = element_text(color = foreground_color),
-          legend.title = element_text(color = foreground_color)
-        ),
-      source = 'V'
-    )
+  } else {
+    message("EnhancedVolcano not installed; install manually from Bioconductor or GitHub - kevinblighe/EnhancedVolcano")
   }
   return(p)
 }
