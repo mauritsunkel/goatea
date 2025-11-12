@@ -1,7 +1,7 @@
 Package: goatea
 Type: Package
 Title: Interactive Exploration of GSEA by the GOAT Method
-Version: 1.0.1
+Version: 1.1.1
 Authors@R: 
     person("Maurits", "Unkel",
 		   role = c("aut", "cre", "fnd", "cph"),
