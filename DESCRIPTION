@@ -1,7 +1,7 @@
 Package: goatea
 Type: Package
 Title: Interactive Exploration of GSEA by the GOAT Method
-Version: 0.99.9
+Version: 1.0.1
 Authors@R: 
     person("Maurits", "Unkel",
 		   role = c("aut", "cre", "fnd", "cph"),
@@ -17,7 +17,7 @@ License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Config/testthat/edition: 3
 biocViews: GeneSetEnrichment, NetworkEnrichment, Visualization, ShinyApps, GUI, Transcriptomics, Genetics, FunctionalGenomics, DifferentialExpression, Network
 Depends: 
@@ -47,7 +47,8 @@ Imports:
     DT (>= 0.33),
     enrichplot (>= 1.27.4),
     plyr (>= 1.8.9),
-    tibble (>= 3.2.1)
+    tibble (>= 3.2.1),
+	rlang (>= 1.1.6)
 Suggests:
     org.Hs.eg.db,
     org.Mm.eg.db,

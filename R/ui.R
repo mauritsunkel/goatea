@@ -45,7 +45,7 @@ goatea_ui <- function() {
       shinyjs::useShinyjs(), # initialize shinyjs
       tags$head(
         if (file.exists("inst/www/styles.css")) {
-          includeCSS("inst/www/styles.css")  # dev: live-reload without reinstall
+          shiny::includeCSS("inst/www/styles.css")  # dev: live-reload without reinstall
         } else {
           tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")  # installed pkg path via addResourcePath
         }, # load .css stylesheet

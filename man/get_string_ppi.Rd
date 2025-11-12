@@ -41,7 +41,7 @@ STRING documentation: https://string-db.org/cgi/help?sessionId=baEZCS5u1RdM
 Protocol used for downloading STRING files is https
 }
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
 get_string_ppi(c("TP53", "EGFR", "BRCA1", "MTOR", "MYC", "SOX2"))
 \dontshow{\}) # examplesIf}
 }

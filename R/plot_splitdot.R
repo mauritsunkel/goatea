@@ -29,7 +29,7 @@ plot_splitdot <- function(enrichment, topN = NA) {
     labs(x = "GeneRatio", y = "", size = "Ngenes", color = "Adjusted p-value") +
     facet_wrap(~ .data$zscore_sign, scales = "free_x", drop = FALSE) +
     theme(
-      axis.text.y = element_text(size = 30),
+      axis.text.y = element_text(size = 17),
       axis.text.x = element_text(size = 17),
       axis.title.x = element_text(size = 18, face = "bold"),
       legend.title = element_text(size = 25, face = "bold"),
