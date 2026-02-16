@@ -16,7 +16,7 @@
 #' @importFrom rlang .data
 #' 
 #' @examples
-#' plot_termtree(genelist <- get(load(system.file("extdata", "example_genelist.rda", package = "goatea"))))
+#' plot_termtree(get(load(system.file("extdata", "example_genelist.rda", package = "goatea"))))
 plot_termtree <- function(genelist, map_organism = 9606, effectsize_threshold = 1, Nterms = NA, Nwords = 5, Nclusters = 1) {
   if ( ! requireNamespace("enrichplot")) stop("Need 'enrichplot' package installed via: BiocManager::install('enrichplot')")
   if (length(genelist) == 0) stop("List passed to plot termtree has no genes/proteins")
