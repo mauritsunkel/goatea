@@ -4,10 +4,21 @@
 \alias{plot_termtree}
 \title{Plot semantic similarity termtree}
 \usage{
-plot_termtree(enrichment, Nterms = NA, Nwords = 5, Nclusters = 1)
+plot_termtree(
+  genelist,
+  map_organism = 9606,
+  effectsize_threshold = 1,
+  Nterms = NA,
+  Nwords = 5,
+  Nclusters = 1
+)
 }
 \arguments{
-\item{enrichment}{GOAT enrichment result dataframe}
+\item{genelist}{GOAT current genelist from selected enrichment sample}
+
+\item{map_organism}{integer, default: 9606 (human) - input organism ID that will be mapped to org.Xx.eg.db}
+
+\item{effectsize_threshold}{numerical, default: 1 - genelist effectsize threshold}
 
 \item{Nterms}{integer, default: NA to plat all terms, integer sets amount of terms to plot}
 
@@ -22,8 +33,5 @@ ggtree/gg/ggplot object
 Plot semantic similarity termtree
 }
 \examples{
-plot_termtree(
-  get(load(system.file("extdata", "example_enrichment.rda", package = "goatea"))), 
-  Nclusters = 3
-)
+plot_termtree(genelist <- get(load(system.file("extdata", "example_genelist.rda", package = "goatea"))))
 }
