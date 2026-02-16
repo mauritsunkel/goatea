@@ -33,5 +33,5 @@ ggtree/gg/ggplot object
 Plot semantic similarity termtree
 }
 \examples{
-plot_termtree(genelist <- get(load(system.file("extdata", "example_genelist.rda", package = "goatea"))))
+plot_termtree(get(load(system.file("extdata", "example_genelist.rda", package = "goatea"))))
 }
