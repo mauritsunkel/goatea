@@ -45,9 +45,12 @@ Imports:
     methods (>= 4.5.0),
     AnnotationDbi (>= 1.69.1),
     DT (>= 0.33),
-    enrichplot (>= 1.27.4),
     plyr (>= 1.8.9),
-    tibble (>= 3.2.1)
+    tibble (>= 3.2.1),
+    rlang (>= 1.1.6),
+    DOSE (>= 4.4.0),
+    enrichplot (>= 1.30.4),
+    EnhancedVolcano (>= 1.28.1)
 Suggests:
     org.Hs.eg.db,
     org.Mm.eg.db,

@@ -592,7 +592,10 @@ goatea_server <- function(input, output, session, css_colors) {
   
   shiny::observeEvent(input$ab_termtree_plot, {
     shinyjs::show("ab_termtree_plot_loader")
-    rv_termtree$plot <- plot_termtree(enrichment = rv_enrichment$current_enrichment, Nterms = input$ni_termtree_Nterms, Nwords = input$ni_termtree_Nwords, Nclusters = input$ni_termtree_Nclusters)
+    data <- rv_genelists()
+    genelist = data[[input$si_show_enrichment]]
+    rv_termtree$plot <- plot_termtree(genelist = genelist, map_organism = as.numeric(input$si_organism), effectsize_threshold = input$ni_set_significant_effectsize, Nterms = input$ni_termtree_Nterms, Nwords = input$ni_termtree_Nwords, Nclusters = input$ni_termtree_Nclusters)
+    # rv_termtree$plot <- plot_termtree(enrichment = rv_enrichment$current_enrichment, Nterms = input$ni_termtree_Nterms, Nwords = input$ni_termtree_Nwords, Nclusters = input$ni_termtree_Nclusters)
     if (is.null(rv_termtree$plot)) shiny::showNotification("'enrichplot' package required for plotting")
     shinyjs::hide("ab_termtree_plot_loader")
   })

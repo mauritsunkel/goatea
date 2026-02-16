@@ -304,8 +304,8 @@ goatea::plot_EnhancedVolcano(
 
 If multiple genelists are loaded, their overlap of significant genes is shown through an UpSet plot. These show the total number of genes in a genelist and the number of overlapping significant genes for each intersection.
 
-```{r genelist overlap}
-if (length(genelists) > 2) {
+```{r genelist_overlap}
+if (length(genelists) > 1) {
   goatea::plot_genelists_overlap_upsetjs(
     genelists = genelists, 
     mode = 'distinct'
@@ -318,14 +318,13 @@ if (length(genelists) > 2) {
 ### Tree plot 
 The tree plot shows a clustered hierarchical split between terms based on their term similarity. Similarity is based on semantics of the term. Terms are clustered together by semantics, meaning words that look or mean alike. A summary of the clustered semantics is given to the right of the vertical lines for each cluster. 
 
-```{r tree plot}
-# filter to keep a single geneset source
-single_source_enrichment <- enrichment_results[[1]] %>% 
-  dplyr::filter(source == enrichment_results[[1]]$source[1])
+```{r tree_plot}
 goatea::plot_termtree(
-  single_source_enrichment, 
-  Nterms = 20, 
-  Nwords = 5, 
+  genelist = genelists[["rna"]],
+  map_organism = 9606,
+  effectsize_threshold = absolute_effectsize_threshold,
+  Nterms = 20,
+  Nwords = 5,
   Nclusters = 3
 )
 ```
