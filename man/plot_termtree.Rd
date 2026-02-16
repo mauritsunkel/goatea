@@ -10,7 +10,7 @@ plot_termtree(
   effectsize_threshold = 1,
   Nterms = NA,
   Nwords = 5,
-  Nclusters = 1
+  Nclusters = 3
 )
 }
 \arguments{
