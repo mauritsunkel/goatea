@@ -41,8 +41,8 @@ jobs:
           start_tag <- "[![pkgdown site](https://img.shields.io/badge/docs-pkgdown-brown.svg)](https://mauritsunkel.github.io/goatea/)"
           end_tag   <- "<!-- badges: end -->"
           
-          start_idx <- grep(start_tag, readme)
-          end_idx   <- grep(end_tag, readme)
+          start_idx <- grep(start_tag, readme, fixed =  TRUE)
+          end_idx   <- grep(end_tag, readme, fixed = TRUE)
           
             if(length(start_idx) == 1 && length(end_idx) == 1) {
             # Construct the new content: 
