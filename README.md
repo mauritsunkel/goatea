@@ -11,13 +11,11 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![license](https://img.shields.io/github/license/mauritsunkel/goatea)](https://opensource.org/license/apache-2-0)
 ![repo
-size](https://img.shields.io/github/repo-size/mauritsunkel/goatea)
-![version](https://img.shields.io/github/r-package/v/mauritsunkel/goatea)
+size](https://img.shields.io/github/repo-size/mauritsunkel/goatea?color=orange)
+![version](https://img.shields.io/github/r-package/v/mauritsunkel/goatea?color=orange)
 [![pkgdown
 site](https://img.shields.io/badge/docs-pkgdown-white.svg)](https://mauritsunkel.github.io/goatea/)
-<!-- badge: bioc-downloads -->
-[![](https://img.shields.io/badge/download-210/total-white.svg)](https://bioconductor.org/packages/stats/bioc/goatea)
-<!-- badges: end -->
+<!-- badge: bioc-downloads --> <!-- badges: end -->
 
 # goatea <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
