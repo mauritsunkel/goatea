@@ -95,83 +95,15 @@
 <p>GOATEA is designed to support large-scale and user-friendly enrichment workflows across multiple gene lists and comparisons, with flexible plotting and output options. Visualizations pre-enrichment include interactive Volcano and UpSet (overlap) plots. Visualizations post-enrichment include interactive geneset split term dotplot, geneset hierarchical clustering treeplot, multi-genelist gene-effectsize heatmap, enrichment overview gene-geneset heatmap and bottom-up pathway-like STRING database of protein-protein-interactions network graph.</p>
 </div>
 <div class="section level1">
-<h1 id="run-via-web-browser---huggingface">Run via web browser - HuggingFace<a class="anchor" aria-label="anchor" href="#run-via-web-browser---huggingface"></a>
+<h1 id="running-goatea-shiny-application-gui-or-r-package">Running goatea: Shiny application GUI or R package<a class="anchor" aria-label="anchor" href="#running-goatea-shiny-application-gui-or-r-package"></a>
 </h1>
-<p>Easiest: run GOATEA in your browser via HuggingFace Docker container: <a href="https://huggingface.co/spaces/Mausaya/GOATEA" class="external-link uri">https://huggingface.co/spaces/Mausaya/GOATEA</a> Note: this may be somewhat slower, as 16GB RAM and 2CPU are shared across all users.</p>
-</div>
-<div class="section level1">
-<h1 id="local-installation">Local installation<a class="anchor" aria-label="anchor" href="#local-installation"></a>
-</h1>
-<p>The development version of GOATEA is available through Github, GOATEA is also available through Bioconductor (v3.23).</p>
-<p>For experienced technical users, GOATEA is also available via Docker. You can download the image under GitHub GOATEA Packages and create a local container to have a version that is independent of external package changes. See the GUI vignette for installation steps.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## GOATEA local installation requires the specific version of R (v4.5.0) and latest version of Rtools.</span></span>
-<span><span class="co">## Rtools is needed for package compilation, to download and install visit: </span></span>
-<span><span class="co"># R: https://cran.r-project.org/mirrors.html</span></span>
-<span><span class="co"># Rtools: https://cran.r-project.org/bin/windows/Rtools/</span></span>
-<span></span>
-<span><span class="co">## To install GOATEA from Bioconductor (v3.23) use:</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"goatea"</span><span class="op">)</span></span>
-<span><span class="co"># or via pak</span></span>
-<span><span class="kw">if</span> <span class="op">(</span> <span class="op">!</span> <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://pak.r-lib.org/" class="external-link">"pak"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'pak'</span><span class="op">)</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">'goatea'</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, upgrade <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## goatea requires at least one of the following available organism genome wide annotation packages:</span></span>
-<span><span class="co">### format: organism (taxid): org.Xx.eg.dg</span></span>
-<span><span class="co"># Human (9606)--------: org.Hs.eg.db</span></span>
-<span><span class="co"># Mouse (10090)-------: org.Mm.eg.db</span></span>
-<span><span class="co"># Fruit Fly (7227)----: org.Dm.eg.db</span></span>
-<span><span class="co"># Rhesus monkey (9544): org.Mmu.eg.db</span></span>
-<span><span class="co"># Rat (10116)---------: org.Rn.eg.db</span></span>
-<span><span class="co"># Worm (6239)---------: org.Ce.eg.db</span></span>
-<span><span class="co"># Chimpanzee (9598)---: org.Pt.eg.db</span></span>
-<span><span class="co"># Zebrafish (7955)----: org.Dr.eg.db</span></span>
-<span><span class="kw">if</span> <span class="op">(</span> <span class="op">!</span> <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://pak.r-lib.org/" class="external-link">"pak"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'pak'</span><span class="op">)</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"org.Hs.eg.db"</span>, </span>
-<span>  <span class="st">"org.Mm.eg.db"</span>, </span>
-<span>  <span class="st">"org.Dm.eg.db"</span>, </span>
-<span>  <span class="st">"org.Mmu.eg.db"</span>, </span>
-<span>  <span class="st">"org.Rn.eg.db"</span>, </span>
-<span>  <span class="st">"org.Ce.eg.db"</span>, </span>
-<span>  <span class="st">"org.Pt.eg.db"</span>, </span>
-<span>  <span class="st">"org.Dr.eg.db"</span></span>
-<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level1">
-<h1 id="running-goatea-shiny-application">Running goatea: Shiny application<a class="anchor" aria-label="anchor" href="#running-goatea-shiny-application"></a>
-</h1>
-<p>Simply install the package and its dependencies, then run the code below in R.</p>
-<p>Note that the goatea color scheme is easily customizable, have fun creating your own theme!</p>
-<p>Click the ‘?’ buttons and hover over UI elements for explanation in tooltips.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mauritsunkel/goatea" class="external-link">goatea</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## customizable coloring</span></span>
-<span><span class="va">colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  main_bg <span class="op">=</span> <span class="st">"#222222"</span>,</span>
-<span>  darker_bg <span class="op">=</span> <span class="st">"#111111"</span>,</span>
-<span>  focus <span class="op">=</span> <span class="st">"#32CD32"</span>, </span>
-<span>  hover <span class="op">=</span> <span class="st">"#228B22"</span>,</span>
-<span>  border <span class="op">=</span> <span class="st">"#555555"</span>,</span>
-<span>  text <span class="op">=</span> <span class="st">"#FFFFFF"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## run the goatea Shiny application</span></span>
-<span><span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shinyApp</a></span><span class="op">(</span></span>
-<span>  ui <span class="op">=</span> <span class="va">goatea_ui</span>,</span>
-<span>  server <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="reference/goatea_server.html">goatea_server</a></span><span class="op">(</span></span>
-<span>      <span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span>, </span>
-<span>      css_colors <span class="op">=</span> <span class="va">colors</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level1">
-<h1 id="documentation---running-goatea-automated-analyses">Documentation - Running goatea: automated analyses<a class="anchor" aria-label="anchor" href="#documentation---running-goatea-automated-analyses"></a>
-</h1>
-<p>See the documentation on the <a href="https://mauritsunkel.github.io/goatea/" class="external-link">pkgdown site - vignette</a> for more details on automated scripted analyses.</p>
+<p>All vignettes can be found in the <a href="https://mauritsunkel.github.io/goatea" class="external-link">pkgdown documentation</a></p>
+<p>For an application demonstration, see the <a href="https://mauritsunkel.github.io/goatea/articles/goatea_GUI.html" class="external-link">GUI vignette</a>.</p>
+<p>Easiest: run GOATEA in your web browser via HuggingFace Docker container: <a href="https://huggingface.co/spaces/Mausaya/GOATEA" class="external-link uri">https://huggingface.co/spaces/Mausaya/GOATEA</a> Note: this may be somewhat slower, as 16GB RAM and 2CPU are shared across all users.</p>
+<p>If this runs too slow, I suggest you run GOATEA via local R, see the steps for this in the <a href="https://mauritsunkel.github.io/goatea/articles/goatea_GUI.html" class="external-link">GUI vignette</a>.</p>
+<p>If for any reason the current and Bioconductor versions do not install, you can always resolve to running the GOATEA Docker container, also explained in the <a href="https://mauritsunkel.github.io/goatea/articles/goatea_GUI.html" class="external-link">GUI vignette</a>.</p>
+<hr>
+<p>For more technical users, if you are interested in making your own pipeline or scripts with GOATEA functions to maximize throughput, see the <a href="https://mauritsunkel.github.io/goatea/articles/goatea.html" class="external-link">R package vignette</a>.</p>
 </div>
 <div class="section level1">
 <h1 id="goat-reference">GOAT reference<a class="anchor" aria-label="anchor" href="#goat-reference"></a>
