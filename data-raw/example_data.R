@@ -38,6 +38,11 @@ example_ppi_data <- goatea::get_string_ppi(c("TP53", "EGFR", "BRCA1", "MTOR", "M
 usethis::use_data(example_ppi_data, overwrite = TRUE)
 save(example_ppi_data, file = "inst/extdata/example_ppi_data.rda")
 
+example_Colameo_data <- goat::download_goat_manuscript_data(output_dir = tempdir())
+example_Colameo_data <- example_Colameo_data[1:2]
+usethis::use_data(example_Colameo_data, overwrite = TRUE)
+save(example_Colameo_data, file = "inst/extdata/example_Colameo.rda")
+
 ## set to R/sysdata.rda - have internally available datasets
 usethis::use_data(
   example_genelist, 
@@ -45,5 +50,6 @@ usethis::use_data(
   example_enrichment, 
   example_genes_overview,
   example_ppi_data,
+  example_Colameo_data,
   internal = TRUE, overwrite = TRUE
 )

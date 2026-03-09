@@ -20,11 +20,14 @@ css_colors <- list(
   text = "black"
 )
 
+## set max file size to ...MB for uploads (default: 10)
+options(shiny.maxRequestSize = 1024^2 * 10)
+
 ## run the application
 shiny::shinyApp(
-  ui = goatea:::goatea_ui,
+  ui = goatea_ui,
   server = function(input, output, session) {
-    goatea:::goatea_server(
+    goatea_server(
       input, output, session, 
       css_colors = css_colors)
   }

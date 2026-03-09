@@ -9,7 +9,7 @@ output:
     toc_float: true
     number_sections: true
 vignette: >
-  %\VignetteIndexEntry{goatea}
+  %\VignetteIndexEntry{2. GOATEA R package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -45,59 +45,27 @@ The steps above can be automated, an example workflow is described in the rest o
 
 As intended for interactive and intuitive usage, run the goatea Shiny interface.
 
-# Running goatea: Shiny application
+# Installation
 
-Simply install the package and its dependencies, then run the script below.
-
-Note that the goatea color scheme is easily customizable, have fun creating your own theme! 
-
-Click the '?' buttons and hover over UI elements for explanation in tooltips. 
-
-```{r goatea_Shiny, eval=FALSE, message=FALSE, warning=FALSE}
-library(goatea)
-
-## customizable coloring
-colors <- list(
-  main_bg = "#222222",
-  darker_bg = "#111111",
-  focus = "#32CD32", 
-  hover = "#228B22",
-  border = "#555555",
-  text = "#FFFFFF"
-)
-
-## run the goatea Shiny application
-shiny::shinyApp(
-  ui = goatea:::goatea_ui,
-  server = function(input, output, session) {
-    goatea:::goatea_server(
-      input, output, session, 
-      css_colors = colors)
-  }
-)
-```
-
-# Running goatea: automated analyses
-
-## Installation
-
-goatea is available through Github, I intend for goatea to become available through Bioconductor. 
+goatea developer version is available through GitHub, goatea is also available on Bioconductor. 
 
 ```{r installation, eval = FALSE}
-## GOATEA installation requires the latest version of R and Rtools 
+## GOATEA installation requires R (v4.5.0) and the lastest version of Rtools 
 ## Rtools is needed for package compilation, to download and install visit: 
 # R: https://cran.r-project.org/mirrors.html
 # Rtools: https://cran.r-project.org/bin/windows/Rtools/
+## I recommend to run the installation and GUI startup code via Rstudio, to have a nice graphical environment: 
+# Rstudio: https://posit.co/downloads/
 
-# For the GOATEA development version use: 
+## To install GOATEA from Bioconductor (v3.23) use:
+if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager")
+BiocManager::install("goatea")
+# or via pak
 if ( ! require("pak", quietly = TRUE)) install.packages('pak')
-pak::pkg_install('mauritsunkel/goatea')
+pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
 
-## When GOATEA is on Bioconductor use: 
-# pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
-
-## goatea organism (taxid) genome wide annotation packages (org.Xx.eg.dg)
-## goatea requires at least one of the following available organism packages:
+## goatea requires at least one of the following available organism genome wide annotation packages:
+### format: organism (taxid): org.Xx.eg.dg
 # Human (9606)--------: org.Hs.eg.db
 # Mouse (10090)-------: org.Mm.eg.db
 # Fruit Fly (7227)----: org.Dm.eg.db
@@ -117,12 +85,49 @@ pak::pkg_install(c(
   "org.Pt.eg.db", 
   "org.Dr.eg.db"
 ))
-
-## Optional: add gene descriptions to exported tables, install annotables:
-# available only for: human, mouse, rat, worm, fruit fly, Rhesus Monkey
-if ( ! require("pak", quietly = TRUE)) install.packages('pak')
-pak::pkg_install('stephenturner/remotes')
 ```
+
+# Running goatea: Shiny application
+
+Easiest: run GOATEA in your browser via HuggingFace: https://huggingface.co/spaces/Mausaya/GOATEA
+Note: this may be somewhat slower, as 16GB RAM and 2CPU are shared across all users. 
+
+
+
+For local usage, simply install the package and its dependencies, then run the script below.
+
+Note that the goatea color scheme is easily customizable, have fun creating your own theme! 
+
+Click the '?' buttons and hover over UI elements for explanation in tooltips. 
+
+```{r goatea_Shiny, eval=FALSE, message=FALSE, warning=FALSE}
+library(goatea)
+
+## customizable coloring
+colors <- list(
+  main_bg = "#222222",
+  darker_bg = "#111111",
+  focus = "#32CD32", 
+  hover = "#228B22",
+  border = "#555555",
+  text = "#FFFFFF"
+)
+
+## set max file size to ...MB for uploads (default: 100)
+options(shiny.maxRequestSize = 1024^2 * 100)
+
+## run the goatea Shiny application
+shiny::shinyApp(
+  ui = goatea:::goatea_ui,
+  server = function(input, output, session) {
+    goatea:::goatea_server(
+      input, output, session, 
+      css_colors = colors)
+  }
+)
+```
+
+# Running goatea: automated analyses
 
 ## Initialization
 
@@ -154,7 +159,7 @@ Transcriptomic and/or proteomic experiments often end up in comparing groups thr
 # GOAT paper data: download to a specific folder, tempdir() by default
 data <- goat::download_goat_manuscript_data(output_dir = outdir)
 # We select datasets from Colameo 2021 for our automated workflow.
-# Thi is RNA-seq with matched mass-spectrometry data. 
+# This is RNA-seq with matched mass-spectrometry data. 
 # Rat data is mapped to HUman NCBI Entrez gene identifies with the goat package.
 genelists <- list(
   rna = data$`Colameo 2021:RNA-seq:PMID34396684`,
@@ -318,10 +323,13 @@ if (length(genelists) > 1) {
 ### Tree plot 
 The tree plot shows a clustered hierarchical split between terms based on their term similarity. Similarity is based on semantics of the term. Terms are clustered together by semantics, meaning words that look or mean alike. A summary of the clustered semantics is given to the right of the vertical lines for each cluster. 
 
+NOTE: As the 'enrichplot' package used internally no longer allows for GOAT enrichment to be converted to the class needed for plotting their 'treeplot', I rerun a local over-representation analysis on all genes of the selected genelist versus the selected (filtered) genesets of the current enrichment view.
+
 ```{r tree_plot}
 goatea::plot_termtree(
   genelist = genelists[["rna"]], 
-  map_organism = 9606, 
+  genesets = filtered_genesets_list[["rna"]], 
+  map_organism = taxid, 
   effectsize_threshold = absolute_effectsize_threshold, 
   Nterms = 20, 
   Nwords = 5, 

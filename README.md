@@ -15,6 +15,7 @@ size](https://img.shields.io/github/repo-size/mauritsunkel/goatea)
 ![version](https://img.shields.io/github/r-package/v/mauritsunkel/goatea)
 [![pkgdown
 site](https://img.shields.io/badge/docs-pkgdown-brown.svg)](https://mauritsunkel.github.io/goatea/)
+\# goatea downloads badge start \# goatea downloads badge end
 <!-- badges: end -->
 
 # goatea <img src="man/figures/logo.png" align="right" height="139" alt="" />
@@ -34,28 +35,37 @@ heatmap, enrichment overview gene-geneset heatmap and bottom-up
 pathway-like STRING database of protein-protein-interactions network
 graph.
 
-# Installation
+# Run via web browser - HuggingFace
 
-goatea is available on Bioconductor, the development version is available through GitHub.
+Easiest: run GOATEA in your browser via HuggingFace Docker container:
+<https://huggingface.co/spaces/Mausaya/GOATEA> Note: this may be
+somewhat slower, as 16GB RAM and 2CPU are shared across all users.
+
+# Local installation
+
+The development version of GOATEA is available through Github, GOATEA is
+also available through Bioconductor (v3.23).
+
+For experienced technical users, GOATEA is also available via Docker.
+You can download the image under GitHub GOATEA Packages and create a
+local container to have a version that is independent of external
+package changes. See the GUI vignette for installation steps.
 
 ``` r
-## GOATEA installation requires the latest version of R and Rtools 
+## GOATEA local installation requires the specific version of R (v4.5.0) and latest version of Rtools.
 ## Rtools is needed for package compilation, to download and install visit: 
 # R: https://cran.r-project.org/mirrors.html
 # Rtools: https://cran.r-project.org/bin/windows/Rtools/
 
-## To install GOATEA from Bioconductor use:
-if (!requireNamespace("BiocManager", quietly=TRUE))
-    install.packages("BiocManager")
+## To install GOATEA from Bioconductor (v3.23) use:
+if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager")
 BiocManager::install("goatea")
 # or via pak
+if ( ! require("pak", quietly = TRUE)) install.packages('pak')
 pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
 
-## When GOATEA is on Bioconductor use: 
-# pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
-
-## goatea organism (taxid) genome wide annotation packages (org.Xx.eg.dg)
-## goatea requires at least one of the following available organism packages:
+## goatea requires at least one of the following available organism genome wide annotation packages:
+### format: organism (taxid): org.Xx.eg.dg
 # Human (9606)--------: org.Hs.eg.db
 # Mouse (10090)-------: org.Mm.eg.db
 # Fruit Fly (7227)----: org.Dm.eg.db
@@ -75,11 +85,6 @@ pak::pkg_install(c(
   "org.Pt.eg.db", 
   "org.Dr.eg.db"
 ))
-
-## Optional: add gene descriptions to exported tables, install annotables:
-# available only for: human, mouse, rat, worm, fruit fly, Rhesus Monkey
-if ( ! require("pak", quietly = TRUE)) install.packages('pak')
-pak::pkg_install('stephenturner/annotables')
 ```
 
 # Running goatea: Shiny application
@@ -108,9 +113,9 @@ colors <- list(
 
 ## run the goatea Shiny application
 shiny::shinyApp(
-  ui = goatea:::goatea_ui,
+  ui = goatea_ui,
   server = function(input, output, session) {
-    goatea:::goatea_server(
+    goatea_server(
       input, output, session, 
       css_colors = colors)
   }
@@ -138,8 +143,31 @@ For issues: <https://github.com/mauritsunkel/goatea/issues>
 
 To collaborate, pull request or email me: <mauritsunkel@gmail.com>
 
-# FAQ
+# Frequently Asked Questions (FAQ)
 
 Why does my file not download? \* For PPI: check if the string database
 website is online. \* Generally: make sure you have read/write
 permissions in the set base folder.
+
+How can I download and use example data? \* The Colameo et al. example
+data used in the manuscript and vignettes is internally available via
+goatea:::example_Colameo_data \* The Colameo et al. example data is also
+available for download via the GitHub repository in the inst/extdata/
+folder. \* This example data can also be loaded in R with:
+example_Colameo_data \<- goat::download_goat_manuscript_data(output_dir
+= tempdir())\[1:2\]
+
+Why do ggplot2 warning messages appear when I run the code? \* These
+warnings are often related to the ggplot2 package and can be safely
+ignored. They do not affect the functionality of the code or the
+resulting plots. If you want to suppress these warnings, you can use the
+`suppressWarnings()` function in R around the code that generates the
+plots.
+
+Why might the statistics on the termtree plot be ‘off’? \* As the
+‘enrichplot’ package used on the background no longer allows for GOAT
+enrichment to be converted to the class needed for plotting their
+‘treeplot’, I rerun a local over-representation analysis on all genes of
+the selected genelist versus the selected genesets of the current
+enrichment view. Use this plot to visualize the hierarchy, clusters and
+gene set size of the genesets (terms).
