@@ -38,7 +38,7 @@ jobs:
           # 2. Read and Update README
           readme <- readLines("README.md")
           
-          start_tag <- "[![pkgdown site](https://img.shields.io/badge/docs-pkgdown-brown.svg)](https://mauritsunkel.github.io/goatea/)"
+          start_tag <- "<!-- badge: bioc-downloads -->"
           end_tag   <- "<!-- badges: end -->"
           
           start_idx <- grep(start_tag, readme, fixed =  TRUE)

@@ -15,7 +15,7 @@ size](https://img.shields.io/github/repo-size/mauritsunkel/goatea)
 ![version](https://img.shields.io/github/r-package/v/mauritsunkel/goatea)
 [![pkgdown
 site](https://img.shields.io/badge/docs-pkgdown-brown.svg)](https://mauritsunkel.github.io/goatea/)
-<!-- badges: end -->
+<!-- badge: bioc-downloads --> <!-- badges: end -->
 
 # goatea <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
