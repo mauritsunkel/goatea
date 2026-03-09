@@ -1,7 +1,7 @@
 Package: goatea
 Type: Package
 Title: Interactive Exploration of GSEA by the GOAT Method
-Version: 1.1.5
+Version: 1.99.0
 Authors@R: 
     person("Maurits", "Unkel",
 		   role = c("aut", "cre", "fnd", "cph"),
@@ -11,7 +11,7 @@ Description: Geneset Ordinal Association Test Enrichment Analysis (GOATEA) provi
     'GOATEA' is designed to support large-scale and user-friendly enrichment workflows across multiple gene lists and comparisons, with flexible plotting and output options.
     Visualizations pre-enrichment include interactive 'Volcano' and 'UpSet' (overlap) plots. Visualizations post-enrichment include interactive geneset dotplot, geneset treeplot, gene-effectsize heatmap, gene-geneset heatmap and 'STRING' database of protein-protein-interactions network graph. 
 	'GOAT' reference: Frank Koopmans (2024) <doi:10.1038/s42003-024-06454-5>.
-URL: https://github.com/mauritsunkel/goatea
+URL: https://github.com/mauritsunkel/goatea, https://mauritsunkel.github.io/goatea/
 BugReports: https://github.com/mauritsunkel/goatea/issues
 License: Apache License (>= 2)
 Encoding: UTF-8
@@ -49,16 +49,17 @@ Imports:
 	rlang (>= 1.1.6),
 	DOSE (>= 4.4.0),
 	enrichplot (>= 1.30.4),
-	EnhancedVolcano (>= 1.28.1)
+	clusterProfiler (>= 4.18.4),
+	EnhancedVolcano (>= 1.28.2),
+	org.Hs.eg.db (>= 3.22.0),
+    org.Mm.eg.db (>= 3.22.0),
+	org.Dm.eg.db (>= 3.22.0),
+	org.Mmu.eg.db (>= 3.22.0),
+	org.Rn.eg.db (>= 3.22.0),
+	org.Ce.eg.db (>= 3.22.0),
+	org.Pt.eg.db (>= 3.22.0),
+	org.Dr.eg.db (>= 3.22.0)
 Suggests:
-    org.Hs.eg.db,
-    org.Mm.eg.db,
-	org.Dm.eg.db,
-	org.Mmu.eg.db,
-	org.Rn.eg.db,
-	org.Ce.eg.db,
-	org.Pt.eg.db,
-	org.Dr.eg.db,
 	knitr,
 	rmarkdown,
 	BiocStyle
