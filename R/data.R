@@ -102,3 +102,19 @@ NULL
 #' @name example_ppi_data
 #' @docType data
 NULL 
+
+#' Example Colameo MS data
+#'
+#' Mass spectrometry genelist from Colameo et al. 2021.
+#'
+#' @format A data frame with columns gene, symbol, effectsize, pvalue.
+#' @source Colameo et al. 2021 (PMID: 34396684)
+"example_Colameo_MS"
+
+#' Example Colameo RNA data
+#'
+#' RNA-seq genelist from Colameo et al. 2021.
+#'
+#' @format A data frame with columns gene, symbol, effectsize, pvalue.
+#' @source Colameo et al. 2021 (PMID: 34396684)
+"example_Colameo_RNA"

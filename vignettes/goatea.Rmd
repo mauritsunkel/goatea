@@ -125,16 +125,19 @@ pak::pkg_install(c(
 ))
 ```
 
-# Running goatea: Shiny application
+# Running GOATEA: Shiny application
+
+For an application demonstration, see the [GUI vignette](goatea_GUI.html)
 
 Easiest: run GOATEA in your browser via HuggingFace: https://huggingface.co/spaces/Mausaya/GOATEA
 Note: this may be somewhat slower, as 16GB RAM and 2CPU are shared across all users. 
 
 
 
+
 For local usage, simply install the package and its dependencies, then run the script below.
 
-Note that the goatea color scheme is easily customizable, have fun creating your own theme! 
+Note that the GOATEA color scheme is easily customizable, have fun creating your own theme! 
 
 Click the '?' buttons and hover over UI elements for explanation in tooltips. 
 

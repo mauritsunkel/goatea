@@ -62,7 +62,7 @@ As intended for interactive and intuitive usage, run the goatea Shiny interface.
 
 # Running GOATEA: Shiny application - Graphical User Interface (GUI) 
 
-If you are interested in making your own pipeline or scripts with GOATEA functions, see the R package usage vignette: LINK
+If you are interested in making your own pipeline or scripts with GOATEA functions, see the [R package vignette](goatea.html)
 
 ## Web browser - HuggingFace Docker container
 

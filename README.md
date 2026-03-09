@@ -34,98 +34,33 @@ heatmap, enrichment overview gene-geneset heatmap and bottom-up
 pathway-like STRING database of protein-protein-interactions network
 graph.
 
-# Run via web browser - HuggingFace
+# Running goatea: Shiny application GUI or R package
 
-Easiest: run GOATEA in your browser via HuggingFace Docker container:
-<https://huggingface.co/spaces/Mausaya/GOATEA> Note: this may be
-somewhat slower, as 16GB RAM and 2CPU are shared across all users.
+All vignettes can be found in the [pkgdown
+documentation](https://mauritsunkel.github.io/goatea)
 
-# Local installation
+For an application demonstration, see the [GUI
+vignette](https://mauritsunkel.github.io/goatea/articles/goatea_GUI.html).
 
-The development version of GOATEA is available through Github, GOATEA is
-also available through Bioconductor (v3.23).
+Easiest: run GOATEA in your web browser via HuggingFace Docker
+container: <https://huggingface.co/spaces/Mausaya/GOATEA> Note: this may
+be somewhat slower, as 16GB RAM and 2CPU are shared across all users.
 
-For experienced technical users, GOATEA is also available via Docker.
-You can download the image under GitHub GOATEA Packages and create a
-local container to have a version that is independent of external
-package changes. See the GUI vignette for installation steps.
+If this runs too slow, I suggest you run GOATEA via local R, see the
+steps for this in the [GUI
+vignette](https://mauritsunkel.github.io/goatea/articles/goatea_GUI.html).
 
-``` r
-## GOATEA local installation requires the specific version of R (v4.5.0) and latest version of Rtools.
-## Rtools is needed for package compilation, to download and install visit: 
-# R: https://cran.r-project.org/mirrors.html
-# Rtools: https://cran.r-project.org/bin/windows/Rtools/
+If for any reason the current and Bioconductor versions do not install,
+you can always resolve to running the GOATEA Docker container, also
+explained in the [GUI
+vignette](https://mauritsunkel.github.io/goatea/articles/goatea_GUI.html).
 
-## To install GOATEA from Bioconductor (v3.23) use:
-if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager")
-BiocManager::install("goatea")
-# or via pak
-if ( ! require("pak", quietly = TRUE)) install.packages('pak')
-pak::pkg_install('goatea', dependencies = TRUE, upgrade = TRUE)
+------------------------------------------------------------------------
 
-## goatea requires at least one of the following available organism genome wide annotation packages:
-### format: organism (taxid): org.Xx.eg.dg
-# Human (9606)--------: org.Hs.eg.db
-# Mouse (10090)-------: org.Mm.eg.db
-# Fruit Fly (7227)----: org.Dm.eg.db
-# Rhesus monkey (9544): org.Mmu.eg.db
-# Rat (10116)---------: org.Rn.eg.db
-# Worm (6239)---------: org.Ce.eg.db
-# Chimpanzee (9598)---: org.Pt.eg.db
-# Zebrafish (7955)----: org.Dr.eg.db
-if ( ! require("pak", quietly = TRUE)) install.packages('pak')
-pak::pkg_install(c(
-  "org.Hs.eg.db", 
-  "org.Mm.eg.db", 
-  "org.Dm.eg.db", 
-  "org.Mmu.eg.db", 
-  "org.Rn.eg.db", 
-  "org.Ce.eg.db", 
-  "org.Pt.eg.db", 
-  "org.Dr.eg.db"
-))
-```
-
-# Running goatea: Shiny application
-
-Simply install the package and its dependencies, then run the code below
-in R.
-
-Note that the goatea color scheme is easily customizable, have fun
-creating your own theme!
-
-Click the ‘?’ buttons and hover over UI elements for explanation in
-tooltips.
-
-``` r
-library(goatea)
-
-## customizable coloring
-colors <- list(
-  main_bg = "#222222",
-  darker_bg = "#111111",
-  focus = "#32CD32", 
-  hover = "#228B22",
-  border = "#555555",
-  text = "#FFFFFF"
-)
-
-## run the goatea Shiny application
-shiny::shinyApp(
-  ui = goatea_ui,
-  server = function(input, output, session) {
-    goatea_server(
-      input, output, session, 
-      css_colors = colors)
-  }
-)
-```
-
-# Documentation - Running goatea: automated analyses
-
-See the documentation on the [pkgdown site -
-vignette](https://mauritsunkel.github.io/goatea/) for more details on
-automated scripted analyses.
+For more technical users, if you are interested in making your own
+pipeline or scripts with GOATEA functions to maximize throughput, see
+the [R package
+vignette](https://mauritsunkel.github.io/goatea/articles/goatea.html).
 
 # GOAT reference
 

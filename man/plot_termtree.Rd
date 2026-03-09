@@ -36,5 +36,8 @@ ggtree/gg/ggplot object
 Plot semantic similarity termtree
 }
 \examples{
-plot_termtree(get(load(system.file("extdata", "example_genelist.rda", package = "goatea"))))
+plot_termtree(
+  genelist = get(load(system.file("extdata", "example_genelist.rda", package = "goatea"))),
+  genesets = get(load(system.file("extdata", "example_genesets.rda", package = "goatea")))
+)
 }
