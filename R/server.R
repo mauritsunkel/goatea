@@ -100,23 +100,28 @@ goatea_server <- function(input, output, session, css_colors) {
     row_names = NULL,
     col_names = NULL
   )
-  rv_ppi <- reactiveValues(
+  rv_ppi <- shiny::reactiveValues(
     nodes = NULL,
     edges = NULL,
     g = NULL,
     p = character(0),
     ## initialize STRING server online for versions - if unavailable set to latest manually, check https://string-db.org/
-    stringdb_versions = 
-      tryCatch(
-        stringdb_versions <- read.table(url("https://string-db.org/api/tsv-no-header/available_api_versions"))$V1,
-        error = function(e) {
-          msg <- paste0("Failed to retrieve STRINGdb versions: ", conditionMessage(e))
-          warning(msg)
-          if( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
-        }, 
-        finally = stringdb_versions <- '12.0'
-      )
+    stringdb_versions = NULL
   )
+  shiny::observeEvent(TRUE, {
+    shiny::isolate({
+      tryCatch({
+        rv_ppi$stringdb_versions <- read.table(url("https://string-db.org/api/tsv-no-header/available_api_versions"))$V1
+      }, error = function(e) {
+        msg <- paste0("Failed to retrieve STRINGdb versions: ", conditionMessage(e))
+        warning(msg)
+        if( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
+        rv_ppi$stringdb_versions <- "12.0"
+      },
+      finally = rv_ppi$stringdb_versions <- '12.0')
+    })
+  }, once = TRUE)
+  
   rv_ppi_subgraph <- reactiveValues(
     nodes = NULL,
     edges = NULL,
@@ -203,7 +208,6 @@ goatea_server <- function(input, output, session, css_colors) {
     genes_overview <- NULL
     if ( ! is.null(rv_genelists_overlap$gene_overview)) genes_overview <- rv_genelists_overlap$gene_overview
     ## set sample selection
-    data_genelists <- rv_genelists()
     vis <- get_visNetwork(g, genes_overview = genes_overview, sample_name = input$si_ppi_sample)
     rv_ppi$nodes <- vis$nodes
     rv_ppi$edges <- vis$edges
@@ -485,7 +489,8 @@ goatea_server <- function(input, output, session, css_colors) {
     version_minor <- as.numeric(gsub("([0-9]+).*$", "\\1", strsplit(latest_version, '\\.')[[1]][2]))
     
     url <- paste0("https://version-", version_major, "-", version_minor, ".string-db.org/interaction/", node_ids[1], "/", node_ids[2])
-    utils::browseURL(url)
+    # utils::browseURL(url) # utils::browseURL does not work in deployment
+    shinyjs::runjs(sprintf("window.open('%s', '_blank');", url))
   })
   
   shiny::observeEvent(input$ab_icheatmap_plot, {
@@ -535,8 +540,6 @@ goatea_server <- function(input, output, session, css_colors) {
     req(genes) # cannot be empty: character(0)
 
     shinyjs::show("ab_genefsi_icheatmap_plot_loader")
-    
-    data_genelists <- rv_genelists()
     
     ch <- plot_gene_effectsize_ComplexHeatmap(
       genes =  genes, 
@@ -592,10 +595,18 @@ goatea_server <- function(input, output, session, css_colors) {
   
   shiny::observeEvent(input$ab_termtree_plot, {
     shinyjs::show("ab_termtree_plot_loader")
-    data <- rv_genelists()
-    genelist = data[[input$si_show_enrichment]]
-    rv_termtree$plot <- plot_termtree(genelist = genelist, map_organism = as.numeric(input$si_organism), effectsize_threshold = input$ni_set_significant_effectsize, Nterms = input$ni_termtree_Nterms, Nwords = input$ni_termtree_Nwords, Nclusters = input$ni_termtree_Nclusters)
-    # rv_termtree$plot <- plot_termtree(enrichment = rv_enrichment$current_enrichment, Nterms = input$ni_termtree_Nterms, Nwords = input$ni_termtree_Nwords, Nclusters = input$ni_termtree_Nclusters)
+    
+    ## get genelist data
+    genelists <- rv_genelists()
+    
+    ## NOTE: have to redo termtree enrichment as 'enrichplot' no longer allows conversion of GOAT enrichment object to class needed for 'enrichplot'
+    result <- plot_termtree(genelist = genelists[[input$si_show_enrichment]], genesets = rv_enrichment$current_enrichment, map_organism = as.numeric(input$si_organism), effectsize_threshold = input$ni_set_significant_effectsize, Nterms = input$ni_termtree_Nterms, Nwords = input$ni_termtree_Nwords, Nclusters = input$ni_termtree_Nclusters)
+    if (identical(result, "no_genes_significant")) {
+      shiny::showNotification("No significant genes found for any term, cannot plot term tree map")
+      return()
+    }
+    
+    rv_termtree$plot <- result
     if (is.null(rv_termtree$plot)) shiny::showNotification("'enrichplot' package required for plotting")
     shinyjs::hide("ab_termtree_plot_loader")
   })
@@ -753,7 +764,7 @@ goatea_server <- function(input, output, session, css_colors) {
         break
       }
       
-      enrichment_results <- goatea::run_geneset_enrichment(
+      enrichment_results <- run_geneset_enrichment(
         genesets = data_genesets[[name]], 
         genelist = data_genelists[[name]],
         method = input$si_test_method,

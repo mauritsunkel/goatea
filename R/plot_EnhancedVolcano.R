@@ -96,13 +96,13 @@ plot_EnhancedVolcano <- function(
   
       p <- plotly::ggplotly(
         p + ggplot2::aes(key = .data$symbol, x = .data$effectsize, y = -log10(.data$pvalue)) +
-          labs(
+          ggplot2::labs(
             x = 'effectsize (FC)',
             y = '-log10(pvalue) (P)',
             title = paste0('EnhancedVolcano - N genes: ', nrow(genelist)),
             color = ''
           ) +
-          theme(
+          ggplot2::theme(
             plot.background = element_rect(fill = background_color, color = NA),
             panel.background = element_rect(fill = background_color, color = NA),
             panel.grid = element_line(color = foreground_color),

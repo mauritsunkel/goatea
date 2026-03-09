@@ -14,34 +14,36 @@
 #' @returns Shiny UI function
 goatea_ui <- function() {
   ## adds custom css styling and Javascript functionalities
-  shiny::addResourcePath("www", system.file("www", package = "goatea"))
+  www_path <- system.file("www", package = "goatea")
+  if (www_path == "") www_path <- "inst/www/"
+  shiny::addResourcePath("www", www_path)
   
-  dashboardPage(
-    dashboardHeader(title = "GOATEA"),
-    dashboardSidebar(
-      sidebarMenu(
+  shinydashboard::dashboardPage(
+    shinydashboard::dashboardHeader(title = "GOATEA"),
+    shinydashboard::dashboardSidebar(
+      shinydashboard::sidebarMenu(
         id = "menu_tabs",
-        menuItem("Initialization", tabName = "global_initialize", icon = icon("dashboard"),
-                 menuSubItem("Load data", tabName = "menu_initialize", selected = TRUE)
+        shinydashboard::menuItem("Initialization", tabName = "global_initialize", icon = icon("dashboard"),
+                                 shinydashboard::menuSubItem("Load data", tabName = "menu_initialize", selected = TRUE)
         ),
-        menuItem("Pre-enrichment plots", tabName = "global_preplot", icon = icon("dashboard"),
-                 menuSubItem("Volcano", tabName = "menu_run_volcano"),
-                 menuSubItem("Overlap", tabName = "menu_run_genelist_overlap")
+        shinydashboard::menuItem("Pre-enrichment plots", tabName = "global_preplot", icon = icon("dashboard"),
+                                 shinydashboard::menuSubItem("Volcano", tabName = "menu_run_volcano"),
+                                 shinydashboard::menuSubItem("Overlap", tabName = "menu_run_genelist_overlap")
         ),
-        menuItem("Enrichment", tabName = "global_enrichment", icon = icon("dashboard"),
-                 menuSubItem("Gene set enrichment", tabName = "menu_run_enrichment")
+        shinydashboard::menuItem("Enrichment", tabName = "global_enrichment", icon = icon("dashboard"),
+                                 shinydashboard::menuSubItem("Gene set enrichment", tabName = "menu_run_enrichment")
         ),
-        menuItem("Post-enrichment plots", tabName = "global_postplot", icon = icon("dashboard"),
-                 menuSubItem("Splitdot", tabName = "menu_plot_splitdot"),
-                 menuSubItem("Termtree", tabName = "menu_plot_termtree"),
-                 menuSubItem("Heatmap (gene-term)", tabName = "menu_plot_heatmap"),
-                 menuSubItem("Heatmap (gene-efsi)", tabName = "menu_plot_genefsi_heatmap"),
-                 menuSubItem("Protein-Protein Interactions", tabName = "menu_plot_PPI")
+        shinydashboard::menuItem("Post-enrichment plots", tabName = "global_postplot", icon = icon("dashboard"),
+                                 shinydashboard::menuSubItem("Splitdot", tabName = "menu_plot_splitdot"),
+                                 shinydashboard::menuSubItem("Termtree", tabName = "menu_plot_termtree"),
+                                 shinydashboard::menuSubItem("Heatmap (gene-term)", tabName = "menu_plot_heatmap"),
+                                 shinydashboard::menuSubItem("Heatmap (gene-efsi)", tabName = "menu_plot_genefsi_heatmap"),
+                                 shinydashboard::menuSubItem("Protein-Protein Interactions", tabName = "menu_plot_PPI")
         )
       )
     ),
     
-    dashboardBody(
+    shinydashboard::dashboardBody(
       shinyjs::useShinyjs(), # initialize shinyjs
       tags$head(
         if (file.exists("inst/www/styles.css")) {
@@ -54,8 +56,8 @@ goatea_ui <- function() {
         tags$script(src = "www/visnetwork_hover_tooltip_style.js"),
         tags$script(src = "www/visnetwork_set_nodes.js") # set nodes when using buttons under visnetwork PPI graphs
       ),
-      tabItems(
-        tabItem(tabName = "menu_initialize",
+      shinydashboard::tabItems(
+        shinydashboard::tabItem(tabName = "menu_initialize",
                 fluidRow(
                   box(
                     id = "box_global_options",

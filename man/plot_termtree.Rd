@@ -6,6 +6,7 @@
 \usage{
 plot_termtree(
   genelist,
+  genesets,
   map_organism = 9606,
   effectsize_threshold = 1,
   Nterms = NA,
@@ -15,6 +16,8 @@ plot_termtree(
 }
 \arguments{
 \item{genelist}{GOAT current genelist from selected enrichment sample}
+
+\item{genesets}{GOAT filtered genesets}
 
 \item{map_organism}{integer, default: 9606 (human) - input organism ID that will be mapped to org.Xx.eg.db}
 

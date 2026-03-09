@@ -33,7 +33,7 @@ read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove
   if (file_extension(file) == "xlsx") {
     genelist <- openxlsx::read.xlsx(file)
   } else if (file_extension(file) == "csv") {
-    genelist <- utils::read.csv2(file = file)
+    genelist <- data.table::fread(file = file)
   } else if (file_extension(file) == "tsv") {
     genelist <- utils::read.delim(file, header = TRUE, sep = "\t")
   }
