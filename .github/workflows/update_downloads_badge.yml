@@ -49,7 +49,6 @@ jobs:
             # Everything before start + the start tag + the badge + the end tag + everything after
             updated_readme <- c(
               readme[1:(start_idx - 1)],
-              start_tag,
               new_badge,
               end_tag,
               readme[(end_idx + 1):length(readme)]
