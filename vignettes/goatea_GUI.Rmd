@@ -1,23 +1,36 @@
 ---
-  title: "goatea GUI vignette"
+title: "goatea GUI vignette"
 author: "Maurits Unkel"
 package: goatea
 date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document:
+    fig_caption: yes
   toc: true
 toc_float: true
 number_sections: true
 vignette: >
   %\VignetteIndexEntry{1. GOATEA GUI & installation}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
   
 ```{r options, include = FALSE, echo = FALSE, results = 'asis',}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse = TRUE, 
+  comment = "#>",
+  
+  fig.width = 9,      # Makes the internal plot larger
+  fig.height = 6,
+  out.width = "100%", # Scales it to fit the screen
+  fig.alt = " ",
+  fig.align = "center",
+  fig.path = 'man/images/'
+)
 BiocStyle::markdown()
 ```
+
 
 # Introduction
 
@@ -53,12 +66,14 @@ If you are interested in making your own pipeline or scripts with GOATEA functio
 
 ## Web browser - HuggingFace Docker container
 
-The easiest and fastest way to run GOATEA is in your browser via HuggingFace: https://huggingface.co/spaces/Mausaya/GOATEA
+The easiest and fastest way to run GOATEA is in your browser via HuggingFace: https://huggingface.co/spaces/Mausaya/GOATEA  
+
+
 Note: this may be somewhat slower, as 16GB RAM and 2CPU are shared across all users and if the Docker container is 'sleeping' it might take a minute to start up. 
 
 ## Local: via R(studio) or Docker
 
-### installation 
+### Installation 
 
 First we have to install GOATEA.
 The GOATEA developer version is available through GitHub, GOATEA is also available on Bioconductor. 
@@ -143,9 +158,9 @@ Install Docker on your computer: https://docs.docker.com/engine/install/
 
 The following commands, run them in a terminal window (Windows: cmd/Powershell).
 
-Download the pre-built GOATEA Docker image via GitHub packages
-- latest: docker pull ghcr.io/mauritsunkel/goatea:latest
-- release: check https://github.com/mauritsunkel/goatea/pkgs/container/goatea and change the command above to fit the release version
+Download the pre-built GOATEA Docker image via GitHub packages  
+- latest: docker pull ghcr.io/mauritsunkel/goatea:latest  
+- release: check https://github.com/mauritsunkel/goatea/pkgs/container/goatea and change the command above to fit the release version  
 
 Run Docker image: docker run -d -p 8080:7860 --name goatea-app ghcr.io/mauritsunkel/goatea:latest
 
@@ -154,6 +169,8 @@ Then open your web browser and navigate to: http://localhost:8080/
 And you are all set! 
 
 # GOATEA GUI demonstration
+
+Note that all plots in the vignette are clickable to full screen, in case the images load too small. 
 
 In general, you can click the '?' buttons and hover over most UI elements for explanations in popups and tool tips. 
 
@@ -167,7 +184,11 @@ When starting the GOATEA GUI, you land on the 'initialization - load data' tab. 
 
 In the genelists pane I've uploaded the example Colameo et al. MS and RNA data, as described in the GOATEA manuscript. On clicking browse, the example data folder should open for easy access. I set significant genes (or proteins) and sample names. 
 
-![Alt text for accessibility](images/GOATEA_GUI_load_data.png){width=80%}
+<a href="images/GOATEA_GUI_load_data.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_load_data.png" 
+       alt="GOATEA GUI load data" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
 
 Usage and parameters are explained through '?' popup documentation and hover tool tips. 
 
@@ -175,34 +196,68 @@ In the genesets pane, you can see the loading animation underneath the button wh
 
 In general, for any tab GUI logic questions and workflow you can click the '?' button and a popup with documentation will be shown to it, simply click on the side of it when done reading.
 
-![Alt text for accessibility](images/GOATEA_GUI_question_button.png){width=80%}
+<a href="images/GOATEA_GUI_question_button.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_question_button.png" 
+       alt="GOATEA GUI question button" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
 
 When done on a tab, you can either use the navigation buttons on the bottom of any tab, as shown in example below, or simply click the tab in the left sidebar menu. 
 
-![Alt text for accessibility](images/GOATEA_GUI_navigation_buttons.png){width=80%}
+<a href="images/GOATEA_GUI_navigation_buttons.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_navigation_buttons.png" 
+       alt="GOATEA GUI navigation buttons" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
 Clicking in 'Go to volcano', we go to the next tab. 
+
+## Pre-enrichment visualization - Volcano plot
 
 After changing the sample to 'RNA' and clicking the plot button the tab shows the following volcano plot. This interactive plotly plot is hoverable to show point (gene/protein) information. All plots are exportable with a button (right) below the plot. 
 
 Here, points can be selected by mouse dragging a box around them and clicking the 'add selected genes' button. 
 
-![Alt text for accessibility](images/GOATEA_GUI_volcano.png){width=80%}
+<a href="images/GOATEA_GUI_volcano.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_volcano.png" 
+       alt="GOATEA GUI volcano" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
+
+## Pre-enrichment visualization - Overlap (UpSet) plot
 
 Now we 'go to overlap' and click plot with the default distinct mode still on. Here I select the 484 genes that are overlapping by clicking the far right histogram and first click 'reset gene selection' before 'add set genes'. These selected genes/proteins are later used in the gene-effectsize heatmap and protein-protein interaction graph. 
 
-![Alt text for accessibility](images/GOATEA_GUI_overlap.png){width=80%}
+<a href="images/GOATEA_GUI_overlap.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_overlap.png" 
+       alt="GOATEA GUI overlap" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
+
+## Enrichment with GOAT
 
 Next we 'go to enrichment', leave parameters at default and utilize the GOAT algorithm with 'run enrichment'! Here we see a lot of output. The table now shows the current enrichment for the selected sample and selected enrichment source. All enrichments or the currently shown enrichment can be exported. Underneath the table there are many filtering options that work together in parallel. For this example I leave defaults except 'synap' for 'query terms' and hit 'filter enrichments'. The filtering is performed for all samples. Filtering can be reset by clicking the 'reset filtered enrichments' button on the top right of the table. 
 
 IMPORTANT: the current shown (filtered) enrichment is used for the splitdot, termtree and gene-genesets heatmap visualizations! 
 
-![Alt text for accessibility](images/GOATEA_GUI_enrichment.png){width=80%}
+<a href="images/GOATEA_GUI_enrichment.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_enrichment.png" 
+       alt="GOATEA GUI enrichment" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
+
+## Post-enrichment visualization: split-dot plot
 
 We then 'GO TO splitdot', set 'top N terms' to 25 and drag the slider at the bottom right to the right to scale the plot size. 
 
 This plot is meant to show a quick overview of top enriched genesets, showing gene ratio, N genes in geneset and adjusted p-value. 
 
-![Alt text for accessibility](images/GOATEA_GUI_splitdot.png){width=80%}
+<a href="images/GOATEA_GUI_splitdot.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_splitdot.png" 
+       alt="GOATEA GUI splitdot" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
+
+## Post-enrichment visualization: termtree plot
 
 We 'GO TO termtree', also set 'top N terms' to 25 and drag the slider at the bottom right to the right to scale the plot size.
 
@@ -210,23 +265,49 @@ Unfortunately, due to changes in the enrichplot package I now have to rerun a cu
 
 This plot can now be used to have a view of (gene ontology) relationships between genesets, in addition to the splitdotplot. 
 
-![Alt text for accessibility](images/GOATEA_GUI_termtree.png){width=80%}
+<a href="images/GOATEA_GUI_termtree.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_termtree.png" 
+       alt="GOATEA GUI termtree" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
+
+## Post-enrichment visualization: gene & genesets heatmap
 
 We 'GO TO gene/genesets heatmap', set 'topN terms' to 25 and 'topN genes' to 50 and click 'plot heatmap'. In the large interactive heatmap that appears there is a lot to see. Genes are on top, with their metadata legend on the bottom whereas genesets are on the right with their metadata legend on the left. If a heatmap cell is colored, it means the gene is in the geneset. The coloring defines clusters and both genes and genesets are hierarchically clustered. This is how you can quickly scan for potentially interesting groups of genes within and between genesets. 
 
-![Alt text for accessibility](images/GOATEA_GUI_heatmap_gene_genesets.png){width=80%}
+<a href="images/GOATEA_GUI_heatmap_gene_genesets.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_heatmap_gene_genesets.png" 
+       alt="GOATEA GUI heatmap gene genesets" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
 
 In the heatmap you can see the mouse dragged selection box. When you scroll down you can now see the subheatmap of this selection and decide to add genes to the selection of genes in different manners. 
 
-![Alt text for accessibility](images/GOATEA_GUI_heatmap_gene_genesets_selected.png){width=80%}
+<a href="images/GOATEA_GUI_heatmap_gene_genesets_selected.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_heatmap_gene_genesets_selected.png" 
+       alt="GOATEA GUI heatmap gene genesets selected" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
+
+## Post-enrichment visualization: gene & effectsize heatmap
 
 We 'GO TO gene/effectsize heatmap', set 'plot n genes' to 500 to plot all 484 selected overlapping genes between RNA and MS. Here, the scale difference of effectsize between the samples makes no sense and is therefore purely illustrative. Although, you can see groups of genes by the hierarchical clustering on the left and differences in effectsize coloring to make out potentially interesting groups of genes.
 
-![Alt text for accessibility](images/GOATEA_GUI_heatmap_gene_effectsize.png){width=80%}
+<a href="images/GOATEA_GUI_heatmap_gene_effectsize.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_heatmap_gene_effectsize.png" 
+       alt="GOATEA GUI heatmap gene effectsize" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
 
 Similar to the previous heatmap, we can mouse drag a selection box and see the subheatmap below and add the genes to the selection if we so wish.
 
-![Alt text for accessibility](images/GOATEA_GUI_heatmap_gene_effectsize_selected.png){width=80%}
+<a href="images/GOATEA_GUI_heatmap_gene_effectsize_selected.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_heatmap_gene_effectsize_selected.png" 
+       alt="GOATEA GUI heatmap gene effectsize selected" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
+
+## Post-enrichment visualization: protein-protein interaction graph
 
 Finally, we 'GO TO PPI' for the bottom-up protein-protein interaction graph of the selected genes/proteins, setting the 'STRINGdb score threshold' to 700 for recommended stringent filtering. The interaction strength is shown by the opacity of the graph edge. 
 
@@ -236,17 +317,30 @@ The node borders are by default colored by effectsize. Both nodes and edges can 
 
 Selected nodes are colored black and white, as shown in the middle. A single protein or cluster can also be selected. 
 
-
-
-![Alt text for accessibility](images/GOATEA_GUI_PPI.png){width=80%}
+<a href="images/GOATEA_GUI_PPI.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_PPI.png" 
+       alt="GOATEA GUI PPI" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
 
 Selections can then be subgraphed for zoomed inspection. 
 
-![Alt text for accessibility](images/GOATEA_GUI_PPI_selected.png){width=80%}
+<a href="images/GOATEA_GUI_PPI_selected.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_PPI_selected.png" 
+       alt="GOATEA PPI GUI selected" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
+
 
 FYI, graph edges can be clicked to inspect their STRING database interaction information.
 
-![Alt text for accessibility](images/GOATEA_GUI_PPI_STRINGdb.png){width=80%}
+
+<a href="images/GOATEA_GUI_PPI_STRINGdb.png" target="_blank" rel="noopener">
+  <img src="images/GOATEA_GUI_PPI_STRINGdb.png" 
+       alt="GOATEA STRINGdb" 
+       style="width:100%; display:block; margin:auto; cursor:zoom-in;" />
+</a>
+
 
 # Information
 

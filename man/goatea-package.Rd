@@ -14,6 +14,7 @@ Geneset Ordinal Association Test Enrichment Analysis (GOATEA) provides a 'Shiny'
 Useful links:
 \itemize{
   \item \url{https://github.com/mauritsunkel/goatea}
+  \item \url{https://mauritsunkel.github.io/goatea/}
   \item Report bugs at \url{https://github.com/mauritsunkel/goatea/issues}
 }
 

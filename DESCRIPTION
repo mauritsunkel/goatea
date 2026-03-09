@@ -1,7 +1,7 @@
 Package: goatea
 Type: Package
 Title: Interactive Exploration of GSEA by the GOAT Method
-Version: 1.99.0
+Version: 1.99.1
 Authors@R: 
     person("Maurits", "Unkel",
 		   role = c("aut", "cre", "fnd", "cph"),
@@ -62,5 +62,6 @@ Imports:
 Suggests:
 	knitr,
 	rmarkdown,
-	BiocStyle
+	BiocStyle,
+	magick
 VignetteBuilder: knitr

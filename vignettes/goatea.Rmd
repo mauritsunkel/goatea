@@ -7,6 +7,7 @@ output:
   BiocStyle::html_document:
     toc: true
     toc_float: true
+    toc_depth: 4
     number_sections: true
 vignette: >
   %\VignetteIndexEntry{2. GOATEA R package}
@@ -15,8 +16,45 @@ vignette: >
 ---
 
 ```{r options, include = FALSE, echo = FALSE, results = 'asis',}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(
+  collapse = TRUE, 
+  comment = "#>",
+  
+  fig.width = 12,
+  fig.height = 6,
+  out.width = "100%", 
+  fig.align = "center")
 BiocStyle::markdown()
+```
+```{r lightbox, echo=FALSE, results='asis'}
+cat('
+<style>
+.fullscreen-overlay {
+  display:none; position:fixed; top:0; left:0;
+  width:100%; height:100%; background:rgba(0,0,0,0.85);
+  z-index:9999; cursor:zoom-out;
+  justify-content:center; align-items:center;
+}
+.fullscreen-overlay.active { display:flex; }
+.fullscreen-overlay img { max-width:95%; max-height:95%; }
+</style>
+<div id="img-overlay" class="fullscreen-overlay" onclick="this.classList.remove(\'active\')">
+  <img id="img-overlay-src" src="" />
+</div>
+<script>
+document.addEventListener("click", function(e) {
+  if (e.target.tagName === "IMG" && e.target.closest(".figure, p")) {
+    document.getElementById("img-overlay-src").src = e.target.src;
+    document.getElementById("img-overlay").classList.add("active");
+  }
+});
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") {
+    document.getElementById("img-overlay").classList.remove("active");
+  }
+});
+</script>
+')
 ```
 
 # Introduction
@@ -131,6 +169,8 @@ shiny::shinyApp(
 
 ## Initialization
 
+Note that all plots in the vignette are clickable to full screen, in case the images load too small. 
+
 ```{r library, message=FALSE, warning=FALSE}
 # load goatea package library
 library(goatea)
@@ -156,15 +196,19 @@ absolute_effectsize_threshold <- 1
 Transcriptomic and/or proteomic experiments often end up in comparing groups through differential gene expression or something similar. There, lists of genes with measurement weights and statistical probability values are obtained. Genelists have to be in .csv/.tsv/.xlsx format. Genelist tables contain a 'gene' column with NCBI Entrez gene identifiers, a 'symbol' column with gene aliases (optional: can be mapped from their gene IDs), and 'effectsize' and 'pvalue' columns with measurement outcomes for a performed comparison. Here, goat manuscript example data will be used, and expected use through uploading your own file is shown. 
 
 ```{r loading_genelists}
-# GOAT paper data: download to a specific folder, tempdir() by default
-data <- goat::download_goat_manuscript_data(output_dir = outdir)
+# GOAT paper example data (example_Colameo_data):
+load(system.file("extdata", "example_Colameo.rda", package = "goatea"))
+## to manually download (to a specific folder, tempdir() by default) use: 
+# data <- goat::download_goat_manuscript_data(output_dir = outdir)
+
 # We select datasets from Colameo 2021 for our automated workflow.
 # This is RNA-seq with matched mass-spectrometry data. 
-# Rat data is mapped to HUman NCBI Entrez gene identifies with the goat package.
+# Rat data are mapped to Human NCBI Entrez gene identifiers within the goat package.
 genelists <- list(
-  rna = data$`Colameo 2021:RNA-seq:PMID34396684`,
-  ms = data$`Colameo 2021:mass-spec:PMID34396684`
+  rna = example_Colameo_data$`Colameo 2021:RNA-seq:PMID34396684`,
+  ms = example_Colameo_data$`Colameo 2021:mass-spec:PMID34396684`
 )
+
 head(genelists[['rna']])
 ```
 
@@ -198,7 +242,7 @@ genesets <- goat::load_genesets_go_bioconductor(taxid = taxid)
 head(genesets)
 ```
 
-## GOAT Enrichment Analysis 
+# GOAT Enrichment Analysis 
 
 Gene significance is set per genelist by the user-defined thresholds. The genelist is then ordered by effect size. For this example, if there are more genes than the amount of precomputed nulldistributions goat uses for its enrichment testing the amount of genes is limited to that amount. If you do want to use all genes, set the method to 'goat_bootstrap'. 
 
@@ -290,9 +334,7 @@ selected_genes <- filtered_enrichment$genes_signif[[1]]
 
 # Plotting
 
-## Genelist plotting
-
-### Volcano plot
+## pre-enrichment: Volcano plot
 
 A Volcano plot is commonly used to have a visual representation of the genelist. It shows an overview of genes as points with effectsize vs p-value and significance thresholds.  
 ```{r genelist_volcano}
@@ -305,11 +347,11 @@ goatea::plot_EnhancedVolcano(
 )
 ```
 
-### UpSet overlap plot
+## pre-enrichment: UpSet overlap plot
 
 If multiple genelists are loaded, their overlap of significant genes is shown through an UpSet plot. These show the total number of genes in a genelist and the number of overlapping significant genes for each intersection.
 
-```{r genelist_overlap}
+```{r genelist_overlap, fig.width = 8, fig.height = 4}
 if (length(genelists) > 1) {
   goatea::plot_genelists_overlap_upsetjs(
     genelists = genelists, 
@@ -318,9 +360,7 @@ if (length(genelists) > 1) {
 }
 ``` 
 
-##  Post-enrichment plotting
-
-### Tree plot 
+## Post-enrichment: termtree plot 
 The tree plot shows a clustered hierarchical split between terms based on their term similarity. Similarity is based on semantics of the term. Terms are clustered together by semantics, meaning words that look or mean alike. A summary of the clustered semantics is given to the right of the vertical lines for each cluster. 
 
 NOTE: As the 'enrichplot' package used internally no longer allows for GOAT enrichment to be converted to the class needed for plotting their 'treeplot', I rerun a local over-representation analysis on all genes of the selected genelist versus the selected (filtered) genesets of the current enrichment view.
@@ -337,22 +377,22 @@ goatea::plot_termtree(
 )
 ```
 
-### Term-split dotplot
+## Post-enrichment: split-dot plot
 
 The dotplot shows terms split by up- and down regulation. The regulation is defined by the sign of the effect sizes of the genes in the genelists. The gene ratio shows the percentage of genes of the term that were matched with the genes of the genelist. 
 
-```{r term_split_dotplot}
+```{r term_split_dotplot, fig.width = 16, fig.height = 9}
 # filter to keep a single geneset source
 single_source_enrichment <- enrichment_results[[1]] %>% 
   dplyr::filter(source == enrichment_results[[1]]$source[1])
 goatea::plot_splitdot(single_source_enrichment, topN = 20)
 ```
 
-### Gene-genelist heatmap
+## Post-enrichment: gene-effectsize heatmap
 
 This heatmap shows the selected genes for each genelist to compare their effect sizes and p-values as a simple overview. 
 
-```{r gene_genelist_heatmap}
+```{r gene_genelist_heatmap, fig.width = 12, fig.height = 8}
 selected_symbols <- filtered_enrichment$symbol[[1]][
   filtered_enrichment$genes[[1]] %in% filtered_enrichment$genes_signif[[1]]
 ][1:15]
@@ -362,7 +402,7 @@ p <- goatea::plot_gene_effectsize_ComplexHeatmap(
 )
 ```
 
-### Gene-term heatmap
+## Post-enrichment: gene-genesets heatmap
 
 This heatmap serves as an overview of the enrichment result, combined with all genelists information. Use the search functionality and pass the resulting filtered enrichment to zoom in on relevant biological aspects and focus on filtered aspects of the enrichment for exploration. In the goatea app this heatmap is also used to select genes/terms from identified aspects of interest. 
 
@@ -377,7 +417,7 @@ p <- goatea::plot_ComplexHeatmap(
 )
 ```
 
-### Protein-protein interaction network
+## Post-enrichment: protein-protein interaction network graph
 
 Gene sets miss information of gene-gene interactions, this visualization can offer bottom-up relationships between genes to gain insight. The STRING database is used to obtain protein-protein interaction data by efficient streaming. For the selected genes of interest, an igraph network is built in the background in order to obtain network statistics. The igraph is passed to visNetwork for (in Shiny app) interactive visualization and exploration of the network. 
 
