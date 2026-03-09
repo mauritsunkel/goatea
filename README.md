@@ -15,7 +15,9 @@ size](https://img.shields.io/github/repo-size/mauritsunkel/goatea)
 ![version](https://img.shields.io/github/r-package/v/mauritsunkel/goatea)
 [![pkgdown
 site](https://img.shields.io/badge/docs-pkgdown-brown.svg)](https://mauritsunkel.github.io/goatea/)
-<!-- badge: bioc-downloads --> <!-- badges: end -->
+<!-- badge: bioc-downloads -->
+[![](https://img.shields.io/badge/download-210/total-white.svg)](https://bioconductor.org/packages/stats/bioc/goatea)
+<!-- badges: end -->
 
 # goatea <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
