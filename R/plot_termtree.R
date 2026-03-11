@@ -65,7 +65,7 @@ plot_termtree <- function(genelist, genesets, map_organism = 9606, effectsize_th
   )
   
   ## formatting enrichment
-  edox <- DOSE::setReadable(edo, org_pkg, 'ENTREZID')
+  edox <- clusterProfiler::setReadable(edo, org_pkg, 'ENTREZID')
   edox2 <- enrichplot::pairwise_termsim(edox)
   edox2@result$p.adjust <- as.numeric(format(edox2@result$p.adjust, scientific = TRUE, digits = 3))
   edox2@result$zscore_sign <- ifelse(edox2@result$zScore >= 0, "Upregulation", "Downregulation")
