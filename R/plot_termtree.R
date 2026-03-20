@@ -53,11 +53,17 @@ plot_termtree <- function(genelist, genesets, map_organism = 9606, effectsize_th
     tidyr::unnest(genes)
   term2name <- genesets[, c("id", "name")]
   
+  all_genes_background <- term2gene %>%
+    dplyr::pull(genes) %>%    
+    as.character() %>% # character needed for new 'enrichit' package function
+    unique()
+  
   ## run unspecific enrichment
   edo <- clusterProfiler::enricher(
     gene = de, 
     TERM2GENE = term2gene,
     TERM2NAME = term2name,
+    universe = all_genes_background,
     pvalueCutoff = 1, 
     qvalueCutoff = 1, 
     minGSSize = 5,
