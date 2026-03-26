@@ -24,7 +24,6 @@ knitr::opts_chunk$set(
   fig.height = 6,
   out.width = "100%", 
   fig.align = "center")
-BiocStyle::markdown()
 ```
 ```{r lightbox, echo=FALSE, results='asis'}
 cat('
@@ -127,7 +126,7 @@ pak::pkg_install(c(
 
 # Running GOATEA: Shiny application
 
-For an application demonstration, see the [GUI vignette](goatea_GUI.html)
+For an application demonstration, see the `r BiocStyle::vignette_url("goatea_GUI", label = "GUI vignette")`
 
 Easiest: run GOATEA in your browser via HuggingFace: https://huggingface.co/spaces/Mausaya/GOATEA
 Note: this may be somewhat slower, as 16GB RAM and 2CPU are shared across all users. 
