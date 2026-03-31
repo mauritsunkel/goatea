@@ -15,7 +15,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r options, include = FALSE, echo = FALSE, results = 'asis',}
+```{r options, include = FALSE, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE, 
   comment = "#>",
@@ -23,37 +23,8 @@ knitr::opts_chunk$set(
   fig.width = 12,
   fig.height = 6,
   out.width = "100%", 
-  fig.align = "center")
-```
-```{r lightbox, echo=FALSE, results='asis'}
-cat('
-<style>
-.fullscreen-overlay {
-  display:none; position:fixed; top:0; left:0;
-  width:100%; height:100%; background:rgba(0,0,0,0.85);
-  z-index:9999; cursor:zoom-out;
-  justify-content:center; align-items:center;
-}
-.fullscreen-overlay.active { display:flex; }
-.fullscreen-overlay img { max-width:95%; max-height:95%; }
-</style>
-<div id="img-overlay" class="fullscreen-overlay" onclick="this.classList.remove(\'active\')">
-  <img id="img-overlay-src" src="" />
-</div>
-<script>
-document.addEventListener("click", function(e) {
-  if (e.target.tagName === "IMG" && e.target.closest(".figure, p")) {
-    document.getElementById("img-overlay-src").src = e.target.src;
-    document.getElementById("img-overlay").classList.add("active");
-  }
-});
-document.addEventListener("keydown", function(e) {
-  if (e.key === "Escape") {
-    document.getElementById("img-overlay").classList.remove("active");
-  }
-});
-</script>
-')
+  fig.align = "center"
+)
 ```
 
 # Introduction
@@ -126,7 +97,7 @@ pak::pkg_install(c(
 
 # Running GOATEA: Shiny application
 
-For an application demonstration, see the [GUI vignette](`r "goatea_GUI.html" `)
+For an application demonstration, see the [GUI vignette](goatea_GUI.html)
 
 Easiest: run GOATEA in your browser via HuggingFace: https://huggingface.co/spaces/Mausaya/GOATEA
 Note: this may be somewhat slower, as 16GB RAM and 2CPU are shared across all users. 
