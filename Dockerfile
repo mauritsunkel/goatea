@@ -28,6 +28,7 @@ COPY --chown=user:user . .
 
 ## launch app 
 ENV HOME=/home/user \
+	R_USER=/home/user \
     SHINY_LOG_STDERR=1 \
     APPLICATION_LOGS_TO_STDOUT=true
 ENV R_DEFAULT_DEVICE=CairoPNG
