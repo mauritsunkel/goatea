@@ -36,8 +36,10 @@ All vignettes can be found in the [pkgdown documentation](https://mauritsunkel.g
 
 For an application demonstration, see the [GUI vignette](https://mauritsunkel.github.io/goatea/articles/goatea_GUI.html).
 
+Example Colameo et al. 2021 data .csvs as used in the manuscript and for demonstrations can be downloaded in the data/ folder.
+
 Easiest: run GOATEA in your web browser via HuggingFace Docker container: https://huggingface.co/spaces/Mausaya/GOATEA
-Note: this may be somewhat slower, as 16GB RAM and 2CPU are shared across all users. 
+Note: this may be slower, as 16GB RAM and 2CPU are shared across all users. Specifically for loading large datasets like the GO annotations via AnnotationDbi can take up to minutes. In all cases, as long as the loader animation is running, the application is working on the background. 
 
 If this runs too slow, I suggest you run GOATEA via local R, see the steps for this in the [GUI vignette](https://mauritsunkel.github.io/goatea/articles/goatea_GUI.html).
 

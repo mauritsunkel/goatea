@@ -15,8 +15,7 @@ size](https://img.shields.io/github/repo-size/mauritsunkel/goatea?color=orange)
 ![version](https://img.shields.io/github/r-package/v/mauritsunkel/goatea?color=orange)
 [![pkgdown
 site](https://img.shields.io/badge/docs-pkgdown-white.svg)](https://mauritsunkel.github.io/goatea/)
-[![](https://img.shields.io/badge/download-210/total-white.svg)](https://bioconductor.org/packages/stats/bioc/goatea)
-<!-- badges: end -->
+<!-- badge: bioc-downloads --> <!-- badges: end -->
 
 # goatea <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
@@ -45,7 +44,11 @@ vignette](https://mauritsunkel.github.io/goatea/articles/goatea_GUI.html).
 
 Easiest: run GOATEA in your web browser via HuggingFace Docker
 container: <https://huggingface.co/spaces/Mausaya/GOATEA> Note: this may
-be somewhat slower, as 16GB RAM and 2CPU are shared across all users.
+be slower, as 16GB RAM and 2CPU are shared across all users.
+Specifically for loading large datasets like the GO annotations via
+AnnotationDbi can take up to minutes. In all cases, as long as the
+loader animation is running, the application is working on the
+background.
 
 If this runs too slow, I suggest you run GOATEA via local R, see the
 steps for this in the [GUI

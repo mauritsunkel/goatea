@@ -168,6 +168,8 @@ absolute_effectsize_threshold <- 1
 
 Transcriptomic and/or proteomic experiments often end up in comparing groups through differential gene expression or something similar. There, lists of genes with measurement weights and statistical probability values are obtained. Genelists have to be in .csv/.tsv/.xlsx format. Genelist tables contain a 'gene' column with NCBI Entrez gene identifiers, a 'symbol' column with gene aliases (optional: can be mapped from their gene IDs), and 'effectsize' and 'pvalue' columns with measurement outcomes for a performed comparison. Here, goat manuscript example data will be used, and expected use through uploading your own file is shown. 
 
+To upload multiple files at once, ensure they are located in the same folder. You can then select them simultaneously by holding the Ctrl (Windows) or Command (Mac) key while clicking individual files, or using the Shift key to select a continuous range.
+
 ```{r loading_genelists}
 # GOAT paper example data (example_Colameo_data):
 load(system.file("extdata", "example_Colameo.rda", package = "goatea"))
@@ -185,7 +187,7 @@ genelists <- list(
 head(genelists[['rna']])
 ```
 
-To load your own data follow this alternative example.
+To load your own data, you can follow this alternative example.
 
 ```{r loading_genelists_user_data}
 # set the filepath to your own data files 
@@ -200,7 +202,7 @@ head(genelist)
 
 ## Loading genesets
 
-Genesets are terms of biological aspects associated with a set of genes. The Gene Ontology (GO) and Molecular Signatures databases (MSigDB) are commonly used repositories containing organism specific genesets. goat provides GO genesets for download, also to supply a .gmt file containing genesets downloaded from MSigDB for instance. 
+symbolsets are terms of biological aspects associated with a set of symbols. The Gene Ontology (GO) and Molecular Signatures databases (MSigDB) are commonly used repositories containing organism specific symbolsets. goat provides GO symbolsets for download, also to supply a .gmt file containing symbolsets downloaded from MSigDB for instance. 
 
 ```{r loading_genesets}
 genesets <- goat::load_genesets_go_bioconductor(taxid = taxid)
@@ -323,6 +325,8 @@ goatea::plot_EnhancedVolcano(
 ## pre-enrichment: UpSet overlap plot
 
 If multiple genelists are loaded, their overlap of significant genes is shown through an UpSet plot. These show the total number of genes in a genelist and the number of overlapping significant genes for each intersection.
+
+UpSet plot offers the intersect, distinct and union modes for overlapping and then selecting genes, which are taken along for downstream heatmap visualizations and PPI network plotting. Intersect are genes present in all selected contrasts, to visualize a shared core. Distinct genes are unique to specific intersections, to visualize exclusive signatures. Union genes are all genes found in any of the selected contrasts, to visualize a comprehensive overview. 
 
 ```{r genelist_overlap, fig.width = 8, fig.height = 4}
 if (length(genelists) > 1) {

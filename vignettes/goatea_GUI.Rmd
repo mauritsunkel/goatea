@@ -156,17 +156,22 @@ This might be for more technical users, although the steps below should be easy 
 
 Install Docker on your computer: https://docs.docker.com/engine/install/
 
-The following commands, run them in a terminal window (Windows: cmd/Powershell).
+Then run the following commands, while Docker Desktop is running, in a terminal window (Windows: cmd/Powershell).
 
 Download the pre-built GOATEA Docker image via GitHub packages  
 - latest: docker pull ghcr.io/mauritsunkel/goatea:latest  
 - release: check https://github.com/mauritsunkel/goatea/pkgs/container/goatea and change the command above to fit the release version  
 
-Run Docker image: docker run -d -p 8080:7860 --name goatea-app ghcr.io/mauritsunkel/goatea:latest
+Run Docker image: 
+```bash
+docker run -d -p 8080:7860 --name goatea-app ghcr.io/mauritsunkel/goatea:latest
+```
 
 Then open your web browser and navigate to: http://localhost:8080/
+Note: it might take a couple of seconds to start up.
+Note: the R_USER home directory is set to /home/user/
 
-And you are all set! 
+You are now all set! 
 
 # GOATEA GUI demonstration
 
@@ -182,7 +187,7 @@ As in the manuscript and package demonstration, we again use the Colameo et al. 
 
 When starting the GOATEA GUI, you land on the 'initialization - load data' tab. On top you see the global options, used throughout the rest of the app. 
 
-In the genelists pane I've uploaded the example Colameo et al. MS and RNA data, as described in the GOATEA manuscript. On clicking browse, the example data folder should open for easy access. I set significant genes (or proteins) and sample names. 
+In the genelists pane I've uploaded the example Colameo et al. MS and RNA data, as described in the GOATEA manuscript. On clicking browse, the example data folder should open for easy access. For your data, to upload multiple files at once, ensure they are located in the same folder. You can then select them simultaneously by holding the Ctrl (Windows) or Command (Mac) key while clicking individual files, or using the Shift key to select a continuous range. I then set significant genes (or proteins) and sample names. 
 
 <a href="images/GOATEA_GUI_load_data.png" target="_blank" rel="noopener">
   <img src="images/GOATEA_GUI_load_data.png" 
@@ -225,7 +230,9 @@ Here, points can be selected by mouse dragging a box around them and clicking th
 
 ## Pre-enrichment visualization - Overlap (UpSet) plot
 
-Now we 'go to overlap' and click plot with the default distinct mode still on. Here I select the 484 genes that are overlapping by clicking the far right histogram and first click 'reset gene selection' before 'add set genes'. These selected genes/proteins are later used in the gene-effectsize heatmap and protein-protein interaction graph. 
+Now we 'go to overlap' and click plot with the default distinct mode still on. Here I select the 484 genes that are overlapping by clicking the far right histogram and first click 'reset gene selection' before 'add set genes'. 
+
+UpSet plot offers the intersect, distinct and union modes for overlapping and then selecting symbols, which are taken along for downstream heatmap visualizations and PPI network plotting. Intersect are symbols present in all selected contrasts, to visualize a shared core. Distinct symbols are unique to specific intersections, to visualize exclusive signatures. Union symbols are all genes found in any of the selected contrasts, to visualize a comprehensive overview. 
 
 <a href="images/GOATEA_GUI_overlap.png" target="_blank" rel="noopener">
   <img src="images/GOATEA_GUI_overlap.png" 
