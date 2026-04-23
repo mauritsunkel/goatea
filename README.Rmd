@@ -49,7 +49,7 @@ If for any reason the current and Bioconductor versions do not install, you can 
 
 For more technical users, if you are interested in making your own pipeline or scripts with GOATEA functions to maximize throughput, see the [R package vignette](https://mauritsunkel.github.io/goatea/articles/goatea.html).
 
-# GOAT reference
+# GOAT reference 
 
 Koopmans, F. GOAT: efficient and robust identification of gene set enrichment. Commun Biol 7, 744 (2024). https://doi.org/10.1038/s42003-024-06454-5
 

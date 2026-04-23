@@ -721,7 +721,6 @@ goatea_server <- function(input, output, session, css_colors) {
   
   shiny::observeEvent(input$ab_plot_overlap_upset, {
     data <- rv_genelists()
-    shinyjs::hide("db_overlap_plot")
     shinyjs::show("ab_plot_overlap_upset_loader")
     rv_genelists_overlap$plot <- plot_genelists_overlap_upsetjs(
       genelists = data,
@@ -731,7 +730,6 @@ goatea_server <- function(input, output, session, css_colors) {
       highlight.color = colors$focus
     )
     shinyjs::hide("ab_plot_overlap_upset_loader")
-    shinyjs::show("db_overlap_plot")
   })
   
   shiny::observeEvent(input$ab_run_volcano, {
@@ -1023,10 +1021,15 @@ goatea_server <- function(input, output, session, css_colors) {
       tags$p("The gene overview can be downloaded by clicking the 'download genelists overlap' button."),
       tags$p("The gene overview is used to add metadata information about overlapping significant genes to the heatmap and gene annotations which can be visualized with the Protein Protein Interactions."),
       tags$hr(),
-      tags$h3("Plotting"),
-      tags$p("Set the overlap mode: 'intersect' to show overlapping genes in each intersection, 'distinct' (as in Venn diagrams) to show unique genes and 'union' for all genes"),
+      tags$h3("Plotting & Logic"),
+      tags$p("Choose an overlap mode to define which genes are carried into downstream analyses: heatmap visualizations and PPI networks:"),
+      tags$ul(
+        tags$li(tags$strong("intersect:"), " Only genes present in ALL selected sets."),
+        tags$li(tags$strong("distinct:"), " Genes unique to non-overlapping intersections."),
+        tags$li(tags$strong("union:"), " Genes found in ANY of the selected sets.")
+      ),
       tags$p("Click 'plot significant gene overlap' to view the interactive UpSetjs plot."),
-      tags$p("Hover and click a set to select it, then press 'add set genes' to add the genes of the selected set to the total gene selection, to be used in plotting."),
+      tags$p("Hover and click a set to select it, then press 'add set genes' to add the genes of the selected set to the total gene selection, to be used in downstream plotting."),
       tags$p("The total gene selection can be reset by clicking the 'reset gene selection' button."),
       ))
   })
@@ -1035,7 +1038,10 @@ goatea_server <- function(input, output, session, css_colors) {
       easyClose = TRUE, footer = NULL,
       title = "Splitdot plot - post enrichment",
       tags$h3("Plotting"),
+      tags$p("CRITICAL NOTE: the currently shown enrichment result in the 'gene set enrichment tab' is used for plotting."),
       tags$p("Put a number of terms and click to plot, when the plot is visible you can download by clicking the save button."),
+      tags$p("Note that if the term labels are large, the plot will be squished and you have to drag the arrow at the bottom right of the plot pane to make the plot wider."),
+      tags$p("When this happens, set a larger 'Export width (px)' (and/or height) below the plot before clicking save."),
     ))
   })
   observeEvent(input$ab_termtree_modal, {
@@ -1043,7 +1049,10 @@ goatea_server <- function(input, output, session, css_colors) {
       easyClose = TRUE, footer = NULL,
       title = "Termtree plot - post enrichment",
       tags$h3("Plotting"),
+      tags$p("CRITICAL NOTE: the currently shown enrichment result in the 'gene set enrichment tab' is used for plotting."),
       tags$p("Put a number of terms/words/clusters and click to plot, when the plot is visible you can download by clicking the save button."),
+      tags$p("Note that if the term labels are large, the plot will be squished and you have to drag the arrow at the bottom right of the plot pane to make the plot wider."),
+      tags$p("When this happens, set a larger 'Export width (px)' (and/or height) below the plot before clicking save."),
     ))
   })
   observeEvent(input$ab_heatmap_modal, {
@@ -1051,9 +1060,14 @@ goatea_server <- function(input, output, session, css_colors) {
       easyClose = TRUE, footer = NULL,
       title = "Interactive heatmap - post enrichment",
       tags$h3("Plotting"),
+      tags$p("CRITICAL NOTE: the currently shown enrichment result in the 'gene set enrichment tab' is used for plotting."),
       tags$p("Set the clustering method, number of clusters, topN terms/genes and click 'plot heatmap' to plot."),
+      tags$p("Note that if the term labels are large, the plot will be squished and you have to drag the arrow at the bottom right of the plot pane to make the plot wider."),
+      tags$p("When this happens, keep in mind a larger width is also required for exporting the figure."),
       tags$p("A box can be drawn with the mouse in order to view a subset of the heatmap, which will be generated in a subgraph below the original heatmap."),
-      tags$p("From the selection, genes can be selected."),
+      tags$hr(),
+      tags$h3("Plotting and Logic"),
+      tags$p("From the selection, symbols can be selected that will be used for the PPI network graph."),
       tags$p("Click 'add visible genes' to add all selected genes shown on the top of the subheatmap to the genes selection."),
       tags$p("Click 'add all genes of visible terms' to add all genes of the terms shown on the subheatmap to the genes selection, even the ones that are in the full set on the background."),
       tags$p("Click 'add visible genes of vible terms' to add the shown genes that are within shown terms of the subheatmap to the total gene selection."),
@@ -1065,7 +1079,10 @@ goatea_server <- function(input, output, session, css_colors) {
       easyClose = TRUE, footer = NULL,
       title = "Interactive heatmap - post enrichment",
       tags$h3("Plotting"),
+      tags$p("CRITICAL NOTE: the currently shown enrichment result in the 'gene set enrichment tab' is used for plotting."),
       tags$p("Make sure some genes are selected, or add them through typing additional genes."),
+      tags$p("Note that if the symbol labels are large, the plot might be squished and you have to drag the arrow at the bottom right of the plot pane to make the plot wider."),
+      tags$p("When this happens, keep in mind a larger width is also required for exporting the figure."),
       tags$p("For speed and clarity, a max N genes out of the selection can be plotted."),
       tags$p("Genes and genelists can be clustered based on effectsize by opting for the dendrograms."),
       tags$p("Exporting the plot can be done via the interactive buttons of the plot itself."),
@@ -1075,6 +1092,14 @@ goatea_server <- function(input, output, session, css_colors) {
     showModal(modalDialog(
       easyClose = TRUE, footer = NULL,
       title = "Initialization",
+      tags$h3("GOATEA global notes"),
+      tags$p("HuggingFace provides the easiest access to GOATEA as a direct web tool. 
+             Note that runtimes here were slower, specifically for loading large datasets 
+             like the GO annotations via AnnotationDbi, which could take up to minutes. 
+             In all cases, as long as the loader animation was running, the application was working on the background."),
+      tags$p(""),
+      tags$p("Also note that the most up-to-date documentation can always be found on the GitHub page: https://github.com/mauritsunkel/goatea"),
+      tags$hr(),
       tags$h3("Global parameters"),
       tags$p("Selected organism is used for gene specific annotations and to load Gene Ontology AnnotationDbi gene sets."),
       tags$p("Selected output type is for all exported tables."),
@@ -1082,8 +1107,14 @@ goatea_server <- function(input, output, session, css_colors) {
       tags$hr(),
       tags$h3("Loading genelists"),
       tags$p("Browse to your file(s), use the parameters for loading differently."),
+      tags$p("To download the Colameo et al. (2021) example data as used in the manuscript and documentation, please download the .csvs at: https://github.com/mauritsunkel/goatea/tree/main/data"),
+      tags$p("To upload multiple files at once, ensure they are located in the same folder. You can then select them simultaneously by holding the Ctrl (Windows) or Command (Mac) key while clicking individual files, or use the Shift key to select a continuous range."),
+      tags$p(""),
       tags$p("Remove Rik(en) and Gm (predicted) mouse genes could be potentially useful for mouse specifically."),
       tags$p("IDs are expected to be in Entrez (NCBI) format."),
+      tags$p(""),
+      tags$p("To download example Colameo genelists as used in the GOATEA manuscript, see https://github.com/mauritsunkel/goatea/tree/main/data and download the .csvs."),
+      tags$p("On HugginFace, these example datasets can also be downloaded from or accessed at: https://huggingface.co/datasets/Mausaya/example_Colameo"),
       tags$hr(),
       tags$h3("Setting significant genes"),
       tags$p("Adds the $signif column to the data, used by the GOAT algorithm and for visualizations."),
@@ -1112,7 +1143,9 @@ goatea_server <- function(input, output, session, css_colors) {
       tags$p("All implemented enrichment methods by goat can be used."),
       tags$p("Some parameters are goat specific, which can be read in its documentation online."),
       tags$p("Once the enrichment has run, all enrichments can be filtered by using the parameters."),
-      tags$p("The currently shown enrichment will be used for plotting the gene-geneset heatmap."),
+      tags$hr(),
+      tags$h3("Post-enrichment plotting"),
+      tags$p("CRITICIAL NOTE: the currently shown and potentially filtered enrichment result will be used for plotting post-enrichment visualizations."),
     ))
   })
   ## explain page and function as graph legend
@@ -1120,13 +1153,16 @@ goatea_server <- function(input, output, session, css_colors) {
     showModal(modalDialog(
       easyClose = TRUE, footer = NULL,
       title = "PPIgraph: Protein-Protein Interaction igraph",
+      tags$h3("Preparation: symbol selection"),
+      tags$p("CRITICAL NOTE: to plot the PPI graph, you need to select symbols (genes/proteins) from the pre-enrichment UpSet overlap plot tab or the post-enrichment overview (gene-term) subheatmap!"),
+      tags$hr(),
       tags$h3("Initialization"),
       tags$p("Initialize by clicking 'Create PPIgraph': UI to its right are used as parameters."),
-      tags$p("Note that the sample selected here can be different than the sample used in the enrichment tab, and thereby heatmap selected genes!"),
-      tags$p("Also note that STRING db PPI information is downloaded to a temporary folder on the first load each session, subsequent loads will likely be instant"),
+      tags$p("Note that the sample selected here can be different than the sample used in the enrichment tab, and thereby selected symbols from the overview heatmap or UpSet overlap!"),
+      tags$p("Also note that STRING DB PPI information is downloaded to a temporary folder on the first load each session, subsequent loads will likely be instant"),
       tags$p("Hover parameters/UI elements for additional information."),
       tags$p("The text output below shows which proteins are selected or how to select proteins."),
-      tags$p("Underneath the ppigraph will be shown. The current view can be exported by clicking 'Export ppigraph' in the bottom left. Original view can be reset with the button in the bottom right."),
+      tags$p("Underneath the ppigraph will be shown. The current view, based on your current zoom (mouse cursor) and dragged view, can be exported by clicking 'Export ppigraph' in the bottom left. Original view can be reset with the button in the bottom right."),
       tags$p("Below the ppigraph are node and edge coloring UI. Edges simply select what to color by. For nodes, first select to color background/border, then select what feature to color by."),
       tags$p(""),
       tags$p("When specific proteins are highlighted by selection, click 'Subgraph selected nodes' to draw a ppisubgraph, which can be seen by scrolling down. This subgraph is meant to focus on specific proteins and their relations."),
@@ -1145,6 +1181,20 @@ goatea_server <- function(input, output, session, css_colors) {
   })
   
   #### download button handlers ----
+  plot_downloadhandler_ggsave <- function(filename, plot_reactive, width_reactive, height_reactive,
+                                          default_width = 3600, default_height = 2400) {
+    shiny::downloadHandler(
+      filename = filename,
+      content = function(file) {
+        p <- plot_reactive()
+        shiny::req(p)
+        w <- width_reactive();  if (!shiny::isTruthy(w)) w <- default_width
+        h <- height_reactive(); if (!shiny::isTruthy(h)) h <- default_height
+        ggplot2::ggsave(file, p, bg = "white", width = w, height = h, units = "px")
+      },
+      contentType = "png/image"
+    )
+  }
   output$db_ppigraph_metrics <- shiny::downloadHandler(
     filename = function() {
       req(rv_ppi$g)
@@ -1171,15 +1221,17 @@ goatea_server <- function(input, output, session, css_colors) {
       }
     }
   )
-  output$db_termtree <- shiny::downloadHandler(
+  output$db_termtree <- plot_downloadhandler_ggsave(
     filename = "TermTreePlot.png",
-    content = function(file) ggplot2::ggsave(file, rv_termtree$plot, bg = "white", width = 30, height = 20, units = "cm"),
-    contentType = "png/image"
+    plot_reactive   = reactive(rv_termtree$plot),
+    width_reactive  = reactive(input$ni_termtree_width),
+    height_reactive = reactive(input$ni_termtree_height)
   )
-  output$db_splitdot <- shiny::downloadHandler(
+  output$db_splitdot <- plot_downloadhandler_ggsave(
     filename = "SplitDotPlot.png",
-    content = function(file) ggplot2::ggsave(file, rv_splitdot$plot, bg = "white", width = 30, height = 20, units = "cm"),
-    contentType = "png/image"
+    plot_reactive   = reactive(rv_splitdot$plot),
+    width_reactive  = reactive(input$ni_splitdot_width),
+    height_reactive = reactive(input$ni_splitdot_height)
   )
   output$db_volcano_download <- downloadHandler(
     filename = "volcano_plot.png",
@@ -1192,20 +1244,9 @@ goatea_server <- function(input, output, session, css_colors) {
         pvalue_threshold = input$ni_set_significant_pvalue,
         interactive = FALSE
       )
-      ggplot2::ggsave(plot = p, filename = file)
-    },
-    contentType = "png/image"
-  )
-  output$db_overlap_plot <- downloadHandler(
-    filename = "overlap_plot.png",
-    content = function(file) {
-      if (is(rv_genelists_overlap$plot[1], "upset")) {
-        png(file)
-        plot(rv_genelists_overlap$plot)
-        dev.off()
-      } else {
-        ggplot2::ggsave(file, rv_genelists_overlap$plot)
-      }
+      w <- input$ni_volcano_width;  if (!shiny::isTruthy(w)) w <- 3600
+      h <- input$ni_volcano_height; if (!shiny::isTruthy(h)) h <- 2400
+      ggplot2::ggsave(plot = p, filename = file, bg = "white", width = w, height = h, units = "px")
     },
     contentType = "png/image"
   )

@@ -38,7 +38,7 @@ plot_genelists_overlap_upsetjs <- function(genelists, mode = 'distinct', interac
     upset <- upsetjs::upsetjs()
   }
   
-  theme <- ifelse(main.color == 'black', 'dark', 'light')
+  theme <- 'light'
   upset <- upset %>% upsetjs::chartTheme(theme = theme, color = main.color, text.color = main.color, selection.color = highlight.color)
 
   if (interactive) upset <- upset %>% upsetjs::interactiveChart() %>% upsetjs::chartFontSizes(

@@ -42,6 +42,9 @@ documentation](https://mauritsunkel.github.io/goatea)
 For an application demonstration, see the [GUI
 vignette](https://mauritsunkel.github.io/goatea/articles/goatea_GUI.html).
 
+Example Colameo et al. 2021 data .csvs as used in the manuscript and for
+demonstrations can be downloaded in the data/ folder.
+
 Easiest: run GOATEA in your web browser via HuggingFace Docker
 container: <https://huggingface.co/spaces/Mausaya/GOATEA> Note: this may
 be slower, as 16GB RAM and 2CPU are shared across all users.

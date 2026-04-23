@@ -185,7 +185,11 @@ goatea_ui <- function() {
                                                     hovertip = "Add selected genes of from the EnahncedVolcano plot to the genes selection")),
                     column(width = 2, wrap_hovertip(actionButton("ab_reset_volcano_genes", "Reset gene selection"),
                                                     hovertip = "Reset selected genes for plotting")),
-                    column(width = 6),
+                    column(width = 2),
+                    column(width = 2, wrap_hovertip(numericInput("ni_volcano_width", "Export width (px)", 3600, min = 1, step = 1),
+                                                    hovertip = "Pixel width for exported plot")),
+                    column(width = 2, wrap_hovertip(numericInput("ni_volcano_height", "Export height (px)", 2400, min = 1, step = 1),
+                                                    hovertip = "Pixel height for exported plot")),
                     column(width = 2, wrap_hovertip(downloadButton("db_volcano_download", "Export vanilla plot"),
                                                     hovertip = "Export vanilla EnhancedVolcano plot with light colors and Enhanced features"))
                   )
@@ -347,13 +351,18 @@ goatea_ui <- function() {
                     width = NULL,
                     column(width = 2, wrap_hovertip(shinyjs::disabled(wrap_loader(id = "ab_splitdot_plot_loader", actionButton("ab_splitdot_plot", "Plot splitdot"))), 
                                                     hovertip = "Plot selected (and filtered) enrichment")),
-                    column(width = 2, wrap_hovertip(numericInput("ni_splitdot_topN", "top N terms", 50, min = 2, step = 1), 
+                    column(width = 2, wrap_hovertip(numericInput("ni_splitdot_topN", "top N terms", 50, min = 2, step = 1),
                                                     hovertip = "Plot terms ordered by adjusted pvalue")),
-                    column(width = 4),
-                    column(width = 2, hidden(downloadButton("db_splitdot", "Save plot"))),
+                    column(width = 6),
                     column(width = 2, wrap_hovertip(actionButton("ab_splitdot_modal", label = icon("question"), style = "font-size: 24px;"),
                                                     hovertip = "Click to show tab help overview")),
-                    column(width = 12, shinyjqui::jqui_resizable(plotOutput("po_splitdot", width = 800, height = 600)))
+                    column(width = 12, shinyjqui::jqui_resizable(plotOutput("po_splitdot", width = 800, height = 600))),
+                    column(width = 6),
+                    column(width = 2, wrap_hovertip(numericInput("ni_splitdot_width", "Export width (px)", 3600, min = 1, step = 1),
+                                                    hovertip = "Pixel width for exported plot")),
+                    column(width = 2, wrap_hovertip(numericInput("ni_splitdot_height", "Export height (px)", 2400, min = 1, step = 1),
+                                                    hovertip = "Pixel height for exported plot")),
+                    column(width = 2, hidden(downloadButton("db_splitdot", "Save plot")))
                   )),
                 fluidRow(
                   box(
@@ -379,12 +388,18 @@ goatea_ui <- function() {
                                                     hovertip = "Plot terms ordered by adjusted pvalue")),
                     column(width = 2, wrap_hovertip(numericInput("ni_termtree_Nwords", "N words", 5, min = 0, step = 1), 
                                                     hovertip = "Plot N summarizing words from semantic similarity/overlapping genes")),
-                    column(width = 2, wrap_hovertip(numericInput("ni_termtree_Nclusters", "N clusters", 3, min = 1, step = 1), 
+                    column(width = 2, wrap_hovertip(numericInput("ni_termtree_Nclusters", "N clusters", 3, min = 1, step = 1),
                                                     hovertip = "Plot N clusters of terms by semantic similarity/overlapping genes")),
-                    column(width = 2, hidden(downloadButton("db_termtree", "Save plot"))),
+                    column(width = 2),
                     column(width = 2, wrap_hovertip(actionButton("ab_termtree_modal", label = icon("question"), style = "font-size: 24px;"),
                                                     hovertip = "Click to show tab help overview")),
-                    column(width = 12, shinyjqui::jqui_resizable(plotOutput("po_termtree", width = 800, height = 600)))
+                    column(width = 12, shinyjqui::jqui_resizable(plotOutput("po_termtree", width = 800, height = 600))),
+                    column(width = 6),
+                    column(width = 2, wrap_hovertip(numericInput("ni_termtree_width", "Export width (px)", 3600, min = 1, step = 1),
+                                                    hovertip = "Pixel width for exported plot")),
+                    column(width = 2, wrap_hovertip(numericInput("ni_termtree_height", "Export height (px)", 2400, min = 1, step = 1),
+                                                    hovertip = "Pixel height for exported plot")),
+                    column(width = 2, hidden(downloadButton("db_termtree", "Save plot")))
                   )),
                 fluidRow(
                   box(
