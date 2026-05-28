@@ -84,6 +84,18 @@ For issues: <https://github.com/mauritsunkel/goatea/issues>
 
 To collaborate, pull request or email me: <mauritsunkel@gmail.com>
 
+# Issues
+
+If you encounter any issues (on a specific platform or version) please
+post an issue at <https://github.com/mauritsunkel/goatea/issues> and
+follow it.
+
+In the meantime you can try with the development version on GitHub as
+that will be most up-to-date.
+
+Note that the Bioconductor release version might not yet have updated to
+its upcoming development version that fixes potential bugs.
+
 # Frequently Asked Questions (FAQ)
 
 Why does my file not download?
