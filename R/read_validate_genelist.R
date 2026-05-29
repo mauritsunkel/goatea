@@ -60,7 +60,9 @@ read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove
     org.xx.eg.db <- getExportedValue(org_pkg, org_pkg)
   
     message("mapping gene symbols via AnnotationDbi::mapIds ALIAS to NCBI Entrez IDs")
-    genelist$gene <- AnnotationDbi::mapIds(org.xx.eg.db, keys = toupper(genelist$symbol), column = "ENTREZID", keytype = "ALIAS", multiVals = "first")
+    # Note: do NOT toupper() symbols — ALIAS keys are organism-specific case (e.g. mouse is
+    # mixed-case "Actb", human is uppercase "ACTB"). Forcing toupper() breaks mouse mapping.
+    genelist$gene <- AnnotationDbi::mapIds(org.xx.eg.db, keys = genelist$symbol, column = "ENTREZID", keytype = "ALIAS", multiVals = "first")
     msg <- paste0(round(sum(is.na(genelist$gene)) / nrow(genelist), digits = 2), '% of symbols were not converted to ENTREZID')
     warning(msg)
     if ( ! is.null(shiny::getDefaultReactiveDomain())) shiny::showNotification(msg, type = 'warning')
@@ -135,18 +137,25 @@ read_validate_genelist <- function(file, remove_non_numerical_ids = TRUE, remove
   }
   
   # 5) genes cannot be duplicated
-  if (remove_duplicated) genelist <- genelist[ ! duplicated(genelist$gene), ]
+  if (remove_duplicated) {
+    # first deduplicate by symbol (preserves input uniqueness; avoids collapsing distinct
+    # proteins that happen to share the same ALIAS-mapped ENTREZID via multiVals="first")
+    if ('symbol' %in% colnames(genelist)) genelist <- genelist[ ! duplicated(genelist$symbol), ]
+    # then deduplicate by gene (ENTREZID), keeping the most significant entry per ID
+    genelist <- genelist[order(genelist$pvalue), ]
+    genelist <- genelist[ ! duplicated(genelist$gene), ]
+  }
   if(anyDuplicated(genelist$gene)) {
     return("genelist table should not contain duplicate values in the 'gene' column")
   }
-  
+
   # remove if NA after integer conversion of gene IDs
   if (remove_non_numerical_ids) genelist <- genelist[ ! is.na(as.integer(genelist$gene)), ]
-  
-  # remove Riken uncanonical mouse genes
-  if (remove_Rik_genes) genelist <- genelist %>% filter( ! grepl("Rik$", .data$gene))
-  # remove Gm uncanonical mouse genes
-  if (remove_Gm_genes) genelist <- genelist %>% filter( ! grepl("^Gm", .data$gene))
+
+  # remove Riken uncanonical mouse genes (filter on symbol, not gene/ENTREZID)
+  if (remove_Rik_genes && 'symbol' %in% colnames(genelist)) genelist <- genelist %>% filter( ! grepl("Rik$", .data$symbol))
+  # remove Gm uncanonical mouse genes (filter on symbol, not gene/ENTREZID)
+  if (remove_Gm_genes && 'symbol' %in% colnames(genelist)) genelist <- genelist %>% filter( ! grepl("^Gm", .data$symbol))
 
   return(genelist)
 }
