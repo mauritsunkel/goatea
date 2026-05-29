@@ -37,13 +37,7 @@ Shows enrichment terms from GO:BP, GO:CC, and GO:MF in a 3-row x 2-column grid
 terms are shown first (top), followed by auto-filled top terms by adjusted p-value.
 }
 \examples{
-# Build multi-source data from the single-source example by assigning GO source labels
-enr <- get(load(system.file("extdata", "example_enrichment.rda", package = "goatea")))
-multi_enr <- rbind(
-  transform(enr, source = "GO:BP"),
-  transform(enr, source = "GO:CC"),
-  transform(enr, source = "GO:MF")
-)
-plot_splitdot_combined(multi_enr, topN = 5, show_signif_overlay = FALSE,
-  highlight_terms = c("geneset name 7", "geneset name 3"))
+get(load(system.file("extdata", "example_enrichment.rda", package = "goatea")))
+example_enrichment$source <- rep(c("GO_BP", "GO_CC", "GO_MF"), 4)[1:10]
+plot_splitdot_combined(example_enrichment, topN = 2)
 }

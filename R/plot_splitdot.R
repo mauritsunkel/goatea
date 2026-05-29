@@ -125,15 +125,9 @@ plot_splitdot <- function(enrichment, topN = NA, mode = "gene_ratio", show_signi
 #' @importFrom ggplot2 ggplot aes geom_point scale_x_continuous scale_color_gradient scale_size_continuous scale_y_discrete theme_minimal labs facet_grid theme element_rect element_text element_line
 #'
 #' @examples
-#' # Build multi-source data from the single-source example by assigning GO source labels
-#' enr <- get(load(system.file("extdata", "example_enrichment.rda", package = "goatea")))
-#' multi_enr <- rbind(
-#'   transform(enr, source = "GO:BP"),
-#'   transform(enr, source = "GO:CC"),
-#'   transform(enr, source = "GO:MF")
-#' )
-#' plot_splitdot_combined(multi_enr, topN = 5, show_signif_overlay = FALSE,
-#'   highlight_terms = c("geneset name 7", "geneset name 3"))
+#' get(load(system.file("extdata", "example_enrichment.rda", package = "goatea")))
+#' example_enrichment$source <- rep(c("GO_BP", "GO_CC", "GO_MF"), 4)[1:10]
+#' plot_splitdot_combined(example_enrichment, topN = 2)
 plot_splitdot_combined <- function(enrichment, topN = 5, highlight_terms = NULL, mode = "gene_ratio", show_signif_overlay = TRUE) {
   accepted_sources <- c("GO_BP", "GO_CC", "GO_MF")
 
