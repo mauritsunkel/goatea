@@ -23,6 +23,8 @@
 #' @importFrom shinydashboard updateTabItems
 #'
 #' @returns Shiny server function
+#' 
+#' @export 
 goatea_server <- function(input, output, session, css_colors) {
   colors <- shiny::reactiveValues(
     main_bg = css_colors$main_bg,

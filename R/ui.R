@@ -12,6 +12,8 @@
 #' @importFrom visNetwork visNetworkOutput
 #' 
 #' @returns Shiny UI function
+#' 
+#' @export
 goatea_ui <- function() {
   ## adds custom css styling and Javascript functionalities
   www_path <- system.file("www", package = "goatea")
