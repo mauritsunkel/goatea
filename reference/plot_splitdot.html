@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">goatea</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.99.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.99.10</span>
       </span>
     </div>
 
@@ -66,7 +66,12 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_splitdot</span><span class="op">(</span><span class="va">enrichment</span>, topN <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_splitdot</span><span class="op">(</span></span>
+<span>  <span class="va">enrichment</span>,</span>
+<span>  topN <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  mode <span class="op">=</span> <span class="st">"gene_ratio"</span>,</span>
+<span>  show_signif_overlay <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -74,16 +79,30 @@
 
 
 <dl><dt id="arg-enrichment">enrichment<a class="anchor" aria-label="anchor" href="#arg-enrichment"></a></dt>
-<dd><p>GOAT enrichment result</p></dd>
+<dd><p>GOAT enrichment result, pre-sorted in the desired display order (top row appears at top of plot)</p></dd>
 
 
 <dt id="arg-topn">topN<a class="anchor" aria-label="anchor" href="#arg-topn"></a></dt>
-<dd><p>default: NA to plot all, else integer to plot topN terms by adjusted pvalue</p></dd>
+<dd><p>default: NA to plot all, else integer to plot topN terms (first N rows)</p></dd>
+
+
+<dt id="arg-mode">mode<a class="anchor" aria-label="anchor" href="#arg-mode"></a></dt>
+<dd><p>Character. Either <code>"gene_ratio"</code> (default) or <code>"pvalue"</code>.
+Controls x-axis and color legend only; row order is taken from the input data.
+<code>"gene_ratio"</code>: x = GeneRatio, color = adjusted p-value.
+<code>"pvalue"</code>: x = adjusted p-value, color = GeneRatio.</p></dd>
+
+
+<dt id="arg-show-signif-overlay">show_signif_overlay<a class="anchor" aria-label="anchor" href="#arg-show-signif-overlay"></a></dt>
+<dd><p>Logical. When <code>TRUE</code>, adds an inner black dot representing
+<code>ngenes_signif</code> on the same size scale as <code>ngenes</code>. Default: <code>TRUE</code>.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>ggplot2 object</p>
+    <p>ggplot2 object. <code>attr(p, "suggested_width")</code> contains a suggested render width
+in inches based on the longest term label — pass to <code>ggsave(width = ...)</code> or
+<code>renderPlot(width = ... * 96)</code> in Shiny.</p>
     </div>
 
     <div id="ref-examples">
