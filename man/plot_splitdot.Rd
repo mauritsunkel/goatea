@@ -4,15 +4,30 @@
 \alias{plot_splitdot}
 \title{Plot splitdot plot}
 \usage{
-plot_splitdot(enrichment, topN = NA)
+plot_splitdot(
+  enrichment,
+  topN = NA,
+  mode = "gene_ratio",
+  show_signif_overlay = TRUE
+)
 }
 \arguments{
-\item{enrichment}{GOAT enrichment result}
+\item{enrichment}{GOAT enrichment result, pre-sorted in the desired display order (top row appears at top of plot)}
 
-\item{topN}{default: NA to plot all, else integer to plot topN terms by adjusted pvalue}
+\item{topN}{default: NA to plot all, else integer to plot topN terms (first N rows)}
+
+\item{mode}{Character. Either \code{"gene_ratio"} (default) or \code{"pvalue"}.
+Controls x-axis and color legend only; row order is taken from the input data.
+\code{"gene_ratio"}: x = GeneRatio, color = adjusted p-value.
+\code{"pvalue"}: x = adjusted p-value, color = GeneRatio.}
+
+\item{show_signif_overlay}{Logical. When \code{TRUE}, adds an inner black dot representing
+\code{ngenes_signif} on the same size scale as \code{ngenes}. Default: \code{TRUE}.}
 }
 \value{
-ggplot2 object
+ggplot2 object. \code{attr(p, "suggested_width")} contains a suggested render width
+in inches based on the longest term label — pass to \code{ggsave(width = ...)} or
+\code{renderPlot(width = ... * 96)} in Shiny.
 }
 \description{
 Plot splitdot plot
