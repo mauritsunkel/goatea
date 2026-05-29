@@ -15,8 +15,7 @@ size](https://img.shields.io/github/repo-size/mauritsunkel/goatea?color=orange)
 ![version](https://img.shields.io/github/r-package/v/mauritsunkel/goatea?color=orange)
 [![pkgdown
 site](https://img.shields.io/badge/docs-pkgdown-white.svg)](https://mauritsunkel.github.io/goatea/)
-[![](https://img.shields.io/badge/download-767/total-white.svg)](https://bioconductor.org/packages/stats/bioc/goatea)
-<!-- badges: end -->
+<!-- badge: bioc-downloads --> <!-- badges: end -->
 
 # goatea <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
@@ -80,8 +79,6 @@ enrichment. Commun Biol 7, 744 (2024).
 
 A thank you for your time and effort in using goatea, I hope it may aid
 you in exploring your data!
-
-For issues: <https://github.com/mauritsunkel/goatea/issues>
 
 To collaborate, pull request or email me: <mauritsunkel@gmail.com>
 
